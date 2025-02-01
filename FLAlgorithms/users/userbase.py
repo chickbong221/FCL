@@ -37,7 +37,7 @@ class User:
         self.iter_trainloader = iter(self.trainloader)
         self.iter_testloader = iter(self.testloader)
         
-        self.test_data_so_far_loader = [DataLoader(self.test_data, len(self.test_data))]
+        self.test_data_so_far_loader = [DataLoader(self.test_data, 64)]
 
         self.test_data_per_task = []
         self.test_data_per_task.append(self.test_data)
@@ -138,7 +138,7 @@ class User:
 
     def test(self, personal = True):
         
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.eval()
         test_acc = 0
         loss = 0
@@ -167,18 +167,32 @@ class User:
         loss: total loss (on a dataset) 
         y_shape: total tested samples
         '''
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        self.model.eval()
-        test_acc = 0
+        model = self.model.classifier
+        model.cuda()
+
+        model.eval()
         loss = 0
+        test_correct = 0
+        num_samples = 0
         for x, y in dataloader:
             x = x.to(device)
             y = y.to(device)
-            output = self.model(x)['output']
-            loss += self.loss(output, y)
-            test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item() # counts: how many correct samples
-        return test_acc, loss, y.shape[0]
+
+            p, _, _ = model(x)
+            loss += self.model.classify_criterion(torch.log(p+eps), y).item()
+            test_correct += (torch.sum(torch.argmax(p, dim=1) == y)).item()
+            num_samples += y.shape[0]
+            print(test_correct, num_samples)
+
+        return test_correct/num_samples, loss/num_samples, num_samples
+    
+    def evaluate_current_task(self):
+
+        evaluate_acc, evaluate_loss, num_samples = self.test_a_dataset(self.testloader)
+        
+        return evaluate_acc, evaluate_loss
     
     def test_per_task(self):
 
@@ -199,7 +213,7 @@ class User:
         return test_acc, loss, y_shape
         
     def test_all(self):
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         self.model.eval()
         test_acc = 0

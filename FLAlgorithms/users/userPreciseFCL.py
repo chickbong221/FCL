@@ -66,7 +66,7 @@ class UserPreciseFCL(User):
             self.current_labels.clear()
             self.current_labels.extend(label_info['labels'])
 
-        self.test_data_so_far_loader.append(DataLoader(self.test_data, 32))
+        self.test_data_so_far_loader.append(DataLoader(self.test_data, 64))
 
         # update test data for CL: (test per task)        
         self.test_data_per_task.append(self.test_data)
@@ -89,7 +89,7 @@ class UserPreciseFCL(User):
         '''
 
         # device
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         correct = 0
         sample_num = 0
@@ -150,9 +150,13 @@ class UserPreciseFCL(User):
         if 'flow_loss_last' not in result_dict.keys():
             result_dict['flow_loss_last'] = 0
 
+        evaluate_acc, evaluate_loss = self.evaluate_current_task() 
+
         if self.args.wandb:
             wandb.log({
-                f"Client_{self.id}/Online_Accuracy": acc*100.0,
+                f"Client_{self.id}/Train_Accuracy": acc*100.0,
+                f"Client_{self.id}/Test_Accuracy": evaluate_acc*100.0,
+                f"Client_{self.id}/Test_Loss": evaluate_loss,
             }, step=glob_iter)
 
         if verbose:
@@ -197,7 +201,7 @@ class UserPreciseFCL(User):
 
         model.cuda()
         
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         model.eval()
         

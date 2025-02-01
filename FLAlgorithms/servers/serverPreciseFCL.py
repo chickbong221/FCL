@@ -124,11 +124,11 @@ class FedPrecise(Server):
             # ===================
             #    print info.
             # ===================
-            if True:
-                for u in self.users:
-                    logger.info("classes so far: " + str(u.classes_so_far))
-                logger.info("available labels for the Client: " + str(self.users[-1].available_labels))
-                logger.info("available labels (current) for the Client: " + str(self.users[-1].available_labels_current))
+            # if True:
+            #     for u in self.users:
+            #         logger.info("classes so far: " + str(u.classes_so_far))
+            #     logger.info("available labels for the Client: " + str(self.users[-1].available_labels))
+            #     logger.info("available labels (current) for the Client: " + str(self.users[-1].available_labels_current))
             
 
             # 1. server side:
@@ -159,14 +159,14 @@ class FedPrecise(Server):
                 #   train user
                 # ---------------
 
-                self.pickle_record['train'][glob_iter] = {}
+                # self.pickle_record['train'][glob_iter] = {}
 
                 global_classifier = self.model.classifier
                 global_classifier.eval()
                 
                 for user_id, user in zip(self.user_idxs, self.selected_users): # allow selected users to train
                     # verbose = user_id == chosen_verbose_user
-                    verbose = True
+                    verbose = False
                     
                     # perform regularization using generated samples after the first communication round
                     user_result = user.train(
@@ -175,7 +175,7 @@ class FedPrecise(Server):
                         global_classifier,
                         verbose=verbose)
                         
-                    self.pickle_record['train'][glob_iter][user_id] = user_result
+                    # self.pickle_record['train'][glob_iter][user_id] = user_result
 
                 # log training time
                 curr_timestamp = time.time()
@@ -199,7 +199,8 @@ class FedPrecise(Server):
                 # send parameteres: server -> client
                 self.send_parameters(mode='all', beta=1)
 
-            self.evaluate_all_(glob_iter=glob_iter, matrix=True, personal=False)
+            # self.evaluate_all_(glob_iter=glob_iter, matrix=True, personal=False)
+            self.test_global_model(glob_iter=glob_iter)
 
             # self.save_pickle()
 

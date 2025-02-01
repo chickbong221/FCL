@@ -1,5 +1,5 @@
 {
-  "wandb": true,
+  "wandb": false,
   "dataset": "CIFAR100",
   "datadir": "datasets",
   "data_split_file": "data_split/CIFAR100_split.pkl",
@@ -18,7 +18,7 @@
   "flow_lr": 0.0001,
   "fedprox_k": 0,
   "use_lastflow_x": false,
-  "lr": 1e-05,
+  "lr": 0.0001,
   "beta1": 0.9,
   "beta2": 0.999,
   "weight_decay": 0,
