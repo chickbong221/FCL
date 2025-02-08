@@ -184,7 +184,7 @@ class User:
             loss += self.model.classify_criterion(torch.log(p+eps), y).item()
             test_correct += (torch.sum(torch.argmax(p, dim=1) == y)).item()
             num_samples += y.shape[0]
-            print(test_correct, num_samples)
+            # print(test_correct, num_samples)
 
         return test_correct/num_samples, loss/num_samples, num_samples
     

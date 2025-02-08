@@ -20,7 +20,7 @@ def create_server_n_user(args, i):
 
 def run_job(args, seed):
 
-    logger.info('random seed is: %d'%(seed))
+    # logger.info('random seed is: %d'%(seed))
     logger.info("\n\n         [ Start training iteration, seed: {} ]           \n\n".format(seed))
     if args.wandb:
         wandb.login(key="b1d6eed8871c7668a889ae74a621b5dbd2f3b070")
@@ -28,7 +28,7 @@ def run_job(args, seed):
             project="FCL",
             entity="letuanhf-hanoi-university-of-science-and-technology",
             config=args, 
-            name=f"{args.dataset}",
+            name=f"{args.dataset}_{args.algorithm}_{args.model}_lr{args.lr}_localep{args.local_epochs}",
         )
 
     # Generate model
@@ -68,13 +68,13 @@ if __name__ == "__main__":
     parser.add_argument('--use_lastflow_x', action="store_true") 
 
     # optimizer
-    parser.add_argument('--lr', type=float, default=1e-04)  
+    parser.add_argument('--lr', type=float, default=1e-03)  
     parser.add_argument('--beta1', type=float, default=0.9)
     parser.add_argument('--beta2', type=float, default=0.999)
     parser.add_argument('--weight-decay', type=float, default=0)    
 
-    parser.add_argument("--num_glob_iters", type=int, default=60)
-    parser.add_argument("--local_epochs", type=int, default=100)
+    parser.add_argument("--num_glob_iters", type=int, default=200)
+    parser.add_argument("--local_epochs", type=int, default=2)
 
     parser.add_argument("--train", type=int, default=1, choices=[0,1])
     parser.add_argument("--batch_size", type=int, default=64)
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     
     # model
     parser.add_argument('--c-channel-size', type=int, default=64)
-    parser.add_argument("--model", type=str, default="cnn")
+    parser.add_argument("--model", type=str, default="Resnet8_plus", choices=["Resnet8_plus","S_ConvNet","Resnet18_plus"])
 
     # run routine
     parser.add_argument('--target_dir_name', type = str, default="output_dir", help="the dim of the solution")
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     else:
         logger.info('------------------Debug--------------------')
 
-    print_args(args)
+    # print_args(args)
     with open(os.path.join(args.target_dir_name, 'args.json'), "w") as f:
         json.dump(args.__dict__, f, indent =2)
         

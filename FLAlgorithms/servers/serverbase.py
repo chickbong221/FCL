@@ -188,6 +188,36 @@ class Server:
             for key in self.metrics:
                 hf.create_dataset(key, data=self.metrics[key])
             hf.close()
+
+    def test_local_model(self, glob_iter):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        model = self.model.classifier
+        model.cuda()
+
+        model.eval()
+        loss = 0
+        test_correct = 0
+        num_samples = 0
+        # for dataloader in c.test_data_so_far_loader:
+        for x, y in self.users[0].testloader:
+            x = x.to(device)
+            y = y.to(device)
+
+            p, _, _ = model(x)
+            loss += self.model.classify_criterion(torch.log(p+eps), y).item()
+            test_correct += (torch.sum(torch.argmax(p, dim=1) == y)).item()
+            num_samples += y.shape[0]
+            print(test_correct, num_samples)
+
+        glob_acc = test_correct/num_samples
+        glob_loss = loss/num_samples
+
+        if self.args.wandb:
+            wandb.log({
+                "Global/Average_Accuracy(All_task_so_far)": glob_acc*100,
+                "Global/Loss(All_task_so_far)": glob_loss
+            }, step=glob_iter)
         
     def test_global_model(self, glob_iter):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -208,15 +238,15 @@ class Server:
                 p, _, _ = model(x)
                 loss += self.model.classify_criterion(torch.log(p+eps), y).item()
                 test_correct += (torch.sum(torch.argmax(p, dim=1) == y)).item()
-                print(test_correct)
                 num_samples += y.shape[0]
+                # print(test_correct, num_samples)
 
         glob_acc = test_correct/num_samples
         glob_loss = loss/num_samples
 
         if self.args.wandb:
             wandb.log({
-                "Global/Average_Accuracy(All_task_so_far)he": glob_acc*100,
+                "Global/Average_Accuracy(All_task_so_far)": glob_acc*100,
                 "Global/Loss(All_task_so_far)": glob_loss
             }, step=glob_iter)
 

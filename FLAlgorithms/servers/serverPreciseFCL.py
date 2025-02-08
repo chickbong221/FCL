@@ -105,7 +105,7 @@ class FedPrecise(Server):
                     id, train_data, test_data, label_info = read_user_data_PreciseFCL(i, self.data, dataset=args.dataset, count_labels=True, task = task)
 
                     # update dataset 
-#                     assert (self.users[i].id == id)
+                    # assert (self.users[i].id == id)
                     self.users[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
 
                 # update labels info.
@@ -135,7 +135,7 @@ class FedPrecise(Server):
             # 2. user side:
             # ============ train ==============
 
-            epoch_per_task = int(self.num_glob_iters / N_TASKS)
+            epoch_per_task = self.num_glob_iters
 
             for glob_iter_task in range(epoch_per_task):
                 
