@@ -215,11 +215,11 @@ class Server:
 
         if self.args.wandb:
             wandb.log({
-                "Global/Average_Accuracy(All_task_so_far)": glob_acc*100,
-                "Global/Loss(All_task_so_far)": glob_loss
+                "Global/Average_Accuracy(Current_task)": glob_acc*100,
+                "Global/Loss(Current_task)": glob_loss
             }, step=glob_iter)
         
-    def test_global_model(self, glob_iter):
+    def test_global_model_current(self, glob_iter):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         model = self.model.classifier
@@ -246,9 +246,41 @@ class Server:
 
         if self.args.wandb:
             wandb.log({
-                "Global/Average_Accuracy(All_task_so_far)": glob_acc*100,
-                "Global/Loss(All_task_so_far)": glob_loss
+                "Global/Average_Accuracy(Current_task)": glob_acc*100,
+                "Global/Loss(Current_task)": glob_loss
             }, step=glob_iter)
+
+    def test_global_model_so_far(self, glob_iter):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        model = self.model.classifier
+        model.cuda()
+
+        model.eval()
+        loss = 0
+        test_correct = 0
+        num_samples = 0
+        for c in self.users:
+            for dataloader in c.test_data_so_far_loader:
+                for x, y in dataloader:
+                    x = x.to(device)
+                    y = y.to(device)
+
+                    p, _, _ = model(x)
+                    loss += self.model.classify_criterion(torch.log(p+eps), y).item()
+                    test_correct += (torch.sum(torch.argmax(p, dim=1) == y)).item()
+                    num_samples += y.shape[0]
+                    # print(test_correct, num_samples)
+
+        glob_acc = test_correct/num_samples
+        glob_loss = loss/num_samples
+
+        if self.args.wandb:
+            wandb.log({
+                "Global/Average_Accuracy(all_task_so_far)": glob_acc*100,
+                "Global/Loss(all_task_so_far)": glob_loss
+            }, step=glob_iter)
+
 
     def test(self, selected=False):
         '''

@@ -200,7 +200,8 @@ class FedPrecise(Server):
                 self.send_parameters(mode='all', beta=1)
 
             # self.evaluate_all_(glob_iter=glob_iter, matrix=True, personal=False)
-            self.test_global_model(glob_iter=glob_iter)
+            self.test_global_model_current(glob_iter=glob_iter)
+            self.test_global_model_so_far(glob_iter=glob_iter)
 
             # self.save_pickle()
 

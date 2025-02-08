@@ -6,7 +6,7 @@ import numpy as np
 import torch.nn.functional as F
 
 from FLAlgorithms.PreciseFCLNet.SConvNet import S_ConvNet
-from FLAlgorithms.PreciseFCLNet.resnet_relu import Resnet8_plus, Resnet18_plus
+from FLAlgorithms.PreciseFCLNet.resnet_relu import Resnet8_plus, Resnet12_plus, Resnet18_plus
 from nflows.flows.base import Flow
 from nflows.transforms.permutations import RandomPermutation, ReversePermutation
 from nflows.transforms.base import CompositeTransform
@@ -71,6 +71,9 @@ class PreciseModel(nn.Module):
             if args.model == "Resnet18_plus":
                 self.xa_shape=[512]
                 self.classifier = Resnet18_plus(32, xa_dim=int(np.prod(self.xa_shape)), num_classes=self.num_classes)
+            if args.model == "Resnet12_plus":
+                self.xa_shape=[512]
+                self.classifier = Resnet12_plus(32, xa_dim=int(np.prod(self.xa_shape)), num_classes=self.num_classes)
             if args.model == "S_ConvNet":
                 self.xa_shape=[512]
                 self.classifier = S_ConvNet(32, 3, c_channel_size, xa_dim=int(np.prod(self.xa_shape)), num_classes=self.num_classes)

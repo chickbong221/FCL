@@ -278,6 +278,9 @@ def resnet34(**kwargs: Any) -> ResNet:
 def resnet18(input_channels, num_classes, **kwargs: Any) -> ResNet: # 18 = 2 + 2 * (2 + 2 + 2 + 2)
     return ResNet(BasicBlock, layers=[2, 2, 2, 2], num_input_channels=input_channels, num_classes=num_classes, **kwargs)
 
+def resnet12(input_channels, num_classes, **kwargs: Any) -> ResNet: # 12 = 2 + 2 * (2 + 1 + 1 + 1)
+    return ResNet(BasicBlock, layers=[2, 1, 1, 1], num_input_channels=input_channels, num_classes=num_classes, **kwargs)
+
 def resnet10(**kwargs: Any) -> ResNet: # 10 = 2 + 2 * (1 + 1 + 1 + 1)
     return ResNet(BasicBlock, [1, 1, 1, 1], **kwargs)
 
@@ -328,6 +331,44 @@ class Resnet8_plus(nn.Module):
 
         return classes_p, logits
     
+class Resnet12_plus(nn.Module):
+    def __init__(self, image_size, xa_dim, num_classes = 10):
+        # configurations
+        super().__init__()
+        self.image_size = image_size
+        self.num_classes = num_classes
+        
+        # layers
+        self.features = resnet12(input_channels=3, num_classes=self.num_classes)
+        channel_size = 512
+        self.fc1 = nn.Linear(channel_size, xa_dim)
+        self.fc2 = nn.Linear(xa_dim, xa_dim)
+        
+        # aux-classifier fc
+        self.fc_classifier = nn.Linear(xa_dim, self.num_classes)
+        
+        # activation functions:
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        xa = self.forward_to_xa(x)
+        classes_p, logits = self.forward_from_xa(xa)
+
+        return classes_p, xa, logits  
+    
+    def forward_to_xa(self, x):
+        xa = self.features(x) # [N, 256]
+        # print(xa.size())
+        return xa
+
+    def forward_from_xa(self, xa):
+        xa = F.leaky_relu(self.fc1(xa))
+        xb = F.leaky_relu(self.fc2(xa))
+        logits = self.fc_classifier(xb)        
+        classes_p = self.softmax(logits)
+
+        return classes_p, logits
+
 class Resnet18_plus(nn.Module):
     def __init__(self, image_size, xa_dim, num_classes = 10):
         # configurations
