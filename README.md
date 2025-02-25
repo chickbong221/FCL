@@ -3,13 +3,13 @@ This directory contains the implementation of the continual binary ImageNet clas
 
 The first step to replicate the results is to download the data. The data can be downloaded [here](https://drive.google.com/file/d/1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z/view?usp=sharing).
 Then download a file [here](https://drive.google.com/file/d/1qt6ucxtgVKsRdGvw72Phm916mSNlTMZB/view?usp=sharing).
-Create a directory named `data` and extract/move the downloaded file in `data`. Remember to change the name of the extracted folder as 'imagenet1k-classes'. Don not change the name of the 'class order' file.
+Create a directory named `data` and extract/move the downloaded file in `data`. 
 ```sh
 cd FCL/
 mkdir data
 ```
 
-Then run the following command to run the code
+Remember to change the name of the extracted folder as 'imagenet1k-classes'. Do not change the name of the 'class order' file. Then run the following command to run the code
 
 ```sh
 python system/main.py --dataset IMAGENET1k --num_classes 1000 --wandb True 
