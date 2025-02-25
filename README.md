@@ -3,7 +3,8 @@ This directory contains the implementation of the continual binary ImageNet clas
 
 The first step to replicate the results is to download the data. The data can be downloaded [here](https://drive.google.com/file/d/1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z/view?usp=sharing).
 Then download a file [here](https://drive.google.com/file/d/1qt6ucxtgVKsRdGvw72Phm916mSNlTMZB/view?usp=sharing).
-Create a directory named `data` and extract the downloaded data folder in `data`. Also move the downloaded file `class_order`  to `data` 
+Create a directory named `dataset` and extract the downloaded data folder in `dataset`. Also move the downloaded file `class_order`  to `dataset` 
+Rename `classes` to `imagenet1k-classes`
 ```sh
 cd FCL/
 mkdir data
