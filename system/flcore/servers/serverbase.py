@@ -279,9 +279,6 @@ class Server(object):
             wandb.log({
                 "Global/Averaged Train Loss": train_loss,
                 "Global/Averaged Test Accurancy": test_acc,
-                "Global/Averaged Test AUC": test_auc,
-                "Global/Std Test Accurancy": accs,
-                "Global/Std Test AUC": aucs,
             }, step=glob_iter)
 
         print("Averaged Train Loss: {:.4f}".format(train_loss))

@@ -89,11 +89,6 @@ class FedAvg(Server):
                 for client in self.selected_clients:
                     client.train()
 
-                # threads = [Thread(target=client.train)
-                #            for client in self.selected_clients]
-                # [t.start() for t in threads]
-                # [t.join() for t in threads]
-
                 self.receive_models()
                 if self.dlg_eval and i%self.dlg_gap == 0:
                     self.call_dlg(i)
@@ -106,8 +101,6 @@ class FedAvg(Server):
                     break
 
             print("\nBest accuracy.")
-            # self.print_(max(self.rs_test_acc), max(
-            #     self.rs_train_acc), min(self.rs_train_loss))
             print(max(self.rs_test_acc))
             print("\nAverage time cost per round.")
             print(sum(self.Budget[1:])/len(self.Budget[1:]))
