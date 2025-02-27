@@ -4,6 +4,7 @@ import numpy as np
 import time
 from flcore.clients.clientbase import Client
 from flcore.utils.fcil_utils import entropy, get_one_hot
+import torch.optim as optim
 
 
 class clientFCIL(Client):
@@ -21,7 +22,6 @@ class clientFCIL(Client):
         if self.train_slow:
             max_local_epochs = np.random.randint(1, max_local_epochs // 2)
 
-        self.model = model_to_device(self.model, False, self.device)
         opt = optim.SGD(self.model.parameters(), lr=self.learning_rate, weight_decay=0.00001)
 
         if model_old[1] != None:
@@ -35,14 +35,13 @@ class clientFCIL(Client):
 
         if self.old_model != None:
             print('load old model')
-            self.old_model = model_to_device(self.old_model, False, self.device)
             self.old_model.eval()
 
         for epoch in range(max_local_epochs):
             loss_cur_sum, loss_mmd_sum = [], []
             if (epoch + ep_g * 20) % 200 == 100:
                 if self.numclass == self.task_size:
-                    opt = self.optimizer
+                    opt = optim.SGD(self.model.parameters(), lr=self.learning_rate / 25, weight_decay=0.00001)
                 else:
                     for p in opt.param_groups:
                         p['lr'] = self.learning_rate / 5
