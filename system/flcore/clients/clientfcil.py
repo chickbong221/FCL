@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import time
 from flcore.clients.clientbase import Client
+from flcore.utils.fcil_utils import entropy, get_one_hot
 
 
 class clientFCIL(Client):
@@ -41,7 +42,11 @@ class clientFCIL(Client):
             loss_cur_sum, loss_mmd_sum = [], []
             if (epoch + ep_g * 20) % 200 == 100:
                 if self.numclass == self.task_size:
-                    opt = self.optimizer
+                    opt = self.optimizerdef entropy(input_):
+    bs = input_.size(0)
+    entropy = -input_ * torch.log(input_ + 1e-5)
+    entropy = torch.sum(entropy, dim=1)
+    return entropy
                 else:
                     for p in opt.param_groups:
                         p['lr'] = self.learning_rate / 5
