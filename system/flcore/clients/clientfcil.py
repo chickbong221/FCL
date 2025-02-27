@@ -10,7 +10,7 @@ class clientFCIL(Client):
     def __init__(self, args, id, train_data, test_data, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
 
-    def traintrain(self, ep_g, model_old):
+    def train(self, ep_g, model_old):
         trainloader = self.load_train_data()
         # self.model.to(self.device)
         self.model.train()
