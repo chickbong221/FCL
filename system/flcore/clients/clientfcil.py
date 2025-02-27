@@ -20,24 +20,6 @@ class clientFCIL(Client):
         if self.train_slow:
             max_local_epochs = np.random.randint(1, max_local_epochs // 2)
 
-        for epoch in range(max_local_epochs):
-            for i, (x, y) in enumerate(trainloader):
-                if type(x) == type([]):
-                    x[0] = x[0].to(self.device)
-                else:
-                    x = x.to(self.device)
-                y = y.to(self.device)
-                if self.train_slow:
-                    time.sleep(0.1 * np.abs(np.random.rand()))
-                output = self.model(x)
-                loss = self.loss(output, y)
-                self.optimizer.zero_grad()
-                loss.backward()
-                self.optimizer.step()
-
-        """
-        
-        """
         self.model = model_to_device(self.model, False, self.device)
         opt = optim.SGD(self.model.parameters(), lr=self.learning_rate, weight_decay=0.00001)
 
@@ -95,3 +77,28 @@ class clientFCIL(Client):
 
         self.train_time_cost['num_rounds'] += 1
         self.train_time_cost['total_cost'] += time.time() - start_time
+
+    """
+        Compute loss function
+    """
+    def _compute_loss(self, indexs, imgs, label):
+        output = self.model(imgs)
+
+        target = get_one_hot(label, self.numclass, self.device)
+        output, target = output.cuda(self.device), target.cuda(self.device)
+        if self.old_model == None:
+            w = self.efficient_old_class_weight(output, label)
+            loss_cur = torch.mean(w * F.binary_cross_entropy_with_logits(output, target, reduction='none'))
+
+            return loss_cur
+        else:
+            w = self.efficient_old_class_weight(output, label)
+            loss_cur = torch.mean(w * F.binary_cross_entropy_with_logits(output, target, reduction='none'))
+
+            distill_target = target.clone()
+            old_target = torch.sigmoid(self.old_model(imgs))
+            old_task_size = old_target.shape[1]
+            distill_target[..., :old_task_size] = old_target
+            loss_old = F.binary_cross_entropy_with_logits(output, distill_target)
+
+            return 0.5 * loss_cur + 0.5 * loss_old
