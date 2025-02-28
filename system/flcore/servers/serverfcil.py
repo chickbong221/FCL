@@ -4,6 +4,7 @@ from flcore.clients.clientfcil import clientFCIL
 from flcore.servers.serverbase import Server
 from threading import Thread
 from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
+from flcore.trainmodel.models import *
 
 
 class FedFCIL(Server):
@@ -24,7 +25,9 @@ class FedFCIL(Server):
         self.best_model_1 = None
         self.best_model_2 = None
         self.best_perf = 0
-        self.encode_model = encode_model                  # Check this
+
+        self.encode_model = LeNet2(num_classes=self.num_classes)
+        self.encode_model.apply(weights_init)
         self.monitor_dataset = Proxy_Data(test_transform) # Check this
 
     def train(self):
@@ -39,7 +42,7 @@ class FedFCIL(Server):
             Init for parameters for learning FCIL 
         """
         old_client_0 = []
-        old_client_1 = [i for i in range(args.num_clients)]
+        old_client_1 = [i for i in range(self.num_clients)]
         new_client = []
         models = []
 
