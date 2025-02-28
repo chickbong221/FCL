@@ -29,6 +29,8 @@ class Client(object):
         self.batch_size = args.batch_size
         self.learning_rate = args.local_learning_rate
         self.local_epochs = args.local_epochs
+        self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True,  shuffle = True)
+        self.testloader =  DataLoader(self.test_data, self.batch_size, drop_last=True)
 
         # check BatchNorm
         self.has_BatchNorm = False

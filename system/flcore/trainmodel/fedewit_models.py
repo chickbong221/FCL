@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import torchmetrics
+from sklearn import metrics
 import numpy as np
 import time
 
@@ -12,16 +12,9 @@ class TrainModule:
 
     def __init__(self, args, logger, nets):
         self.args = args
-        self.logger = logger
+        # self.logger = logger
         self.nets = nets
-        self.metrics = {
-            'train_lss': torchmetrics.MeanMetric(),
-            'train_acc': torchmetrics.Accuracy(),
-            'valid_lss': torchmetrics.MeanMetric(),
-            'valid_acc': torchmetrics.Accuracy(),
-            'test_lss' : torchmetrics.MeanMetric(),
-            'test_acc' : torchmetrics.Accuracy()
-        }
+        self.device = args.device
 
     def init_state(self, cid):
         self.state = {
@@ -46,7 +39,7 @@ class TrainModule:
 
     def load_state(self, cid):
         self.state = np_load(os.path.join(self.args.state_dir, '{}_train.npy'.format(cid))).item()
-        self.optimizer = optim.Adam(self.nets.parameters())
+        self.optimizer = optim.Adam(list(self.params['trainables']))
         self.optimizer.load_state_dict(self.state['optimizer'])
 
     def save_state(self):
@@ -56,12 +49,12 @@ class TrainModule:
     def init_learning_rate(self):
         self.state['early_stop'] = False
         self.state['lowest_lss'] = np.inf
-        self.state['curr_lr'] = self.args.lr
+        self.state['curr_lr'] = self.args.local_learning_rate
         self.state['curr_lr_patience'] = self.args.lr_patience
         self.init_optimizer(self.state['curr_lr'])
 
     def init_optimizer(self, curr_lr):
-        self.optimizer = optim.Adam(self.nets.parameters(), lr=curr_lr)
+        self.optimizer = torch.optim.Adam([torch.nn.Parameter(torch.zeros(1))], lr=curr_lr)
 
     # def adaptive_lr_decay(self):
     #     vlss = self.vlss
@@ -86,10 +79,12 @@ class TrainModule:
         self.state['curr_round'] = curr_round
         self.state['round_cnt'] = round_cnt
         self.state['curr_task'] = curr_task
-        self.curr_model = self.nets.get_model_by_tid(curr_task)
         trainloader = self.task['trainloader']
+        self.optimizer.param_groups[0]['params'] = list(self.params['trainables'])
+        self.curr_model = self.nets.get_model_by_tid(curr_task)
+        self.curr_model.to(self.device)
         self.curr_model.train()
-        for epoch in range(self.args.num_epochs):
+        for epoch in range(self.args.local_epochs):
             self.state['curr_epoch'] = epoch + 1
             for i, (x, y) in enumerate(trainloader):
                 if type(x) == type([]):
@@ -97,17 +92,17 @@ class TrainModule:
                 else:
                     x = x.to(self.device)
                 y = y.to(self.device)
-                if self.train_slow:
-                    time.sleep(0.1 * np.abs(np.random.rand()))
-                output = self.model(x)
-                loss = self.loss(output, y)
+                # if self.train_slow:
+                #     time.sleep(0.1 * np.abs(np.random.rand()))
+                output = self.curr_model(x)
+                loss = self.params['loss'](output, y)
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
             # self.validate()
             # self.evaluate()
-            if self.args.model in ['fedweit']:
-                self.calculate_capacity()
+            # if self.args.algorithm in ['FedWeIT']:
+            #     self.calculate_capacity()
             # self.adaptive_lr_decay()
             if self.state['early_stop']:
                 continue
@@ -149,72 +144,72 @@ class TrainModule:
     #                 .format(self.state['curr_round'], self.state['round_cnt'], self.state['curr_epoch'], tid, round(lss, 3), \
     #                     round(acc, 3), len(self.task['x_train']), len(self.task['x_valid']), len(x_test)))
 
-    def add_performance(self, lss_name, acc_name, loss, y_true, y_pred):
-        self.metrics[lss_name].update(loss)
-        self.metrics[acc_name].update(y_pred, y_true)
+    # def add_performance(self, lss_name, acc_name, loss, y_true, y_pred):
+    #     self.metrics[lss_name].update(loss)
+    #     self.metrics[acc_name].update(y_pred, y_true)
 
-    def measure_performance(self, lss_name, acc_name):
-        lss = float(self.metrics[lss_name].compute())
-        acc = float(self.metrics[acc_name].compute())
-        self.metrics[lss_name].reset()
-        self.metrics[acc_name].reset()
-        return lss, acc
+    # def measure_performance(self, lss_name, acc_name):
+    #     lss = float(self.metrics[lss_name].compute())
+    #     acc = float(self.metrics[acc_name].compute())
+    #     self.metrics[lss_name].reset()
+    #     self.metrics[acc_name].reset()
+    #     return lss, acc
 
-    def calculate_capacity(self):
-        def l1_pruning(weights, hyp):
-            hard_threshold = torch.gt(torch.abs(weights), hyp).float()
-            return weights * hard_threshold
+    # def calculate_capacity(self):
+    #     def l1_pruning(weights, hyp):
+    #         hard_threshold = torch.gt(torch.abs(weights), hyp).float()
+    #         return weights * hard_threshold
 
-        if self.state['num_total_params'] == 0:
-            for dims in self.nets.shapes:
-                params = 1
-                for d in dims:
-                    params *= d
-                self.state['num_total_params'] += params
-        num_total_activ = 0
-        num_shared_activ = 0
-        num_adapts_activ = 0
-        for var_name in self.nets.decomposed_variables:
-            if var_name == 'adaptive':
-                for tid in range(self.state['curr_task'] + 1):
-                    for lid in self.nets.decomposed_variables[var_name][tid]:
-                        var = self.nets.decomposed_variables[var_name][tid][lid]
-                        var = l1_pruning(var, self.args.lambda_l1)
-                        actives = torch.ne(var, torch.zeros_like(var)).float()
-                        actives = torch.sum(actives)
-                        num_adapts_activ += actives
-            elif var_name == 'shared':
-                for var in self.nets.decomposed_variables[var_name]:
-                    actives = torch.ne(var, torch.zeros_like(var)).float()
-                    actives = torch.sum(actives)
-                    num_shared_activ += actives
-            else:
-                continue
-        num_total_activ += (num_adapts_activ + num_shared_activ)
-        ratio = num_total_activ / self.state['num_total_params']
-        self.state['capacity']['num_adapts_activ'].append(num_adapts_activ)
-        self.state['capacity']['num_shared_activ'].append(num_shared_activ)
-        self.state['capacity']['ratio'].append(ratio)
-        self.logger.print(self.state['client_id'], 'model capacity: %.3f' % (ratio))
+    #     if self.state['num_total_params'] == 0:
+    #         for dims in self.nets.shapes:
+    #             params = 1
+    #             for d in dims:
+    #                 params *= d
+    #             self.state['num_total_params'] += params
+    #     num_total_activ = 0
+    #     num_shared_activ = 0
+    #     num_adapts_activ = 0
+    #     for var_name in self.nets.decomposed_variables:
+    #         if var_name == 'adaptive':
+    #             for tid in range(self.state['curr_task'] + 1):
+    #                 for lid in self.nets.decomposed_variables[var_name][tid]:
+    #                     var = self.nets.decomposed_variables[var_name][tid][lid]
+    #                     var = l1_pruning(var, self.args.lambda_l1)
+    #                     actives = torch.ne(var, torch.zeros_like(var)).float()
+    #                     actives = torch.sum(actives)
+    #                     num_adapts_activ += actives
+    #         elif var_name == 'shared':
+    #             for var in self.nets.decomposed_variables[var_name]:
+    #                 actives = torch.ne(var, torch.zeros_like(var)).float()
+    #                 actives = torch.sum(actives)
+    #                 num_shared_activ += actives
+    #         else:
+    #             continue
+    #     num_total_activ += (num_adapts_activ + num_shared_activ)
+    #     ratio = num_total_activ / self.state['num_total_params']
+    #     self.state['capacity']['num_adapts_activ'].append(num_adapts_activ)
+    #     self.state['capacity']['num_shared_activ'].append(num_shared_activ)
+    #     self.state['capacity']['ratio'].append(ratio)
+    #     self.logger.print(self.state['client_id'], 'model capacity: %.3f' % (ratio))
 
-    def calculate_communication_costs(self, params):
-        if self.state['num_total_params'] == 0:
-            for dims in self.nets.shapes:
-                params = 1
-                for d in dims:
-                    params *= d
-                self.state['num_total_params'] += params
+    # def calculate_communication_costs(self, params):
+    #     if self.state['num_total_params'] == 0:
+    #         for dims in self.nets.shapes:
+    #             params = 1
+    #             for d in dims:
+    #                 params *= d
+    #             self.state['num_total_params'] += params
 
-        num_actives = 0
-        for i, pruned in enumerate(params):
-            actives = torch.ne(pruned, torch.zeros_like(pruned)).float()
-            actives = torch.sum(actives)
-            num_actives += actives
+    #     num_actives = 0
+    #     for i, pruned in enumerate(params):
+    #         actives = torch.ne(pruned, torch.zeros_like(pruned)).float()
+    #         actives = torch.sum(actives)
+    #         num_actives += actives
 
-        ratio = num_actives / self.state['num_total_params']
-        self.state['communication']['num_actives'].append(num_actives)
-        self.state['communication']['ratio'].append(ratio)
-        self.logger.print(self.state['client_id'], 'communication cost: %.3f' % (ratio))
+    #     ratio = num_actives / self.state['num_total_params']
+    #     self.state['communication']['num_actives'].append(num_actives)
+    #     self.state['communication']['ratio'].append(ratio)
+    #     self.logger.print(self.state['client_id'], 'communication cost: %.3f' % (ratio))
 
     def set_details(self, details):
         self.params = details
@@ -232,7 +227,7 @@ class TrainModule:
         return self.state['communication']
 
     def aggregate(self, updates):
-        if self.args.sparse_comm and self.args.model in ['fedweit']:
+        if self.args.sparse_comm and self.args.algorithm in ['FedWeIT']:
             client_weights = [u[0][0] for u in updates]
             client_masks = [u[0][1] for u in updates]
             client_sizes = [u[1] for u in updates]
@@ -280,19 +275,19 @@ class NetModule:
                 (3200, 800),
                 (800, 500)]
         
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             self.decomposed_variables = {
                 'shared': [],
                 'adaptive':{},
                 'mask':{},
                 'bias':{},
             }
-            if self.args.model == 'fedweit':
+            if self.args.algorithm in ['FedWeIT']:
                 self.decomposed_variables['atten'] = {}
                 self.decomposed_variables['from_kb'] = {}
 
     def init_state(self, cid):
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             self.state = {
                 'client_id':  cid,
                 'decomposed_weights': {
@@ -303,7 +298,7 @@ class NetModule:
                 },
                 'heads_weights': self.initial_heads_weights,
             }
-            if self.args.model == 'fedweit':
+            if self.args.algorithm in ['FedWeIT']:
                 self.state['decomposed_weights']['atten'] = {}
                 self.state['decomposed_weights']['from_kb'] = {}
         else:
@@ -317,7 +312,7 @@ class NetModule:
         self.state['heads_weights'] = []
         for h in self.heads:
             self.state['heads_weights'].append(h.state_dict())
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             for var_type, layers in self.decomposed_variables.items():
                 self.state['decomposed_weights'] = {
                     'shared': [layer.detach().cpu().numpy() for layer in self.decomposed_variables['shared']],
@@ -325,7 +320,7 @@ class NetModule:
                     'mask':{tid: [layer.detach().cpu().numpy() for lid, layer in self.decomposed_variables['mask'][tid].items()] for tid in self.decomposed_variables['mask'].keys()},
                     'bias':{tid: [layer.detach().cpu().numpy() for lid, layer in self.decomposed_variables['bias'][tid].items()] for tid in self.decomposed_variables['bias'].keys()},
                 }
-                if self.args.model == 'fedweit':
+                if self.args.algorithm in ['FedWeIT']:
                     self.state['decomposed_weights']['from_kb'] = {tid: [layer.detach().cpu().numpy() for lid, layer in self.decomposed_variables['from_kb'][tid].items()] for tid in self.decomposed_variables['from_kb'].keys()}
                     self.state['decomposed_weights']['atten'] = {tid: [layer.detach().cpu().numpy() for lid, layer in self.decomposed_variables['atten'][tid].items()] for tid in self.decomposed_variables['atten'].keys()}
         else:
@@ -339,7 +334,7 @@ class NetModule:
         for i, h in enumerate(self.state['heads_weights']):
             self.heads[i].load_state_dict(h)
 
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             for var_type, values in self.state['decomposed_weights'].items():
                 if var_type == 'shared':
                     for lid, weights in enumerate(values):
@@ -352,7 +347,7 @@ class NetModule:
             self.model_body.load_state_dict(self.state['body_weights'])
 
     def init_global_weights(self):
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             global_weights = []
             for i in range(len(self.shapes)):
                 global_weights.append(self.initializer(torch.empty(self.shapes[i])).numpy())
@@ -365,6 +360,7 @@ class NetModule:
     def init_decomposed_variables(self, initial_weights):
         self.decomposed_variables['shared'] = [torch.nn.Parameter(torch.tensor(initial_weights[i]), requires_grad=True) for i in range(len(self.shapes))]
         for tid in range(self.args.num_tasks):
+            print(tid)
             for lid in range(len(self.shapes)):
                 var_types = ['adaptive', 'bias', 'mask'] if self.args.model == 'apd' else ['adaptive', 'bias', 'mask', 'atten', 'from_kb']
                 for var_type in var_types:
@@ -377,21 +373,23 @@ class NetModule:
         if var_type == 'adaptive':
             init_value = self.decomposed_variables['shared'][lid].detach().cpu().numpy()/self.adaptive_factor
         elif var_type == 'atten':
-            shape = (int(round(self.args.num_clients*self.args.frac_clients)),)
+            shape = (int(round(self.args.num_clients*self.args.join_ratio)),)
             if tid == 0:
                 trainable = False
                 init_value = np.zeros(shape).astype(np.float32)
             else:
-                init_value = self.initializer(torch.empty(shape)).numpy()
+                # init_value = self.initializer(torch.empty(shape)).numpy()
+                init_value = np.zeros(shape).astype(np.float32)
         elif var_type == 'from_kb':
-            shape = np.concatenate([self.shapes[lid], [int(round(self.args.num_clients*self.args.frac_clients))]], axis=0)
+            shape = np.concatenate([self.shapes[lid], [int(round(self.args.num_clients*self.args.join_ratio))]], axis=0)
             trainable = False
             if tid == 0:
                 init_value = np.zeros(shape).astype(np.float32)
             else:
-                init_value = self.initializer(torch.empty(shape)).numpy()
+                # init_value = self.initializer(torch.empty(shape)).numpy()
+                init_value = np.zeros(shape).astype(np.float32)
         else:
-            init_value = self.initializer(torch.empty(self.shapes[lid][-1],)).numpy()
+            init_value = self.initializer(torch.empty(self.shapes[lid][-1], 1)).numpy()
         var = torch.nn.Parameter(torch.tensor(init_value), requires_grad=trainable)
         self.decomposed_variables[var_type][tid][lid] = var
 
@@ -405,12 +403,12 @@ class NetModule:
         return torch.sigmoid(mask)
 
     def get_model_by_tid(self, tid):
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             self.switch_model_params(tid)
         return self.models[tid]
 
     def get_trainable_variables(self, curr_task, head=True):
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             return self.get_decomposed_trainable_variables(curr_task, retroactive=False, head=head)
         else:
             if head:
@@ -443,7 +441,7 @@ class NetModule:
         return trainable_variables
 
     def get_body_weights(self, task_id=None):
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             prev_weights = {}
             for lid in range(len(self.shapes)):
                 prev_weights[lid] = {}
@@ -460,7 +458,7 @@ class NetModule:
             return self.model_body.state_dict()
 
     def set_body_weights(self, body_weights):
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             for lid, wgt in enumerate(body_weights):
                 sw = self.get_variable('shared', lid)
                 sw.data = torch.tensor(wgt)
@@ -473,12 +471,12 @@ class NetModule:
             dlay.aw = self.get_variable('adaptive', lid, tid)
             dlay.bias = self.get_variable('bias', lid, tid)
             dlay.mask = self.generate_mask(self.get_variable('mask', lid, tid))
-            if self.args.model == 'fedweit':
+            if self.args.algorithm in ['FedWeIT']:
                 dlay.atten = self.get_variable('atten', lid, tid) 
                 dlay.aw_kb = self.get_variable('from_kb', lid, tid) 
 
     def add_head(self, body):
-        head = nn.Linear(body.output_shape[1], self.args.num_classes)
+        head = nn.Linear(body[-2].out_features, self.args.num_classes)
         self.heads.append(head)
         self.initial_heads_weights.append(head.state_dict())
         return nn.Sequential(body, head) # multiheaded model
@@ -494,6 +492,7 @@ class NetModule:
     def build_lenet_body(self, initial_weights=None, decomposed=False):
         if decomposed:
             self.init_decomposed_variables(initial_weights)
+            print("bug here")
             tid = 0
             layers = []
             for lid in [0, 1]:
@@ -512,9 +511,10 @@ class NetModule:
                 self.decomposed_layers[self.lid] = self.dense_decomposed(
                     lid, tid,
                     units=self.shapes[lid][-1],
-                    acti='relu')
+                    acti=None)
             layers.append(self.decomposed_layers[self.lid])
             self.lid += 1
+            layers.append(nn.ReLU())
             model = nn.Sequential(*layers)
         else:
             layers = []
@@ -547,8 +547,7 @@ class NetModule:
             from_kb     = self.get_variable('from_kb', lid, tid),
             atten       = self.get_variable('atten', lid, tid),
             bias        = self.get_variable('bias', lid, tid), use_bias=True,
-            mask        = self.generate_mask(self.get_variable('mask', lid, tid)),
-            kernel_regularizer = nn.L2(self.args.wd))
+            mask        = self.generate_mask(self.get_variable('mask', lid, tid)))
 
     def dense_decomposed(self, lid, tid, units, acti):
         return DecomposedDense(
@@ -562,8 +561,8 @@ class NetModule:
             from_kb     = self.get_variable('from_kb', lid, tid),
             atten       = self.get_variable('atten', lid, tid),
             bias        = self.get_variable('bias', lid, tid), use_bias=True,
-            mask        = self.generate_mask(self.get_variable('mask', lid, tid)),
-            kernel_regularizer = nn.L2(self.args.wd))
+            mask        = self.generate_mask(self.get_variable('mask', lid, tid)))
+    
 # Layers
 class DecomposedDense(nn.Module):
     """ Custom dense layer that decomposes parameters into shared and specific parameters.
@@ -579,7 +578,8 @@ class DecomposedDense(nn.Module):
                  from_kb=None,
                  atten=None,
                  mask=None,
-                 bias=None):
+                 bias=None,
+                 **kwargs):
         super(DecomposedDense, self).__init__()
         
         self.units = units
@@ -594,6 +594,10 @@ class DecomposedDense(nn.Module):
         self.atten = atten
         self.lambda_l1 = lambda_l1
         self.lambda_mask = lambda_mask
+
+    @property
+    def out_features(self):
+        return self.units
     
     def l1_pruning(self, weights, hyp):
         hard_threshold = (weights.abs() > hyp).float()
@@ -634,7 +638,8 @@ class DecomposedConv(nn.Module):
                  from_kb=None,
                  atten=None,
                  mask=None,
-                 bias=None):
+                 bias=None,
+                 **kwargs):
         super(DecomposedConv, self).__init__()
         
         self.filters = filters
@@ -653,6 +658,10 @@ class DecomposedConv(nn.Module):
         self.atten = atten
         self.lambda_l1 = lambda_l1
         self.lambda_mask = lambda_mask
+    
+    @property
+    def out_features(self):
+        return self.units
     
     def l1_pruning(self, weights, hyp):
         hard_threshold = (weights.abs() > hyp).float()

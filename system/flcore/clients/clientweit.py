@@ -3,15 +3,19 @@ import math
 import torch
 import numpy as np
 import time
-from flcore.clients.clientbase import Client
-from utils.fedweit_utils import *
-from flcore.trainmodel.fedewit_models import *
 
-class clientweit(Client):
-    def __init__(self, gid, args, initial_weights):
+from flcore.clients.clientbase import Client
+from flcore.trainmodel.fedewit_models import *
+from utils.fedweit_utils import *
+from sklearn.preprocessing import label_binarize
+from sklearn import metrics
+
+class clientWeIT(Client):
+    def __init__(self, args, id, train_data, test_data, train_samples, test_samples, initial_weights, **kwargs):
+        super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
+
         self.args = args
-        self.state = {'gpu_id': gid}
-        self.lock = threading.Lock()
+        self.state = {'gpu_id': self.device}
         self.logger = Logger(self.args)
 
         self.nets = NetModule(self.args)
@@ -20,7 +24,7 @@ class clientweit(Client):
         self.init_model(initial_weights)
 
     def init_model(self, initial_weights):
-        decomposed = True if self.args.model in ['fedweit'] else False
+        decomposed = True if self.args.algorithm in ['FedWeIT'] else False
         if self.args.base_network == 'lenet':
             self.nets.build_lenet(initial_weights, decomposed=decomposed)
 
@@ -56,9 +60,9 @@ class clientweit(Client):
     def init_new_task(self):
         self.state['curr_task'] += 1
         self.state['round_cnt'] = 0
-        self.load_data()
         self.train.init_learning_rate()
         self.update_train_config_by_tid(self.state['curr_task'])
+        self.load_data()
 
     def update_train_config_by_tid(self, tid):
         self.target_model = self.nets.get_model_by_tid(tid)
@@ -71,12 +75,6 @@ class clientweit(Client):
         })
 
     def load_data(self):
-        data = self.loader.get_train(self.state['curr_task'])
-        self.state['task_names'][self.state['curr_task']] = data['name']
-        self.x_train = data['x_train']
-        self.y_train = data['y_train']
-        self.x_valid, self.y_valid = self.loader.get_valid(self.state['curr_task'])
-        self.x_test_list, self.y_test_list = self.loader.get_test(self.state['curr_task'])
         self.train.set_task({
             'trainloader': self.trainloader,
             'testloader': self.testloader,
@@ -86,7 +84,7 @@ class clientweit(Client):
         return self.nets.get_model_by_tid(tid)
 
     def set_weights(self, weights):
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             if weights is None:
                 return None
             for i, w in enumerate(weights):
@@ -97,7 +95,7 @@ class clientweit(Client):
             self.nets.set_body_weights(weights)
 
     def get_weights(self):
-        if self.args.model in ['fedweit']:
+        if self.args.algorithm in ['FedWeIT']:
             if self.args.sparse_comm:
                 hard_threshold = []
                 sw_pruned = []
@@ -117,7 +115,7 @@ class clientweit(Client):
             return self.nets.get_body_weights()
 
     def get_train_size(self):
-        return len(self.x_train)
+        return self.args.batch_size
 
     def get_task_id(self):
         return self.curr_task
@@ -142,7 +140,7 @@ class clientweit(Client):
             self.set_weights(global_weights) 
         else:
             is_last_task = (self.state['curr_task'] == self.args.num_tasks - 1)
-            is_last_round = (self.state['round_cnt'] % self.args.num_rounds == 0 and self.state['round_cnt'] != 0)
+            is_last_round = (self.state['round_cnt'] % self.args.global_rounds == 0 and self.state['round_cnt'] != 0)
             is_last = is_last_task and is_last_round
             if is_last_round:
                 if is_last_task:
@@ -153,20 +151,17 @@ class clientweit(Client):
                 else:
                     self.init_new_task()
                     self.state['prev_body_weights'] = self.nets.get_body_weights(self.state['curr_task'])
-            else:
-                self.load_data()
 
         if selected:
             self.set_weights(global_weights)
 
-        with torch.cuda.device(self.state['gpu_id']):
-            self.train.train_one_round(self.state['curr_round'], self.state['round_cnt'], self.state['curr_task'])
+        self.train.train_one_round(self.state['curr_round'], self.state['round_cnt'], self.state['curr_task'])
         
-        self.logger.save_current_state(self.state['client_id'], {
-            'scores': self.train.get_scores(),
-            'capacity': self.train.get_capacity(),
-            'communication': self.train.get_communication()
-        })
+        # self.logger.save_current_state(self.state['client_id'], {
+        #     'scores': self.train.get_scores(),
+        #     'capacity': self.train.get_capacity(),
+        #     'communication': self.train.get_communication()
+        # })
         self.save_state()
         
         if selected:
@@ -208,3 +203,78 @@ class clientweit(Client):
             hard_threshold = np.greater(np.abs(aw), self.args.lambda_l1).astype(np.float32)
             adapts.append(aw * hard_threshold)
         return adapts
+
+    def test_metrics(self):
+        testloaderfull = self.load_test_data()
+        if hasattr(clientWeIT, 'state'):
+            self.curr_model = self.nets.get_model_by_tid(self.state['curr_task'])
+        else:
+            self.curr_model = self.nets.get_model_by_tid(0)
+        # self.model = self.load_model('model')
+        self.curr_model.to(self.device)
+        self.curr_model.eval()
+
+        test_acc = 0
+        test_num = 0
+        y_prob = []
+        y_true = []
+        
+        with torch.no_grad():
+            for x, y in testloaderfull:
+                if type(x) == type([]):
+                    x[0] = x[0].to(self.device)
+                else:
+                    x = x.to(self.device)
+                y = y.to(self.device)
+                output = self.curr_model(x)
+
+                test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
+                test_num += y.shape[0]
+
+                y_prob.append(output.detach().cpu().numpy())
+                nc = self.num_classes
+                if self.num_classes == 2:
+                    nc += 1
+                lb = label_binarize(y.detach().cpu().numpy(), classes=np.arange(nc))
+                if self.num_classes == 2:
+                    lb = lb[:, :2]
+                y_true.append(lb)
+
+        # self.model.cpu()
+        # self.save_model(self.model, 'model')
+
+        y_prob = np.concatenate(y_prob, axis=0)
+        y_true = np.concatenate(y_true, axis=0)
+
+        auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
+        
+        return test_acc, test_num, auc
+
+    def train_metrics(self):
+        trainloader = self.load_train_data()
+        if hasattr(clientWeIT, 'state'):
+            self.curr_model = self.nets.get_model_by_tid(self.state['curr_task'])
+        else:
+            self.curr_model = self.nets.get_model_by_tid(0)
+        # self.model = self.load_model('model')
+        self.curr_model.to(self.device)
+        self.curr_model.eval()
+
+        train_num = 0
+        losses = 0
+        with torch.no_grad():
+            for x, y in trainloader:
+                if type(x) == type([]):
+                    x[0] = x[0].to(self.device)
+                else:
+                    x = x.to(self.device)
+                y = y.to(self.device)
+                output = self.curr_model.eval()(x)
+                loss = self.loss(output, y)
+                train_num += y.shape[0]
+                losses += loss.item() * y.shape[0]
+
+        # self.model.cpu()
+        # self.save_model(self.model, 'model')
+
+        return losses, train_num

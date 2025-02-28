@@ -13,6 +13,7 @@ import wandb
 from flcore.servers.serveravg import FedAvg
 from flcore.servers.serverala import FedALA
 from flcore.servers.serverdbe import FedDBE
+from flcore.servers.serverweit import FedWeIT
 
 from flcore.trainmodel.models import *
 
@@ -68,8 +69,6 @@ def run(args):
         else:
             raise NotImplementedError
 
-        print(args.model)
-
         # select algorithm
         if args.algorithm == "FedAvg":
             args.head = copy.deepcopy(args.model.fc)
@@ -85,9 +84,12 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedDBE(args, i)
+        elif args.algorithm == "FedWeIT":
+            server = FedWeIT(args, i)
         else:
             raise NotImplementedError
 
+        print("Done Algo")
         server.train()
 
         time_list.append(time.time()-start)
@@ -170,8 +172,25 @@ if __name__ == "__main__":
     parser.add_argument('-mo', "--momentum", type=float, default=0.1)
     parser.add_argument('-klw', "--kl_weight", type=float, default=0.0)
 
-    args = parser.parse_args()
+    #FedWeIT
+    parser.add_argument('--output_path', type=str, default='output_fedweit/', help="Path to save outputs")
+    parser.add_argument('--sparse_comm', type=bool, default=True, help="Enable sparse communication")
+    parser.add_argument('--client_sparsity', type=float, default=0.3, help="Client-side sparsity level")
+    parser.add_argument('--server_sparsity', type=float, default=0.3, help="Server-side sparsity level")
+    parser.add_argument('--base_network', type=str, default='lenet', choices=['lenet'], help="Base network architecture")
+    parser.add_argument('--lr_patience', type=int, default=3, help="Patience for learning rate scheduling")
+    parser.add_argument('--lr_factor', type=int, default=3, help="Factor for learning rate reduction")
+    parser.add_argument('--lr_min', type=float, default=1e-10, help="Minimum learning rate")
+    parser.add_argument('--wd', type=float, default=1e-4, help="Weight decay")
+    parser.add_argument('--lambda_l1', type=float, default=1e-3, help="L1 regularization coefficient")
+    parser.add_argument('--lambda_l2', type=float, default=100.0, help="L2 regularization coefficient")
+    parser.add_argument('--lambda_mask', type=float, default=0.0, help="Mask regularization coefficient")
+    parser.add_argument('--num_tasks', type=float, default=500, help="num tasks")
 
+
+    args = parser.parse_args()
+    args.log_dir = os.path.join(args.output_path, 'logs/{}-{}'.format(args.model, args.dataset))
+    args.state_dir = os.path.join(args.output_path, 'states/{}-{}'.format(args.model, args.dataset))
     os.environ["CUDA_VISIBLE_DEVICES"] = args.device_id
 
     if args.device == "cuda" and not torch.cuda.is_available():
