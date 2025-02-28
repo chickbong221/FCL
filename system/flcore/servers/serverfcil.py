@@ -286,15 +286,7 @@ class FedFCIL(Server):
 
                     for iters in range(self.Iteration):
                         def closure():
-                            optimizer.zero_grad()    def reconstruction(self):
-        self.new_set, self.new_set_label = [], []
-
-        tt = transforms.Compose([transforms.ToTensor()])
-        tp = transforms.Compose([transforms.ToPILImage()])
-        pool_label = self.gradient2label()
-        pool_label = np.array(pool_label)
-        # print(pool_label)
-        class_ratio = np.zeros((1, 100))
+                            optimizer.zero_grad()
 
         for i in pool_label:
             class_ratio[0, i] += 1
@@ -324,15 +316,7 @@ class FedFCIL(Server):
                             pred = recon_model(dummy_data)
                             dummy_loss = criterion(pred, label_pred)
 
-                            dummy_dy_dx = torch.autograd.grad(dudef reconstruction(self):
-        self.new_set, self.new_set_label = [], []
-
-        tt = transforms.Compose([transforms.ToTensor()])
-        tp = transforms.Compose([transforms.ToPILImage()])
-        pool_label = self.gradient2label()
-        pool_label = np.array(pool_label)
-        # print(pool_label)
-        class_ratio = np.zeros((1, 100))mmy_loss, recon_model.parameters(), create_graph=True)
+                            dummy_dy_dx = torch.autograd.grad(dummy_loss, recon_model.parameters(), create_graph=True)
 
                             grad_diff = 0
                             for gx, gy in zip(dummy_dy_dx, grad_truth_temp):
@@ -375,63 +359,3 @@ class FedFCIL(Server):
 
                 self.new_set.append(augmentation)
                 self.new_set_label.append(label_i)
-
-
-def reconstruction(self):
-    self.new_set, self.new_set_label = [], []
-
-    tt = transforms.Compose([transforms.ToTensor()])
-    tp = transforms.Compose([transforms.ToPILImage()])
-    pool_label = self.gradient2label()
-    pool_label = np.array(pool_label)
-    # print(pool_label)
-    class_ratio = np.zeros((1, 100))
-
-    for i in pool_label:
-        class_ratio[0, i] += 1
-
-    for label_i in range(100):
-        if class_ratio[0, label_i] > 0:
-            num_augmentation = self.num_image
-            augmentation = []
-
-            grad_index = np.where(pool_label == label_i)
-            for j in range(len(grad_index[0])):
-                # print('reconstruct_{}, {}-th'.format(label_i, j))
-                grad_truth_temp = self.pool_grad[grad_index[0][j]]
-
-                dummy_data = torch.randn((1, 3, 32, 32)).to(self.device).requires_grad_(True)
-                label_pred = torch.Tensor([label_i]).long().to(self.device).requires_grad_(False)
-
-                optimizer = torch.optim.LBFGS([dummy_data, ], lr=0.1)
-                criterion = nn.CrossEntropyLoss().to(self.device)
-
-                recon_model = copy.deepcopy(self.encode_model)
-                recon_model = model_to_device(recon_model, False, self.device)
-
-                for iters in range(self.Iteration):
-                    def closure():
-                        optimizer.zero_grad()
-                        pred = recon_model(dummy_data)
-                        dummy_loss = criterion(pred, label_pred)
-
-                        dummy_dy_dx = torch.autograd.grad(dummy_loss, recon_model.parameters(), create_graph=True)
-
-                        grad_diff = 0
-                        for gx, gy in zip(dummy_dy_dx, grad_truth_temp):
-                            grad_diff += ((gx - gy) ** 2).sum()
-                        grad_diff.backward()
-                        return grad_diff
-
-                    optimizer.step(closure)
-                    current_loss = closure().item()
-
-                    if iters == self.Iteration - 1:
-                        print(current_loss)
-
-                    if iters >= self.Iteration - self.num_image:
-                        dummy_data_temp = np.asarray(tp(dummy_data.clone().squeeze(0).cpu()))
-                        augmentation.append(dummy_data_temp)
-
-            self.new_set.append(augmentation)
-            self.new_set_label.append(label_i)
