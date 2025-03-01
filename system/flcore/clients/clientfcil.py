@@ -11,6 +11,17 @@ from torch.nn import functional as F
 class clientFCIL(Client):
     def __init__(self, args, id, train_data, test_data, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
+        self.start = True
+        self.signal = False
+
+        self.memory_size = args.memory_size
+        self.task_size = 2      # Check it out later
+
+        self.train_loader = None
+        self.current_class = None
+        self.last_class = None
+        self.task_id_old = -1
+        self.last_entropy = 0
 
     def train(self, ep_g, model_old):
         trainloader = self.load_train_data()
@@ -41,19 +52,19 @@ class clientFCIL(Client):
         for epoch in range(max_local_epochs):
             loss_cur_sum, loss_mmd_sum = [], []
             if (epoch + ep_g * 20) % 200 == 100:
-                if self.numclass == self.task_size:
+                if self.num_classes == self.task_size:
                     opt = optim.SGD(self.model.parameters(), lr=self.learning_rate / 25, weight_decay=0.00001)
                 else:
                     for p in opt.param_groups:
                         p['lr'] = self.learning_rate / 5
             elif (epoch + ep_g * 20) % 200 == 150:
-                if self.numclass > self.task_size:
+                if self.num_classes > self.task_size:
                     for p in opt.param_groups:
                         p['lr'] = self.learning_rate / 25
                 else:
                     opt = optim.SGD(self.model.parameters(), lr=self.learning_rate / 25, weight_decay=0.00001)
             elif (epoch + ep_g * 20) % 200 == 180:
-                if self.numclass == self.task_size:
+                if self.num_classes == self.task_size:
                     opt = optim.SGD(self.model.parameters(), lr=self.learning_rate / 125, weight_decay=0.00001)
                 else:
                     for p in opt.param_groups:
@@ -76,7 +87,7 @@ class clientFCIL(Client):
     def _compute_loss(self, indexs, imgs, label):
         output = self.model(imgs)
 
-        target = get_one_hot(label, self.numclass, self.device)
+        target = get_one_hot(label, self.num_classes, self.device)
         output, target = output.cuda(self.device), target.cuda(self.device)
         if self.old_model == None:
             w = self.efficient_old_class_weight(output, label)
@@ -94,3 +105,37 @@ class clientFCIL(Client):
             loss_old = F.binary_cross_entropy_with_logits(output, distill_target)
 
             return 0.5 * loss_cur + 0.5 * loss_old
+
+    def beforeTrain(self, task_id_new, group):
+        if task_id_new != self.task_id_old:
+            self.task_id_old = task_id_new
+            self.num_classes = self.task_size * (task_id_new + 1)
+            if group != 0:
+                if self.current_class != None:
+                    self.last_class = self.current_class
+                self.current_class = random.sample([x for x in range(self.num_classes - self.task_size, self.num_classes)], 6)
+                # print(self.current_class)
+            else:
+                self.last_class = None
+
+        self.train_loader = self._get_train_and_test_dataloader(self.current_class, False)
+
+    def update_new_set(self):
+        self.model = model_to_device(self.model, False, self.device)
+        self.model.eval()
+        self.signal = False
+        self.signal = self.entropy_signal(self.train_loader)
+
+        if self.signal and (self.last_class != None):
+            self.learned_numclass += len(self.last_class)
+            self.learned_classes += self.last_class
+
+            m = int(self.memory_size / self.learned_numclass)
+            self._reduce_exemplar_sets(m)
+            for i in self.last_class:
+                images = self.train_dataset.get_image_class(i)
+                self._construct_exemplar_set(images, m)
+
+        self.model.train()
+
+        self.train_loader = self._get_train_and_test_dataloader(self.current_class, True)

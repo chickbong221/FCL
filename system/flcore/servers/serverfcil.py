@@ -1,5 +1,6 @@
 import time
 import torch
+import random
 from flcore.clients.clientfcil import clientFCIL
 from flcore.servers.serverbase import Server
 from threading import Thread
@@ -29,6 +30,8 @@ class FedFCIL(Server):
 
         self.encode_model = LeNet2(num_classes=self.num_classes)
         self.encode_model.apply(weights_init)
+
+        self.cil = False
 
     def train(self):
 
@@ -114,7 +117,7 @@ class FedFCIL(Server):
 
                 if task_id != old_task_id and old_task_id != -1:
                     overall_client = len(old_client_0) + len(old_client_1) + len(new_client)
-                    new_client = [i for i in range(overall_client, overall_client + args.task_size)]
+                    new_client = [i for i in range(overall_client, overall_client + self.task_size)]
                     old_client_1 = random.sample([i for i in range(overall_client)], int(overall_client * 0.9))
                     old_client_0 = [i for i in range(overall_client) if i not in old_client_1]
                     num_clients = len(new_client) + len(old_client_1) + len(old_client_0)
@@ -129,16 +132,17 @@ class FedFCIL(Server):
                 if i % self.eval_gap == 0:
                     print(f"\n-------------Round number: {i}-------------")
                     print("\nEvaluate global model")
-                    self.evaluate(glob_iter=glob_pool_graditer)
+                    self.evaluate(glob_iter=glob_iter)
 
                 for client in self.selected_clients:
-                    if index in old_client:
-                        client.beforeTrain(task_id, 0)
-                    else:
-                        client.beforeTrain(task_id, 1)
-
-                    client.update_new_set()
+                    if self.cil:
+                        if client.id in old_client_0:
+                            client.beforeTrain(task_id, 0)
+                        else:
+                            client.beforeTrain(task_id, 1)
+                        client.update_new_set()
                     print(client.signal)
+
                     client.train(ep_g, model_old)
                     local_model = client.model.state_dict()
                     proto_grad = client.proto_grad_sharing()

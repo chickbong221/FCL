@@ -161,6 +161,10 @@ if __name__ == "__main__":
     parser.add_argument('-vs', "--vocab_size", type=int, default=32000, 
                         help="Set this for text tasks. 80 for Shakespeare. 32000 for AG_News and SogouNews.")
     parser.add_argument('-ml', "--max_len", type=int, default=200)
+
+    # Continual
+    parser.add_argument('-mem', "--memory_size", type=int, default=2000)
+
     # practical
     parser.add_argument('-cdr', "--client_drop_rate", type=float, default=0.0,
                         help="Rate for clients that train but drop out")
@@ -182,7 +186,6 @@ if __name__ == "__main__":
     parser.add_argument('-klw', "--kl_weight", type=float, default=0.0)
 
     # FedSTGM
-    parser.add_argument('-mem', "--stgm_mem", type=int, default=1e7)
     parser.add_argument('-car', "--grad_stgm_rounds", type=int, default=100)
     parser.add_argument('-calr', "--grad_stgm_learning_rate", type=float, default=25)
     parser.add_argument('-mmt', "--stgm_momentum", type=float, default=0.5)
