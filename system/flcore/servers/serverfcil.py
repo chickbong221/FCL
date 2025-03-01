@@ -46,7 +46,6 @@ class FedFCIL(Server):
         new_client = []
         models = []
 
-        classes_learned = args.task_size # Verify later
         old_task_id = -1
 
         for task in range(N_TASKS):
@@ -82,7 +81,7 @@ class FedFCIL(Server):
                                                                                      count_labels=True, task=task)
 
                     # update dataset
-                    # vassert (self.users[i].id == id)
+                    # assert (self.users[i].id == id)
                     self.clients[i].next_task(train_data, test_data, label_info)  # assign dataloader for new data
 
                 # update labels info.
@@ -102,7 +101,6 @@ class FedFCIL(Server):
 
                 glob_iter = i + self.global_rounds * task
                 s_t = time.time()
-
                 """
                     L85-L103 FCIL/fl_main.py
                     - model_g -> global_model
@@ -110,7 +108,7 @@ class FedFCIL(Server):
                     - 
                 """
                 pool_grad = []
-                model_old = proxy_server.model_back()
+                model_old = self.model_back()
                 task_id = task  # ep_g // args.tasks_global (exchange with this)
                 ep_g = (task*self.global_rounds + i)
 
@@ -121,11 +119,6 @@ class FedFCIL(Server):
                     old_client_0 = [i for i in range(overall_client) if i not in old_client_1]
                     num_clients = len(new_client) + len(old_client_1) + len(old_client_0)
                     print(old_client_0)
-
-                if task_id != old_task_id and old_task_id != -1:
-                    classes_learned += args.task_size
-                    model_g.Incremental_learning(classes_learned)
-                    model_g = model_to_device(model_g, False, args.device)
 
                 print('federated global round: {}, task_id: {}'.format(ep_g, task_id))
                 w_local = []
@@ -157,8 +150,6 @@ class FedFCIL(Server):
                         - grad_i in proto_grad? what is the shape of proto_grad?
                         - append to pool_grad
                     """
-                    # local_model, proto_grad = local_train(models, c, model_g, task_id, model_old, ep_g, old_client_0)
-                    local_model, proto_grad = client.train(task_id, model_old, ep_g, old_client_0)
                     w_local.append(local_model)
                     if proto_grad != None:
                         for grad_i in proto_grad:
