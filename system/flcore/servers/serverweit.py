@@ -26,12 +26,10 @@ class FedWeIT(Server):
         # self.logger = Logger(self.args)
         self.nets = NetModule(self.args)
         # self.trainh = TrainModule(self.args, self.logger, self.nets)
-        print("first")
 
         self.nets.init_state(None)
         # self.trainh.init_state(None)
         self.global_weights = self.nets.init_global_weights()
-        print("second")
 
         # select slow clients
         self.set_slow_clients()
@@ -41,7 +39,6 @@ class FedWeIT(Server):
         print("Finished creating server and clients.")
 
     def set_clients(self, clientObj):
-        print("third")
         total_clients = 10
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
             
@@ -76,7 +73,7 @@ class FedWeIT(Server):
     def train(self):
 
         if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = 500
+            N_TASKS = 2
         else:
             N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
         print(str(N_TASKS) + " tasks are available")

@@ -360,7 +360,7 @@ class NetModule:
     def init_decomposed_variables(self, initial_weights):
         self.decomposed_variables['shared'] = [torch.nn.Parameter(torch.tensor(initial_weights[i]), requires_grad=True) for i in range(len(self.shapes))]
         for tid in range(self.args.num_tasks):
-            print(tid)
+            # print(tid)
             for lid in range(len(self.shapes)):
                 var_types = ['adaptive', 'bias', 'mask'] if self.args.model == 'apd' else ['adaptive', 'bias', 'mask', 'atten', 'from_kb']
                 for var_type in var_types:
@@ -389,7 +389,7 @@ class NetModule:
                 # init_value = self.initializer(torch.empty(shape)).numpy()
                 init_value = np.zeros(shape).astype(np.float32)
         else:
-            init_value = self.initializer(torch.empty(self.shapes[lid][-1], 1)).numpy()
+            init_value = self.initializer(torch.empty(self.shapes[lid][0], 1)).numpy()
         var = torch.nn.Parameter(torch.tensor(init_value), requires_grad=trainable)
         self.decomposed_variables[var_type][tid][lid] = var
 
@@ -497,12 +497,13 @@ class NetModule:
             layers = []
             for lid in [0, 1]:
                 self.decomposed_layers[self.lid] = self.conv_decomposed(lid, tid,
-                    filters = self.shapes[lid][-1],
-                    kernel_size = (self.shapes[lid][0], self.shapes[lid][1]),
+                    filters = self.shapes[lid][0],
+                    kernel_size = (self.shapes[lid][-1], self.shapes[lid][-2]),
                     strides = (1,1),
                     padding = 'same',
-                    acti = 'relu')
+                    args = self.args)
                 layers.append(self.decomposed_layers[self.lid])
+                layers.append(nn.ReLU())
                 self.lid += 1
                 layers.append(nn.LocalResponseNorm(4, alpha=0.001/9.0, beta=0.75, k=1.0))
                 layers.append(nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
@@ -510,11 +511,11 @@ class NetModule:
             for lid in [2, 3]:
                 self.decomposed_layers[self.lid] = self.dense_decomposed(
                     lid, tid,
-                    units=self.shapes[lid][-1],
-                    acti=None)
-            layers.append(self.decomposed_layers[self.lid])
-            self.lid += 1
-            layers.append(nn.ReLU())
+                    units=self.shapes[lid][0],
+                    args = self.args)
+                layers.append(self.decomposed_layers[self.lid])
+                layers.append(nn.ReLU())
+                self.lid += 1
             model = nn.Sequential(*layers)
         else:
             layers = []
@@ -532,14 +533,14 @@ class NetModule:
             model = nn.Sequential(*layers)
         return model
 
-    def conv_decomposed(self, lid, tid, filters, kernel_size, strides, padding, acti):
+    def conv_decomposed(self, lid, tid, filters, kernel_size, strides, padding, args):
         return  DecomposedConv(
+            args        = args,
             name        = 'layer_{}'.format(lid),
             filters     = filters,
             kernel_size = kernel_size,
             strides     = strides,
             padding     = padding,
-            activation  = acti,
             lambda_l1   = self.args.lambda_l1,
             lambda_mask = self.args.lambda_mask,
             shared      = self.get_variable('shared', lid),
@@ -549,10 +550,10 @@ class NetModule:
             bias        = self.get_variable('bias', lid, tid), use_bias=True,
             mask        = self.generate_mask(self.get_variable('mask', lid, tid)))
 
-    def dense_decomposed(self, lid, tid, units, acti):
+    def dense_decomposed(self, lid, tid, units, args):
         return DecomposedDense(
+            args        = args,
             name        = 'layer_{}'.format(lid),
-            activation  = acti,
             units       = units,
             lambda_l1   = self.args.lambda_l1,
             lambda_mask = self.args.lambda_mask,
@@ -567,9 +568,9 @@ class NetModule:
 class DecomposedDense(nn.Module):
     """ Custom dense layer that decomposes parameters into shared and specific parameters.
     """
-    def __init__(self, 
+    def __init__(self,
+                 args, 
                  units,
-                 activation=None,
                  use_bias=False,
                  lambda_l1=None,
                  lambda_mask=None,
@@ -582,8 +583,8 @@ class DecomposedDense(nn.Module):
                  **kwargs):
         super(DecomposedDense, self).__init__()
         
+        self.args = args
         self.units = units
-        self.activation = activation
         self.use_bias = use_bias
         
         self.sw = shared
@@ -609,27 +610,27 @@ class DecomposedDense(nn.Module):
         atten = self.atten
         aw_kbs = self.aw_kb
         
-        self.my_theta = self.sw * mask + aw + torch.sum(aw_kbs * atten, dim=-1)
+        mask = mask.to(self.args.device)
+
+        self.my_theta = self.sw * mask.view(mask.shape[0], 1, 1, 1) + aw + torch.sum(aw_kbs * atten, dim=-1)
         
         outputs = torch.matmul(inputs, self.my_theta)
         
         if self.use_bias:
             outputs = outputs + self.bias
         
-        if self.activation is not None:
-            return self.activation(outputs)
         return outputs
 
 class DecomposedConv(nn.Module):
     """ Custom conv layer that decomposes parameters into shared and specific parameters.
     """
     def __init__(self, 
+                 args,
                  filters,
                  kernel_size,
                  strides=1,
                  padding='valid',
                  dilation_rate=1,
-                 activation=None,
                  use_bias=False,
                  lambda_l1=None,
                  lambda_mask=None,
@@ -642,13 +643,14 @@ class DecomposedConv(nn.Module):
                  **kwargs):
         super(DecomposedConv, self).__init__()
         
+        self.args = args
         self.filters = filters
         self.kernel_size = kernel_size
         self.strides = strides
         self.padding = padding
         self.dilation_rate = dilation_rate
-        self.activation = activation
         self.use_bias = use_bias
+        # potential bug
         
         self.sw = shared
         self.aw = adaptive
@@ -671,15 +673,15 @@ class DecomposedConv(nn.Module):
         aw = self.aw if self.training else self.l1_pruning(self.aw, self.lambda_l1)
         mask = self.mask if self.training else self.l1_pruning(self.mask, self.lambda_mask)
         atten = self.atten
-        aw_kbs = self.aw_kb
+        aw_kbs = self.aw_kb        
         
-        self.my_theta = self.sw * mask + aw + torch.sum(aw_kbs * atten, dim=-1)
+        mask = mask.to(self.args.device)
+
+        self.my_theta = self.sw * mask.view(mask.shape[0], 1, 1, 1) + aw + torch.sum(aw_kbs * atten, dim=-1)
         
         outputs = F.conv2d(inputs, self.my_theta, stride=self.strides, padding=self.padding, dilation=self.dilation_rate)
         
         if self.use_bias:
             outputs = outputs + self.bias.view(1, -1, 1, 1)
         
-        if self.activation is not None:
-            return self.activation(outputs)
         return outputs

@@ -185,7 +185,7 @@ if __name__ == "__main__":
     parser.add_argument('--lambda_l1', type=float, default=1e-3, help="L1 regularization coefficient")
     parser.add_argument('--lambda_l2', type=float, default=100.0, help="L2 regularization coefficient")
     parser.add_argument('--lambda_mask', type=float, default=0.0, help="Mask regularization coefficient")
-    parser.add_argument('--num_tasks', type=float, default=500, help="num tasks")
+    parser.add_argument('--num_tasks', type=int, default=500, help="num tasks")
 
 
     args = parser.parse_args()
@@ -197,9 +197,9 @@ if __name__ == "__main__":
         print("\ncuda is not avaiable.\n")
         args.device = "cpu"
 
-    print("=" * 50)
-    for arg in vars(args):
-        print(arg, '=',getattr(args, arg))
-    print("=" * 50)
+    # print("=" * 50)
+    # for arg in vars(args):
+    #     print(arg, '=',getattr(args, arg))
+    # print("=" * 50)
     run(args)
 
