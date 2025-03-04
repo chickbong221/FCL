@@ -7,11 +7,21 @@ from flcore.utils.fcil_utils import entropy, get_one_hot
 import torch.optim as optim
 from torch.nn import functional as F
 from torch.autograd import Variable
+from torchvision import transforms
 
 
 class clientFCIL(Client):
     def __init__(self, args, id, train_data, test_data, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
+        self.exemplar_set = []
+        self.class_mean_set = []
+        self.learned_numclass = 0
+        self.learned_classes = []
+        self.transform = transforms.Compose([#transforms.Resize(img_size),
+                                             transforms.ToTensor(),
+                                            transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
+        self.old_model = None
+
         self.start = True
         self.signal = False
 
@@ -25,6 +35,7 @@ class clientFCIL(Client):
         self.last_entropy = 0
 
         self.old_model = None
+
 
     def train(self, ep_g, model_old):
         self.train_loader = self.load_train_data()
