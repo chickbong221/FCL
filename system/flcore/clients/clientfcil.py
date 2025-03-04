@@ -1,5 +1,6 @@
 import copy
 import torch
+import torch.nn as nn
 import numpy as np
 import time
 from flcore.clients.clientbase import Client
@@ -247,3 +248,34 @@ class clientFCIL(Client):
             proto_grad.append(original_dy_dx)
 
         return proto_grad
+
+    def entropy_signal(self, loader):
+        self.model.eval()
+        start_ent = True
+        res = False
+
+        for step, (indexs, imgs, labels) in enumerate(loader):
+            imgs, labels = imgs.cuda(self.device), labels.cuda(self.device)
+            with torch.no_grad():
+                outputs = self.model(imgs)
+            softmax_out = nn.Softmax(dim=1)(outputs)
+            ent = entropy(softmax_out)
+
+            if start_ent:
+                all_ent = ent.float().cpu()
+                all_label = labels.long().cpu()
+                start_ent = False
+            else:
+                all_ent = torch.cat((all_ent, ent.float().cpu()), 0)
+                all_label = torch.cat((all_label, labels.long().cpu()), 0)
+
+        overall_avg = torch.mean(all_ent).item()
+        print(overall_avg)
+        if overall_avg - self.last_entropy > 1.2:
+            res = True
+
+        self.last_entropy = overall_avg
+
+        self.model.train()
+
+        return res

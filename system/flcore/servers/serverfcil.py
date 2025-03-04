@@ -32,7 +32,7 @@ class FedFCIL(Server):
         self.encode_model = LeNet2(num_classes=self.num_classes)
         self.encode_model.apply(weights_init)
 
-        self.cil = False
+        self.cil = True
 
     def train(self):
 
@@ -149,12 +149,7 @@ class FedFCIL(Server):
                     proto_grad = client.proto_grad_sharing()
                     print(f"ProtoGrad: {proto_grad}")
                     print('*' * 60)
-                    """
-                        L106-110 comes here
-                        - returns client.model + client.proto_grad
-                        - grad_i in proto_grad? what is the shape of proto_grad?
-                        - append to pool_grad
-                    """
+
                     w_local.append(local_model)
                     if proto_grad != None:
                         for grad_i in proto_grad:
