@@ -190,3 +190,60 @@ class clientFCIL(Client):
             w = g.clone().fill_(1.)
 
         return w
+
+    def proto_grad_sharing(self):
+        if self.signal:
+            proto_grad = self.prototype_mask()
+        else:
+            proto_grad = None
+
+        return proto_grad
+
+    def prototype_mask(self):
+        tt = transforms.Compose([transforms.ToTensor()])
+        tp = transforms.Compose([transforms.ToPILImage()])
+        iters = 50
+        criterion = nn.CrossEntropyLoss().to(self.device)
+        proto = []
+        proto_grad = []
+
+        for i in self.current_class:
+            images = self.train_dataset.get_image_class(i)
+            class_mean, feature_extractor_output = self.compute_class_mean(images, self.transform)
+            dis = class_mean - feature_extractor_output
+            dis = np.linalg.norm(dis, axis=1)
+            pro_index = np.argmin(dis)
+            proto.append(images[pro_index])
+
+        for i in range(len(proto)):
+            self.model.eval()
+            data = proto[i]
+            label = self.current_class[i]
+            data = Image.fromarray(data)
+            label_np = label
+
+            data, label = tt(data), torch.Tensor([label]).long()
+            data, label = data.cuda(self.device), label.cuda(self.device)
+            data = data.unsqueeze(0).requires_grad_(True)
+            target = get_one_hot(label, self.numclass, self.device)
+
+            opt = optim.SGD([data, ], lr=self.learning_rate / 10, weight_decay=0.00001)
+            proto_model = copy.deepcopy(self.model)
+            proto_model = model_to_device(proto_model, False, self.device)
+
+            for ep in range(iters):
+                outputs = proto_model(data)
+                loss_cls = F.binary_cross_entropy_with_logits(outputs, target)
+                opt.zero_grad()
+                loss_cls.backward()
+                opt.step()
+
+            self.encode_model = model_to_device(self.encode_model, False, self.device)
+            data = data.detach().clone().to(self.device).requires_grad_(False)
+            outputs = self.encode_model(data)
+            loss_cls = criterion(outputs, label)
+            dy_dx = torch.autograd.grad(loss_cls, self.encode_model.parameters())
+            original_dy_dx = list((_.detach().clone() for _ in dy_dx))
+            proto_grad.append(original_dy_dx)
+
+        return proto_grad

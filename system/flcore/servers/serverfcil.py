@@ -1,6 +1,7 @@
 import time
 import torch
 import random
+import copy
 from flcore.clients.clientfcil import clientFCIL
 from flcore.servers.serverbase import Server
 from threading import Thread
@@ -146,7 +147,7 @@ class FedFCIL(Server):
                     client.train(ep_g, model_old)
                     local_model = client.model.state_dict()
                     proto_grad = client.proto_grad_sharing()
-
+                    print(f"ProtoGrad: {proto_grad}")
                     print('*' * 60)
                     """
                         L106-110 comes here
@@ -167,18 +168,13 @@ class FedFCIL(Server):
                 self.receive_models()
                 if self.dlg_eval and i % self.dlg_gap == 0:
                     self.call_dlg(i)
+
+                w_g_last = copy.deepcopy(self.global_model)
                 self.aggregate_parameters()
-
                 """
-                    L121-L124 comes here
-                    - proxy_server.dataloader(pool_grad) do for what?
+                    - Aggregate parameters returns self.global_model (w_g_new)
                 """
-                w_g_last = copy.deepcopy(model_g.state_dict())
-
-                model_g.load_state_dict(w_g_new)
-
-                proxy_server.model = copy.deepcopy(model_g)
-                proxy_server.dataloader(pool_grad)
+                self.dataloader(pool_grad)
 
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
@@ -207,6 +203,7 @@ class FedFCIL(Server):
         return [self.best_model_1, self.best_model_2]
 
     def dataloader(self, pool_grad):
+        print(self.pool_grad)
         self.pool_grad = pool_grad
         if len(pool_grad) != 0:
             self.reconstruction()
@@ -226,12 +223,12 @@ class FedFCIL(Server):
         Verify later
     """
     def monitor(self):
-        self.model.eval()
+        self.global_model.eval()
         correct, total = 0, 0
         for step, (imgs, labels) in enumerate(self.monitor_loader):
             imgs, labels = imgs.cuda(self.device), labels.cuda(self.device)
             with torch.no_grad():
-                outputs = self.model(imgs)
+                outputs = self.global_model(imgs)
             predicts = torch.max(outputs, dim=1)[1]
             correct += (predicts.cpu() == labels.cpu()).sum()
             total += len(labels)
