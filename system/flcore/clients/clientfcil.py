@@ -6,6 +6,7 @@ from flcore.clients.clientbase import Client
 from flcore.utils.fcil_utils import entropy, get_one_hot
 import torch.optim as optim
 from torch.nn import functional as F
+from torch.autograd import Variable
 
 
 class clientFCIL(Client):
@@ -23,8 +24,10 @@ class clientFCIL(Client):
         self.task_id_old = -1
         self.last_entropy = 0
 
+        self.old_model = None
+
     def train(self, ep_g, model_old):
-        trainloader = self.load_train_data()
+        self.train_loader = self.load_train_data()
         # self.model.to(self.device)
         self.model.train()
 
@@ -36,6 +39,7 @@ class clientFCIL(Client):
 
         opt = optim.SGD(self.model.parameters(), lr=self.learning_rate, weight_decay=0.00001)
 
+        print(model_old)
         if model_old[1] != None:
             if self.signal:
                 self.old_model = model_old[1]
@@ -69,11 +73,11 @@ class clientFCIL(Client):
                 else:
                     for p in opt.param_groups:
                         p['lr'] = self.learning_rate / 125
-            for step, (indexs, images, target) in enumerate(self.train_loader):
+            for step, (images, target) in enumerate(self.train_loader):
                 images, target = images.cuda(self.device), target.cuda(self.device)
                 if self.train_slow:
                     time.sleep(0.1 * np.abs(np.random.rand()))
-                loss_value = self._compute_loss(indexs, images, target)
+                loss_value = self._compute_loss(images, target)
                 opt.zero_grad()
                 loss_value.backward()
                 opt.step()
@@ -84,7 +88,7 @@ class clientFCIL(Client):
     """
         Compute loss function
     """
-    def _compute_loss(self, indexs, imgs, label):
+    def _compute_loss(self, imgs, label):
         output = self.model(imgs)
 
         target = get_one_hot(label, self.num_classes, self.device)
@@ -101,7 +105,7 @@ class clientFCIL(Client):
             distill_target = target.clone()
             old_target = torch.sigmoid(self.old_model(imgs))
             old_task_size = old_target.shape[1]
-            distill_target[..., :old_task_size] = old_target
+            distill_target[..., :old_task_size] = old_targetself.train_loader
             loss_old = F.binary_cross_entropy_with_logits(output, distill_target)
 
             return 0.5 * loss_cur + 0.5 * loss_old
@@ -139,3 +143,39 @@ class clientFCIL(Client):
         self.model.train()
 
         self.train_loader = self._get_train_and_test_dataloader(self.current_class, True)
+
+    def efficient_old_class_weight(self, output, label):
+        pred = torch.sigmoid(output)
+
+        N, C = pred.size(0), pred.size(1)
+
+        class_mask = pred.data.new(N, C).fill_(0)
+        class_mask = Variable(class_mask)
+        ids = label.view(-1, 1)
+        class_mask.scatter_(1, ids.data, 1.)
+
+        target = get_one_hot(label, self.num_classes, self.device)
+        g = torch.abs(pred.detach() - target)
+        g = (g * class_mask).sum(1).view(-1, 1)
+
+        if len(self.learned_classes) != 0:
+            for i in self.learned_classes:
+                ids = torch.where(ids != i, ids, ids.clone().fill_(-1))
+
+            index1 = torch.eq(ids, -1).float()
+            index2 = torch.ne(ids, -1).float()
+            if index1.sum() != 0:
+                w1 = torch.div(g * index1, (g * index1).sum() / index1.sum())
+            else:
+                w1 = g.clone().fill_(0.)
+            if index2.sum() != 0:
+                w2 = torch.div(g * index2, (g * index2).sum() / index2.sum())
+            else:
+                w2 = g.clone().fill_(0.)
+
+            w = w1 + w2
+
+        else:
+            w = g.clone().fill_(1.)
+
+        return w
