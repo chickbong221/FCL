@@ -370,26 +370,24 @@ class NetModule:
         trainable = True 
         if tid not in self.decomposed_variables[var_type]:
             self.decomposed_variables[var_type][tid] = {}
+        
         if var_type == 'adaptive':
             init_value = self.decomposed_variables['shared'][lid].detach().cpu().numpy()/self.adaptive_factor
+        
         elif var_type == 'atten':
             shape = (int(round(self.args.num_clients*self.args.join_ratio)),)
             if tid == 0:
                 trainable = False
-                init_value = np.zeros(shape).astype(np.float32)
-            else:
-                # init_value = self.initializer(torch.empty(shape)).numpy()
-                init_value = np.zeros(shape).astype(np.float32)
+            init_value = np.zeros(shape).astype(np.float32)
+        
         elif var_type == 'from_kb':
             shape = np.concatenate([self.shapes[lid], [int(round(self.args.num_clients*self.args.join_ratio))]], axis=0)
             trainable = False
-            if tid == 0:
-                init_value = np.zeros(shape).astype(np.float32)
-            else:
-                # init_value = self.initializer(torch.empty(shape)).numpy()
-                init_value = np.zeros(shape).astype(np.float32)
+            init_value = np.zeros(shape).astype(np.float32)
+        
         else:
-            init_value = self.initializer(torch.empty(self.shapes[lid][0], 1)).numpy()
+            init_value = np.zeros(self.shapes[lid][0]).astype(np.float32)
+        
         var = torch.nn.Parameter(torch.tensor(init_value), requires_grad=trainable)
         self.decomposed_variables[var_type][tid][lid] = var
 
@@ -400,7 +398,9 @@ class NetModule:
             return self.decomposed_variables[var_type][tid][lid]
 
     def generate_mask(self, mask):
-        return torch.sigmoid(mask)
+        with torch.no_grad():  # Không tính gradient khi cập nhật trực tiếp
+            mask.copy_(torch.sigmoid(mask))
+        return mask
 
     def get_model_by_tid(self, tid):
         if self.args.algorithm in ['FedWeIT']:
@@ -609,8 +609,6 @@ class DecomposedDense(nn.Module):
         mask = self.mask if self.training else self.l1_pruning(self.mask, self.lambda_mask)
         atten = self.atten
         aw_kbs = self.aw_kb
-        
-        mask = mask.to(self.args.device)
 
         self.my_theta = self.sw * mask.view(mask.shape[0], 1, 1, 1) + aw + torch.sum(aw_kbs * atten, dim=-1)
         
@@ -673,9 +671,11 @@ class DecomposedConv(nn.Module):
         aw = self.aw if self.training else self.l1_pruning(self.aw, self.lambda_l1)
         mask = self.mask if self.training else self.l1_pruning(self.mask, self.lambda_mask)
         atten = self.atten
-        aw_kbs = self.aw_kb        
-        
-        mask = mask.to(self.args.device)
+        aw_kbs = self.aw_kb      
+
+        print(f"mask shape: {mask.shape}")
+        print(f"aw_kbs shape: {aw_kbs.shape}, atten shape: {atten.shape}")
+        print(f"sw shape: {self.sw.shape}")
 
         self.my_theta = self.sw * mask.view(mask.shape[0], 1, 1, 1) + aw + torch.sum(aw_kbs * atten, dim=-1)
         
