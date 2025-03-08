@@ -24,7 +24,7 @@ class FedAvg(Server):
     def train(self):
 
         if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = 500
+            N_TASKS = 4
         else:
             N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
         print(str(N_TASKS) + " tasks are available")
@@ -74,9 +74,9 @@ class FedAvg(Server):
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
 
-                for i in self.clients:
-                    taskid_list_so_far = list(range(int(len(u.classes_so_far)/2)))
-                    print(taskid_list_so_far)
+                # for i in self.clients:
+                #     taskid_list_so_far = list(range(int(len(u.classes_so_far)/2)))
+                #     print(taskid_list_so_far)
 
             for i in range(self.global_rounds):
 

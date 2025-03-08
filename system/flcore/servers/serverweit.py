@@ -7,6 +7,7 @@ from flcore.trainmodel.fedewit_models import *
 from utils.fedweit_utils import *
 from threading import Thread
 from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
+import shutil
 # import psutil
 # import os
 
@@ -24,11 +25,12 @@ class FedWeIT(Server):
         self.client_adapts = []
 
         # self.logger = Logger(self.args)
+        self.logger = Logger(self.args)
         self.nets = NetModule(self.args)
-        # self.trainh = TrainModule(self.args, self.logger, self.nets)
+        self.trainh = TrainModule(self.args, self.logger, self.nets)
 
         self.nets.init_state(None)
-        # self.trainh.init_state(None)
+        self.trainh.init_state(None)
         self.global_weights = self.nets.init_global_weights()
 
         # select slow clients
@@ -71,7 +73,9 @@ class FedWeIT(Server):
         logger.info("Finished creating FedAvg server.")
 
     def train(self):
-
+        if os.path.exists("/media/tuannl1/heavy_weight/FCL/PFLlib/output_fedweit"):
+            shutil.rmtree("/media/tuannl1/heavy_weight/FCL/PFLlib/output_fedweit")
+        
         if self.args.dataset == 'IMAGENET1k':
             N_TASKS = 2
         else:
@@ -148,7 +152,7 @@ class FedWeIT(Server):
                         if self.is_last_round:
                             self.client_adapts.append(client.get_adaptives())
 
-                aggr = self.train.aggregate(self.updates)
+                aggr = self.trainh.aggregate(self.updates)
                 self.set_weights(aggr)
 
                 self.Budget.append(time.time() - s_t)
@@ -162,7 +166,7 @@ class FedWeIT(Server):
             print("\nAverage time cost per round.")
             print(sum(self.Budget[1:])/len(self.Budget[1:]))
 
-            # self.save_results()
+            self.save_results()
             # self.save_global_model()
 
             if self.num_new_clients > 0:
@@ -182,7 +186,7 @@ class FedWeIT(Server):
         if glob_iter%self.global_rounds==1 and not glob_iter==1:
             from_kb = []
             for lid, shape in enumerate(self.nets.shapes):
-                shape = np.concatenate([self.nets.shapes[lid],[int(round(self.args.num_clients*self.args.frac_clients))]], axis=0)
+                shape = np.concatenate([self.nets.shapes[lid],[int(round(self.args.num_clients*self.join_ratio))]], axis=0)
                 from_kb_l = np.zeros(shape)
                 for cid, ca in enumerate(self.client_adapts):
                     try:

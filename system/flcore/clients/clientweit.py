@@ -15,6 +15,7 @@ class clientWeIT(Client):
         super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
 
         self.args = args
+        self.device = self.args.device
         self.state = {'gpu_id': self.device}
         self.logger = Logger(self.args)
 
@@ -33,10 +34,12 @@ class clientWeIT(Client):
             self.nets.init_state(client_id)
             self.train.init_state(client_id)
             self.init_state(client_id)
+            self.load_data()
         else: # load_state
+            self.load_state(client_id)
             self.nets.load_state(client_id)
             self.train.load_state(client_id)
-            self.load_state(client_id)
+            self.load_data()
 
     def is_new(self, client_id):
         return not os.path.exists(os.path.join(self.args.state_dir, f'{client_id}_client.npy'))
@@ -58,6 +61,7 @@ class clientWeIT(Client):
         self.train.save_state()
 
     def init_new_task(self):
+        # print("hi")
         self.state['curr_task'] += 1
         self.state['round_cnt'] = 0
         self.train.init_learning_rate()
@@ -88,9 +92,16 @@ class clientWeIT(Client):
             if weights is None:
                 return None
             for i, w in enumerate(weights):
-                sw = self.nets.get_variable('shared', i)
+                w = torch.tensor(w) if isinstance(w, np.ndarray) else w
+                sw = self.nets.get_variable('shared', i).detach().cpu()
                 residuals = torch.eq(w, torch.zeros_like(w)).float()
+
+                # print(w.device)
+                # print(sw.device)
+                # print(residuals.device)
+                
                 sw.data = sw * residuals + w
+                sw.data = sw.data.to(self.device)
         else:
             self.nets.set_body_weights(weights)
 
@@ -104,10 +115,21 @@ class clientWeIT(Client):
                     mask = masks[lid]
                     m_sorted = torch.sort(torch.flatten(torch.abs(mask)))[0]
                     thres = m_sorted[math.floor(len(m_sorted) * (self.args.client_sparsity))]
-                    m_binary = torch.gt(torch.abs(mask), thres).float().numpy().tolist()
+                    m_binary = torch.gt(torch.abs(mask), thres).float().cpu().numpy().tolist()
                     hard_threshold.append(m_binary)
+
+                    m_binary = np.array(m_binary)
+                    num_dims = sw.dim()
+
+                    for _ in range(1, num_dims):  
+                        m_binary = np.expand_dims(m_binary, axis=-1)
+                    # print("numdim " + str(num_dims))
+                    # print("swshape" + str(sw.detach().cpu().numpy().shape))
+
+                    # print(m_binary.shape)
+                    
                     sw_pruned.append(sw.detach().cpu().numpy() * m_binary)
-                self.train.calculate_communication_costs(sw_pruned)
+                # self.train.calculate_communication_costs(sw_pruned)
                 return sw_pruned, hard_threshold
             else:
                 return [sw.detach().cpu().numpy() for sw in self.nets.decomposed_variables['shared']]
@@ -132,7 +154,7 @@ class clientWeIT(Client):
         
         if from_kb is not None:
             for lid, weights in enumerate(from_kb):
-                tid = self.state['curr_task'] + 1
+                tid = self.state['curr_task'] 
                 self.nets.decomposed_variables['from_kb'][tid][lid].data = torch.tensor(weights)
         
         if self.state['curr_task'] < 0:

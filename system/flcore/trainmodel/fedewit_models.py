@@ -79,10 +79,21 @@ class TrainModule:
         self.state['curr_round'] = curr_round
         self.state['round_cnt'] = round_cnt
         self.state['curr_task'] = curr_task
+
         trainloader = self.task['trainloader']
-        self.optimizer.param_groups[0]['params'] = list(self.params['trainables'])
         self.curr_model = self.nets.get_model_by_tid(curr_task)
         self.curr_model.to(self.device)
+
+        self.params['trainables'] = [param.to(self.device) for param in self.params['trainables']]
+        self.optimizer = torch.optim.Adam(self.params['trainables'], lr=self.state['curr_lr'])
+
+        # for param in self.params['trainables']:
+        #     print("param: " + str(param.device))
+        # for param in self.curr_model.parameters():
+        #     print("model: " + str(param.device))
+        # print("model: " + str(param.device))
+        # print("param: " + str(param.device))
+
         self.curr_model.train()
         for epoch in range(self.args.local_epochs):
             self.state['curr_epoch'] = epoch + 1
@@ -118,31 +129,31 @@ class TrainModule:
     #             self.add_performance('valid_lss', 'valid_acc', loss, y_batch, y_pred)
     #     self.vlss, self.vacc = self.measure_performance('valid_lss', 'valid_acc')
 
-    # def evaluate(self):
-    #     self.curr_model.eval()
-    #     with torch.no_grad():
-    #         for tid in range(self.state['curr_task'] + 1):
-    #             if self.args.model == 'stl':
-    #                 if not tid == self.state['curr_task']:
-    #                     continue
-    #             x_test = torch.tensor(self.task['x_test_list'][tid])
-    #             y_test = torch.tensor(self.task['y_test_list'][tid])
-    #             model = self.nets.get_model_by_tid(tid)
-    #             for i in range(0, len(x_test), self.args.batch_size):
-    #                 x_batch = x_test[i:i+self.args.batch_size]
-    #                 y_batch = y_test[i:i+self.args.batch_size]
-    #                 y_pred = model(x_batch)
-    #                 loss = nn.functional.cross_entropy(y_pred, y_batch)
-    #                 self.add_performance('test_lss', 'test_acc', loss, y_batch, y_pred)
-    #             lss, acc = self.measure_performance('test_lss', 'test_acc')
-    #             if not tid in self.state['scores']['test_loss']:
-    #                 self.state['scores']['test_loss'][tid] = []
-    #                 self.state['scores']['test_acc'][tid] = []
-    #             self.state['scores']['test_loss'][tid].append(lss)
-    #             self.state['scores']['test_acc'][tid].append(acc)
-    #             self.logger.print(self.state['client_id'], 'round:{}(cnt:{}),epoch:{},task:{},lss:{},acc:{} ({},#_train:{},#_valid:{},#_test:{})'
-    #                 .format(self.state['curr_round'], self.state['round_cnt'], self.state['curr_epoch'], tid, round(lss, 3), \
-    #                     round(acc, 3), len(self.task['x_train']), len(self.task['x_valid']), len(x_test)))
+    def evaluate(self):
+        self.curr_model.eval()
+        with torch.no_grad():
+            for tid in range(self.state['curr_task'] + 1):
+                if self.args.model == 'stl':
+                    if not tid == self.state['curr_task']:
+                        continue
+                x_test = torch.tensor(self.task['x_test_list'][tid])
+                y_test = torch.tensor(self.task['y_test_list'][tid])
+                model = self.nets.get_model_by_tid(tid)
+                for i in range(0, len(x_test), self.args.batch_size):
+                    x_batch = x_test[i:i+self.args.batch_size]
+                    y_batch = y_test[i:i+self.args.batch_size]
+                    y_pred = model(x_batch)
+                    loss = nn.functional.cross_entropy(y_pred, y_batch)
+                    self.add_performance('test_lss', 'test_acc', loss, y_batch, y_pred)
+                lss, acc = self.measure_performance('test_lss', 'test_acc')
+                if not tid in self.state['scores']['test_loss']:
+                    self.state['scores']['test_loss'][tid] = []
+                    self.state['scores']['test_acc'][tid] = []
+                self.state['scores']['test_loss'][tid].append(lss)
+                self.state['scores']['test_acc'][tid].append(acc)
+                self.logger.print(self.state['client_id'], 'round:{}(cnt:{}),epoch:{},task:{},lss:{},acc:{} ({},#_train:{},#_valid:{},#_test:{})'
+                    .format(self.state['curr_round'], self.state['round_cnt'], self.state['curr_epoch'], tid, round(lss, 3), \
+                        round(acc, 3), len(self.task['x_train']), len(self.task['x_valid']), len(x_test)))
 
     # def add_performance(self, lss_name, acc_name, loss, y_true, y_pred):
     #     self.metrics[lss_name].update(loss)
@@ -231,12 +242,17 @@ class TrainModule:
             client_weights = [u[0][0] for u in updates]
             client_masks = [u[0][1] for u in updates]
             client_sizes = [u[1] for u in updates]
-            new_weights = [torch.zeros_like(w) for w in client_weights[0]]
+            
+            new_weights = [torch.zeros_like(torch.tensor(w)) for w in client_weights[0]]
             epsi = 1e-15
-            total_sizes = epsi
-            client_masks = torch.tensor(client_masks, dtype=torch.float32)
-            for _cs in client_masks:
-                total_sizes += _cs
+            total_sizes = [epsi for i in range(len(client_masks[0]))]
+
+            # for mask in client_masks:
+            #     print(len(mask[0]))
+            for cid, mask_cid in enumerate(client_masks):
+                for lid, mask_lid in enumerate(mask_cid):
+                    total_sizes[lid] += sum(client_masks[cid][lid]) 
+            
             for c_idx, c_weights in enumerate(client_weights): # by client
                 for lidx, l_weights in enumerate(c_weights): # by layer
                     ratio = 1 / total_sizes[lidx]
@@ -330,6 +346,8 @@ class NetModule:
 
     def load_state(self, cid):
         self.state = np_load(os.path.join(self.args.state_dir, '{}_net.npy'.format(cid))).item()
+        # print("len_heads_state: " + str(len(self.state['heads_weights'])))
+        # print("len_heads: " + str(len(self.heads)))
 
         for i, h in enumerate(self.state['heads_weights']):
             self.heads[i].load_state_dict(h)
@@ -385,6 +403,9 @@ class NetModule:
             trainable = False
             init_value = np.zeros(shape).astype(np.float32)
         
+        elif var_type == 'bias' and lid in [2,3]:
+            init_value = np.zeros(self.shapes[lid][-1]).astype(np.float32)
+
         else:
             init_value = np.zeros(self.shapes[lid][0]).astype(np.float32)
         
@@ -451,6 +472,11 @@ class NetModule:
                     prev_mask = self.get_variable(var_type='mask', lid=lid, tid=tid).detach().cpu().numpy()
                     prev_mask_sig = self.generate_mask(torch.tensor(prev_mask)).detach().cpu().numpy()
                     #################################################
+                    num_dims = sw.ndim
+
+                    for _ in range(1, num_dims):  
+                        prev_mask_sig = np.expand_dims(prev_mask_sig, axis=-1)
+                        
                     prev_weights[lid][tid] = sw * prev_mask_sig + prev_aw
                     #################################################
             return prev_weights
@@ -511,7 +537,7 @@ class NetModule:
             for lid in [2, 3]:
                 self.decomposed_layers[self.lid] = self.dense_decomposed(
                     lid, tid,
-                    units=self.shapes[lid][0],
+                    units=self.shapes[lid][-1],
                     args = self.args)
                 layers.append(self.decomposed_layers[self.lid])
                 layers.append(nn.ReLU())
@@ -610,12 +636,23 @@ class DecomposedDense(nn.Module):
         atten = self.atten
         aw_kbs = self.aw_kb
 
-        self.my_theta = self.sw * mask.view(mask.shape[0], 1, 1, 1) + aw + torch.sum(aw_kbs * atten, dim=-1)
-        
+        a = self.sw * mask.view(mask.shape[0], 1)
+        b = torch.sum(aw_kbs * atten, dim=-1)
+        c = aw
+
+        # self.my_theta = self.sw * mask.view(mask.shape[0], 1, 1, 1) + aw + torch.sum(aw_kbs * atten, dim=-1)
+        self.my_theta = a
+        self.my_theta += b
+        self.my_theta += c
+
+        # print(inputs.shape)
+        # print(self.my_theta.shape)
         outputs = torch.matmul(inputs, self.my_theta)
         
+        # print(self.bias.shape)
+        # print(outputs.shape)
         if self.use_bias:
-            outputs = outputs + self.bias
+            outputs = outputs + self.bias.view(1, -1)
         
         return outputs
 
@@ -673,14 +710,26 @@ class DecomposedConv(nn.Module):
         atten = self.atten
         aw_kbs = self.aw_kb      
 
-        print(f"mask shape: {mask.shape}")
-        print(f"aw_kbs shape: {aw_kbs.shape}, atten shape: {atten.shape}")
-        print(f"sw shape: {self.sw.shape}")
+        # print(f"mask shape: {mask.shape}")
+        # print(f"aw_kbs shape: {aw_kbs.shape}, atten shape: {atten.shape}")
+        # print(f"sw shape: {self.sw.shape}")
 
-        self.my_theta = self.sw * mask.view(mask.shape[0], 1, 1, 1) + aw + torch.sum(aw_kbs * atten, dim=-1)
-        
+        a = self.sw * mask.view(mask.shape[0], 1, 1, 1)
+        b = torch.sum(aw_kbs * atten, dim=-1)
+        c = aw
+
+        # self.my_theta = self.sw * mask.view(mask.shape[0], 1, 1, 1) + aw + torch.sum(aw_kbs * atten, dim=-1)
+        self.my_theta = a
+        self.my_theta += b
+        self.my_theta += c
+
+        # print(inputs.shape)
+        # print(self.my_theta.shape)
         outputs = F.conv2d(inputs, self.my_theta, stride=self.strides, padding=self.padding, dilation=self.dilation_rate)
-        
+
+        # print(outputs.shape)
+        # print(self.bias.view(1, -1, 1, 1).shape)
+
         if self.use_bias:
             outputs = outputs + self.bias.view(1, -1, 1, 1)
         
