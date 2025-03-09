@@ -101,6 +101,10 @@ class FedFCIL(Server):
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
 
+                for u in self.clients:
+                    taskid_list_so_far = list(range(int(len(u.classes_so_far)/2)))
+                    print(taskid_list_so_far)
+
             for i in range(self.global_rounds):
 
                 glob_iter = i + self.global_rounds * task
