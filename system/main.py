@@ -84,8 +84,11 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedDBE(args, i)
+
         elif args.algorithm == "FedWeIT":
             server = FedWeIT(args, i)
+        
+
         else:
             raise NotImplementedError
 
@@ -96,8 +99,8 @@ def run(args):
 
     print(f"\nAverage time cost: {round(np.average(time_list), 2)}s.")
     
-    # Global average
-    average_data(dataset=args.dataset, algorithm=args.algorithm, goal=args.goal, times=args.times)
+    # Global average 
+    average_data(dataset=args.dataset, algorithm=args.algorithm, goal=args.goal, times=args.times) 
     print("All done!")
     reporter.report()
 
