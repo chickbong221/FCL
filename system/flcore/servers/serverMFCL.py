@@ -11,8 +11,7 @@ class FedMFCL(Server):
         super().__init__(args, times)
         self.Budget = []
 
-
-
+        teacher, generator = None, None 
         self.set_slow_clients()
         self.set_clients(clientMFCL)
 
@@ -127,10 +126,10 @@ class FedMFCL(Server):
                     self.evaluate(glob_iter=glob_iter)
 
                 for client in self.selected_clients:
-                    update = client.train_one_round(client.id, glob_iter, True, self.get_weights(), self.get_adapts(glob_iter=glob_iter))
+                    update = client.train(self.get_weights, lr, teacher, generator)
                     if not update == None:
                         self.updates.append(update)
-                        
+
                 aggr = self.train.aggregate(self.updates)
                 self.set_weights(aggr)
 
@@ -150,7 +149,7 @@ class FedMFCL(Server):
 
             if self.num_new_clients > 0:
                 self.eval_new_clients = True
-                self.set_new_clients(clientWeIT)
+                self.set_new_clients(clientMFCL)
                 print(f"\n-------------Fine tuning round-------------")
                 print("\nEvaluate new clients")
                 self.evaluate(glob_iter=glob_iter)
