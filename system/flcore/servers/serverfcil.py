@@ -51,9 +51,12 @@ class FedFCIL(Server):
         models = []
 
         old_task_id = -1
-
+        task_dict = {
+            "id": [],
+            "name": [],
+        }  # Task dict to append later
         for task in range(N_TASKS):
-
+            task_list = []
             print(f"\n================ Current Task: {task} =================")
             if task == 0:
                 # update labels info. for the first task
@@ -63,7 +66,12 @@ class FedFCIL(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-
+                    # u.taskid_list_so_far = list(range(int(len(u.classes_so_far) / 2)))
+                """
+                    - Combine all task into task_list
+                    - Get unique task
+                    - Assign ID + task into task_dict
+                """
                 for u in self.clients:
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
@@ -100,10 +108,6 @@ class FedFCIL(Server):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
-
-                for u in self.clients:
-                    taskid_list_so_far = list(range(int(len(u.classes_so_far)/2)))
-                    print(taskid_list_so_far)
 
             for i in range(self.global_rounds):
 
