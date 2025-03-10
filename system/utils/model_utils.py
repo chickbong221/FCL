@@ -28,6 +28,7 @@ def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count
     if count_labels:
         label_info = {}
         unique_y, counts=torch.unique(y_train, return_counts=True)
+        # print("unique_y: " + str(unique_y))
         unique_y=unique_y.detach().numpy()
         counts=counts.detach().numpy()
         label_info['labels']=unique_y

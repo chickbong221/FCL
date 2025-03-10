@@ -74,9 +74,9 @@ class FedAvg(Server):
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
 
-                # for i in self.clients:
-                #     taskid_list_so_far = list(range(int(len(u.classes_so_far)/2)))
-                #     print(taskid_list_so_far)
+                for i in self.clients:
+                    taskid_list_so_far = list(range(int(len(u.classes_so_far)/2)))
+                    print(u.classes_so_far)
 
             for i in range(self.global_rounds):
 
@@ -116,7 +116,7 @@ class FedAvg(Server):
             print("\nAverage time cost per round.")
             print(sum(self.Budget[1:])/len(self.Budget[1:]))
 
-            # self.save_results()
+            self.save_results()
             # self.save_global_model()
 
             if self.num_new_clients > 0:
