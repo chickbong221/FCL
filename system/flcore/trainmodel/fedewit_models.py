@@ -376,6 +376,7 @@ class NetModule:
         return global_weights
 
     def init_decomposed_variables(self, initial_weights):
+        print("hello")
         self.decomposed_variables['shared'] = [torch.nn.Parameter(torch.tensor(initial_weights[i]), requires_grad=True) for i in range(len(self.shapes))]
         for tid in range(self.args.num_tasks):
             # print(tid)
@@ -383,6 +384,7 @@ class NetModule:
                 var_types = ['adaptive', 'bias', 'mask'] if self.args.model == 'apd' else ['adaptive', 'bias', 'mask', 'atten', 'from_kb']
                 for var_type in var_types:
                     self.create_variable(var_type, lid, tid)
+        print("hello1")
 
     def create_variable(self, var_type, lid, tid=None):
         trainable = True 
@@ -426,7 +428,7 @@ class NetModule:
     def get_model_by_tid(self, tid):
         if self.args.algorithm in ['FedWeIT']:
             self.switch_model_params(tid)
-        return self.models[tid]
+        return self.models[0]
 
     def get_trainable_variables(self, curr_task, head=True):
         if self.args.algorithm in ['FedWeIT']:
@@ -456,7 +458,7 @@ class NetModule:
                         continue
                     trainable_variables.append(self.get_variable(pvar, lid, curr_task))
         if head:
-            head = self.heads[curr_task]
+            head = self.heads[0]
             trainable_variables.append(head.weight)
             trainable_variables.append(head.bias)
         return trainable_variables
@@ -509,16 +511,18 @@ class NetModule:
 
     def build_lenet(self, initial_weights, decomposed=False):
         self.models = []
+        # print("hello")
         self.model_body = self.build_lenet_body(initial_weights, decomposed=decomposed)
         self.set_body_weights(initial_weights)
+        # print("hello 1")
         self.initial_body_weights = initial_weights
-        for i in range(self.args.num_tasks):
+        for i in range(1):
+            # print("hello 2")
             self.models.append(self.add_head(self.model_body))
 
     def build_lenet_body(self, initial_weights=None, decomposed=False):
         if decomposed:
             self.init_decomposed_variables(initial_weights)
-            print("bug here")
             tid = 0
             layers = []
             for lid in [0, 1]:

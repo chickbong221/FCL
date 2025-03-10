@@ -24,7 +24,7 @@ class FedAvg(Server):
     def train(self):
 
         if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = 4
+            N_TASKS = 500
         else:
             N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
         print(str(N_TASKS) + " tasks are available")
@@ -40,7 +40,8 @@ class FedAvg(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-                    
+                    print(u.task_dict)
+
                 for u in self.clients:
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
@@ -58,8 +59,8 @@ class FedAvg(Server):
                         id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=task)
 
                     # update dataset
-                    # assert (self.users[i].id == id)
                     self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
+                    print(self.clients[i].task_dict)
 
                 # update labels info.
                 available_labels = set()
@@ -73,10 +74,6 @@ class FedAvg(Server):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
-
-                for i in self.clients:
-                    taskid_list_so_far = list(range(int(len(u.classes_so_far)/2)))
-                    print(u.classes_so_far)
 
             for i in range(self.global_rounds):
 

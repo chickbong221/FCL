@@ -60,10 +60,9 @@ class Client(object):
         self.current_labels = [] # current labels for itself
         self.classes_past_task = [] # classes_so_far (current labels excluded) 
         self.available_labels_past = [] # labels from all clients on T-1
-        self.current_task = 0
-        self.label_counts = {}
         self.available_labels = [] # l from all c from 0-T
-        self.label_set = [i for i in range(10)]
+        self.current_task = 0
+        self.task_dict = {}
         self.last_copy = None
         self.if_last_copy = False
         self.args = args
@@ -93,10 +92,14 @@ class Client(object):
         # update classes_past_task
         self.classes_past_task = copy.deepcopy(self.classes_so_far)
         
+        # update class recorder:
+        self.current_task += 1
+
         # update classes_so_far
         if if_label:
             self.classes_so_far.extend(label_info['labels'])
-            
+            self.task_dict[self.current_task] = label_info['labels']
+
             self.current_labels.clear()
             self.current_labels.extend(label_info['labels'])
 
@@ -104,9 +107,6 @@ class Client(object):
 
         # update test data for CL: (test per task)        
         self.test_data_per_task.append(self.test_data)
-        
-        # update class recorder:
-        self.current_task += 1
         
         return
 

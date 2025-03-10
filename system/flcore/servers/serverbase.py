@@ -100,6 +100,7 @@ class Server(object):
             # update classes so far & current labels
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
+            client.task_dict[0] = label_info['labels']
 
         logger.info("Number of Train/Test samples: %d/%d"%(self.total_train_samples, self.total_test_samples))
         logger.info("Data from {} clients in total.".format(total_clients))

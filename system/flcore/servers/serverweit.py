@@ -77,7 +77,7 @@ class FedWeIT(Server):
             shutil.rmtree("/media/tuannl1/heavy_weight/FCL/PFLlib/output_fedweit")
         
         if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = 2
+            N_TASKS = self.args.num_tasks
         else:
             N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
         print(str(N_TASKS) + " tasks are available")
@@ -113,7 +113,7 @@ class FedWeIT(Server):
                     # update dataset
                     # assert (self.users[i].id == id)
                     self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
-
+                    
                 # update labels info.
                 available_labels = set()
                 available_labels_current = set()
