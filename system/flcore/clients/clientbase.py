@@ -94,7 +94,6 @@ class Client(object):
         # update classes_so_far
         if if_label:
             self.classes_so_far.extend(label_info['labels'])
-            print(f"classes so far: {self.classes_so_far}")
             
             self.current_labels.clear()
             self.current_labels.extend(label_info['labels'])
