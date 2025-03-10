@@ -10,5 +10,5 @@ python system/main.py  --dataset IMAGENET1k --num_classes 1000 --algorithm FedST
 
 FCIL\
 ``
-python system/main.py  --dataset IMAGENET1k --num_classes 1000 --algorithm FCIL --wandb True
+python system/main.py  --dataset IMAGENET1k --num_classes 1000 --algorithm FedFCIL --wandb True
 ``
