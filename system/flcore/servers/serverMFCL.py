@@ -144,6 +144,9 @@ class FedMFCL(Server):
             print("\nAverage time cost per round.")
             print(sum(self.Budget[1:])/len(self.Budget[1:]))
 
+            if task == N_TASKS - 1:
+                pass
+
             # self.save_results()
             # self.save_global_model()
 
