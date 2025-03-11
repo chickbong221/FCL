@@ -87,7 +87,7 @@ def run(args):
 
         elif args.algorithm == "FedWeIT":
             server = FedWeIT(args, i)
-        
+
 
         else:
             raise NotImplementedError
@@ -189,6 +189,22 @@ if __name__ == "__main__":
     parser.add_argument('--lambda_l2', type=float, default=100.0, help="L2 regularization coefficient")
     parser.add_argument('--lambda_mask', type=float, default=0.0, help="Mask regularization coefficient")
     parser.add_argument('--num_tasks', type=int, default=500, help="num tasks")
+
+    #FedMFCL
+    parser.add_argument('--z_dim', type=int, default=1000)
+    parser.add_argument('--conv_dim', type=int, default=64)
+    parser.add_argument('--ie_loss', type=int, default=1)
+    parser.add_argument('--act_loss', type=int, default=0)
+    parser.add_argument('--bn_loss', type=int, default=1)
+    parser.add_argument('--noise', type=int, default=1)
+    parser.add_argument('--w_ie', type=float, default=1.)
+    parser.add_argument('--w_kd', type=float, default=1e-1)
+    parser.add_argument('--w_ft', type=float, default=1)
+    parser.add_argument('--w_act', type=float, default=0.1)
+    parser.add_argument('--w_noise', type=float, default=1e-3)
+    parser.add_argument('--w_bn', type=float, default=5e1)
+    parser.add_argument('--lr_end', type=float, default=0.01)
+    parser.add_argument('--generator_model', type=str, default='CIFAR_GEN', help='name of the generative model')
 
 
     args = parser.parse_args()

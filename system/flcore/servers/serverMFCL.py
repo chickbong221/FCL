@@ -4,14 +4,12 @@ import glog as logger
 from flcore.clients.clientMFCL import clientMFCL
 from flcore.servers.serverbase import Server
 from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
-
+import numpy as np
 
 class FedMFCL(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
         self.Budget = []
-
-        teacher, generator = None, None 
         self.set_slow_clients()
         self.set_clients(clientMFCL)
 
@@ -50,7 +48,8 @@ class FedMFCL(Server):
 
 
     def train(self):
-
+        teacher, generator = None, None
+        gamma = np.log(self.args.lr_end / self.args.lr)
         if self.args.dataset == 'IMAGENET1k':
             N_TASKS = 2
         else:
@@ -110,6 +109,7 @@ class FedMFCL(Server):
             for i in range(self.global_rounds):
                 
                 print("Change glob round")
+                lr = self.args.lr * np.exp(i / self.args.global_rounds * gamma)
                 glob_iter = i + self.global_rounds * task
                 self.updates = []
                 self.curr_round = glob_iter+1
