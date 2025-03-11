@@ -47,7 +47,6 @@ def read_client_data_FCL(index, data, dataset='', count_labels=False, task = 0):
     list of tuple: train data
     list of tuple: test data
     '''
-    
     #data contains: clients, groups, train_data, test_data, proxy_data(optional)
     #logger.info('attention: reversed!')
     #task = 4-task
