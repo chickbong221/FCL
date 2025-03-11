@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from sklearn.preprocessing import label_binarize
 from sklearn import metrics
 
+
 class Client(object):
     """
     Base class for clients in federated learning.
@@ -29,6 +30,8 @@ class Client(object):
         self.batch_size = args.batch_size
         self.learning_rate = args.local_learning_rate
         self.local_epochs = args.local_epochs
+        self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True, shuffle=True)
+        self.testloader = DataLoader(self.test_data, self.batch_size, drop_last=True)
 
         # check BatchNorm
         self.has_BatchNorm = False
@@ -45,7 +48,7 @@ class Client(object):
         self.loss = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
         self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
-            optimizer=self.optimizer, 
+            optimizer=self.optimizer,
             gamma=args.learning_rate_decay_gamma
         )
         self.learning_rate_decay = args.learning_rate_decay
@@ -53,45 +56,46 @@ class Client(object):
         # continual federated learning
         self.test_data_so_far_loader = [DataLoader(self.test_data, 64)]
         self.test_data_per_task = [self.test_data]
-        self.classes_so_far = [] # all labels of a client so far 
-        self.available_labels_current = [] # labels from all clients on T (current)
-        self.current_labels = [] # current labels for itself
-        self.classes_past_task = [] # classes_so_far (current labels excluded) 
-        self.available_labels_past = [] # labels from all clients on T-1
+        self.classes_so_far = []  # all labels of a client so far
+        self.available_labels_current = []  # labels from all clients on T (current)
+        self.current_labels = []  # current labels for itself
+        self.classes_past_task = []  # classes_so_far (current labels excluded)
+        self.available_labels_past = []  # labels from all clients on T-1
+        self.available_labels = []  # l from all c from 0-T
         self.current_task = 0
         self.task_dict = {}
-        self.label_counts = {}
-        self.available_labels = [] # l from all c from 0-T
-        self.label_set = [i for i in range(10)]
         self.last_copy = None
         self.if_last_copy = False
         self.args = args
 
-    def next_task(self, train, test, label_info = None, if_label = True):
-        
+    def next_task(self, train, test, label_info=None, if_label=True):
+
         # update last model:
-        self.last_copy  = copy.deepcopy(self.model)
+        self.last_copy = copy.deepcopy(self.model)
         self.last_copy.cuda()
         self.if_last_copy = True
-        
-        # update dataset: 
+
+        # update dataset:
         self.train_data = train
         self.test_data = test
-        
+
         self.train_samples = len(self.train_data)
         self.test_samples = len(self.test_data)
- 
-        self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True,  shuffle = True)
-        self.testloader =  DataLoader(self.test_data, self.batch_size, drop_last=True)
-        
+
+        self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True, shuffle=True)
+        self.testloader = DataLoader(self.test_data, self.batch_size, drop_last=True)
+
         self.testloaderfull = DataLoader(self.test_data, len(self.test_data))
-        self.trainloaderfull = DataLoader(self.train_data, len(self.train_data),  shuffle = True)
+        self.trainloaderfull = DataLoader(self.train_data, len(self.train_data), shuffle=True)
         self.iter_trainloader = iter(self.trainloader)
         self.iter_testloader = iter(self.testloader)
-        
+
         # update classes_past_task
         self.classes_past_task = copy.deepcopy(self.classes_so_far)
-        
+
+        # update class recorder:
+        self.current_task += 1
+
         # update classes_so_far
         if if_label:
             self.classes_so_far.extend(label_info['labels'])
@@ -102,12 +106,9 @@ class Client(object):
 
         self.test_data_so_far_loader.append(DataLoader(self.test_data, 64))
 
-        # update test data for CL: (test per task)        
+        # update test data for CL: (test per task)
         self.test_data_per_task.append(self.test_data)
-        
-        # update class recorder:
-        self.current_task += 1
-        
+
         return
 
     def load_train_data(self, batch_size=None):
@@ -121,7 +122,7 @@ class Client(object):
             batch_size = self.batch_size
         test_data = self.test_data
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
-        
+
     def set_parameters(self, model):
         for new_param, old_param in zip(model.parameters(), self.model.parameters()):
             old_param.data = new_param.data.clone()
@@ -145,7 +146,7 @@ class Client(object):
         test_num = 0
         y_prob = []
         y_true = []
-        
+
         with torch.no_grad():
             for x, y in testloaderfull:
                 if type(x) == type([]):
@@ -174,7 +175,7 @@ class Client(object):
         y_true = np.concatenate(y_true, axis=0)
 
         auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
-        
+
         return test_acc, test_num, auc
 
     def train_metrics(self):
@@ -217,7 +218,6 @@ class Client(object):
     #     y = y.to(self.device)
 
     #     return x, y
-
 
     def save_item(self, item, item_name, item_path=None):
         if item_path == None:

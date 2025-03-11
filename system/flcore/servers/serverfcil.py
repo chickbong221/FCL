@@ -51,6 +51,7 @@ class FedFCIL(Server):
         models = []
 
         old_task_id = -1
+        task_list = []
         task_dict = {
             "id": [],
             "name": [],
@@ -66,7 +67,8 @@ class FedFCIL(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-                    print(u.task_dict)
+                    task_list.append(u.current_labels)
+                    # print(f"u.current_labels on client {u.id}: {u.current_labels}")
 
                 for u in self.clients:
                     u.available_labels = list(available_labels)
@@ -88,9 +90,9 @@ class FedFCIL(Server):
                                                                                      dataset=self.args.dataset,
                                                                                      count_labels=True, task=task)
 
-                    # update dataset
+                    # # update dataset
                     self.clients[i].next_task(train_data, test_data, label_info)  # assign dataloader for new data
-                    print(self.clients[i].task_dict)
+                    # print(f"task list on client {i}: {self.clients[i].current_labels}")
 
                 # update labels info.
                 available_labels = set()
@@ -99,11 +101,15 @@ class FedFCIL(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
+                    task_list.append(u.current_labels)
+                    # print(f"u.current_labels on client {u.id}: {u.current_labels}")
 
                 for u in self.clients:
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
+
+            print(f"total tasks: {task_list}")
 
             # for i in range(self.global_rounds):
             #
