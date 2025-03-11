@@ -111,7 +111,12 @@ class FedFCIL(Server):
                     u.available_labels_past = list(available_labels_past)
 
             unique_task = get_unique_tasks(task_list)
+            """
+            assign unique_task into task_dict
+                - Check if 
+            """
             print(f"total tasks: {task_list}")
+            print(f"unique_task: {unique_task}")
 
             # for i in range(self.global_rounds):
             #
