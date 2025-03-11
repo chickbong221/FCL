@@ -198,7 +198,7 @@ class Client(object):
                 losses += loss.item() * y.shape[0]
 
         # self.model.cpu()
-        # self.save_model(self.model, 'model')    
+        # self.save_model(self.model, 'model')
 
         return losses, train_num
 
