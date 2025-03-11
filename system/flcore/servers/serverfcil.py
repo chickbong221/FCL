@@ -6,7 +6,7 @@ from flcore.clients.clientfcil import clientFCIL
 from flcore.servers.serverbase import Server
 from threading import Thread
 from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
-from utils.data_utils import get_unique_tasks
+from utils.data_utils import get_unique_tasks, assign_unique_tasks
 from flcore.trainmodel.models import LeNet2, weights_init
 from flcore.utils.fcil_utils import Proxy_Data
 
@@ -29,6 +29,9 @@ class FedFCIL(Server):
         self.best_model_1 = None
         self.best_model_2 = None
         self.best_perf = 0
+
+        self.unique_task = []
+        self.old_unique_task = []
 
         self.encode_model = LeNet2(num_classes=self.num_classes)
         self.encode_model.apply(weights_init)
@@ -53,10 +56,7 @@ class FedFCIL(Server):
 
         old_task_id = -1
         task_list = []
-        task_dict = {
-            "id": [],
-            "name": [],
-        }  # Task dict to append later
+
         for task in range(N_TASKS):
 
             print(f"\n================ Current Task: {task} =================")
@@ -111,12 +111,7 @@ class FedFCIL(Server):
                     u.available_labels_past = list(available_labels_past)
 
             unique_task = get_unique_tasks(task_list)
-            """
-            assign unique_task into task_dict
-                - Check if 
-            """
-            print(f"total tasks: {task_list}")
-            print(f"unique_task: {unique_task}")
+            task_id, task_name = assign_unique_tasks(unique_task, old_unique_list, task_dict, current_task)
 
             # for i in range(self.global_rounds):
             #

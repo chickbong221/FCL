@@ -73,6 +73,10 @@ class Server(object):
         self.total_train_samples = 0
         self.total_test_samples = 0
 
+        # FCL
+        self.task_dict = {}
+        self.current_task = 0
+
     def set_clients(self, clientObj):
         total_clients = 10
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
@@ -374,7 +378,7 @@ class Server(object):
                 cnt += 1
             
             # items.append((client_model, origin_grad, target_inputs))
-                
+
         if cnt > 0:
             print('PSNR value is {:.2f} dB'.format(psnr_val / cnt))
         else:
@@ -429,3 +433,16 @@ class Server(object):
         ids = [c.id for c in self.new_clients]
 
         return ids, num_samples, tot_correct, tot_auc
+
+    def assign_unique_tasks(self, unique_list, old_unique_list):
+        # Convert lists to sets of tuples for easy comparison
+        unique_set = {tuple(task) for task in unique_list}
+        old_unique_set = {tuple(task) for task in old_unique_list}
+
+        # Find new tasks by taking the difference
+        new_tasks = unique_set - old_unique_set
+
+        # Loop over new tasks and assign them to task_dict
+        for task in new_tasks:
+            self.current_task += 1
+            self.task_dict[self.current_task] = list(task)
