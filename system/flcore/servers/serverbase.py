@@ -434,10 +434,10 @@ class Server(object):
 
         return ids, num_samples, tot_correct, tot_auc
 
-    def assign_unique_tasks(self, unique_list, old_unique_list):
+    def assign_unique_tasks(self):
         # Convert lists to sets of tuples for easy comparison
-        unique_set = {tuple(task) for task in unique_list}
-        old_unique_set = {tuple(task) for task in old_unique_list}
+        unique_set = {tuple(task) for task in self.unique_task}
+        old_unique_set = {tuple(task) for task in self.old_unique_task}
 
         # Find new tasks by taking the difference
         new_tasks = unique_set - old_unique_set
