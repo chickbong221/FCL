@@ -101,3 +101,6 @@ def read_client_data_Shakespeare(dataset, idx, is_train=True):
         test_data = [(x, y) for x, y in zip(X_test, y_test)]
         return test_data
 
+def get_unique_tasks(task_list):
+    unique_tasks = {tuple(sorted(task)) for task in task_list}
+    return [list(task) for task in unique_tasks]

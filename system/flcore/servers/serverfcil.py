@@ -6,6 +6,7 @@ from flcore.clients.clientfcil import clientFCIL
 from flcore.servers.serverbase import Server
 from threading import Thread
 from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
+from utils.data_utils import get_unique_tasks
 from flcore.trainmodel.models import LeNet2, weights_init
 from flcore.utils.fcil_utils import Proxy_Data
 
@@ -109,6 +110,7 @@ class FedFCIL(Server):
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
 
+            unique_task = get_unique_tasks(task_list)
             print(f"total tasks: {task_list}")
 
             # for i in range(self.global_rounds):
