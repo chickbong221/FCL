@@ -56,7 +56,7 @@ class FedFCIL(Server):
             "name": [],
         }  # Task dict to append later
         for task in range(N_TASKS):
-            task_list = []
+
             print(f"\n================ Current Task: {task} =================")
             if task == 0:
                 # update labels info. for the first task
@@ -66,13 +66,8 @@ class FedFCIL(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-                    print(f"classes of {u.id} is: {u.classes_so_far}")
-                    # u.taskid_list_so_far = list(range(int(len(u.classes_so_far) / 2)))
-                """
-                    - Combine all task into task_list
-                    - Get unique task
-                    - Assign ID + task into task_dict
-                """
+                    print(u.task_dict)
+
                 for u in self.clients:
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
@@ -94,7 +89,6 @@ class FedFCIL(Server):
                                                                                      count_labels=True, task=task)
 
                     # update dataset
-                    # assert (self.users[i].id == id)
                     self.clients[i].next_task(train_data, test_data, label_info)  # assign dataloader for new data
                     print(self.clients[i].task_dict)
 
@@ -105,7 +99,6 @@ class FedFCIL(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-                    print(f"classes of {u.id} is: {u.classes_so_far}")
 
                 for u in self.clients:
                     u.available_labels = list(available_labels)
