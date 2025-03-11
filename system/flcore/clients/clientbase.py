@@ -198,13 +198,7 @@ class Client(object):
                 losses += loss.item() * y.shape[0]
 
         # self.model.cpu()
-        # self.save_model(self.model, 'model')        # update classes_so_far
-        if if_label:
-            self.classes_so_far.extend(label_info['labels'])
-            self.task_dict[self.current_task] = label_info['labels']
-
-            self.current_labels.clear()
-            self.current_labels.extend(label_info['labels'])
+        # self.save_model(self.model, 'model')    
 
         return losses, train_num
 
