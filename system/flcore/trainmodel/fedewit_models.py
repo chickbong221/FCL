@@ -535,7 +535,7 @@ class NetModule:
                 layers.append(self.decomposed_layers[self.lid])
                 layers.append(nn.ReLU())
                 self.lid += 1
-                layers.append(nn.LocalResponseNorm(4, alpha=0.001/9.0, beta=0.75, k=1.0))
+                # layers.append(nn.LocalResponseNorm(4, alpha=0.001/9.0, beta=0.75, k=1.0))
                 layers.append(nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
             layers.append(nn.Flatten())
             for lid in [2, 3]:
@@ -550,10 +550,10 @@ class NetModule:
         else:
             layers = []
             layers.append(nn.Conv2d(3, 20, kernel_size=5, padding=2))
-            layers.append(nn.LocalResponseNorm(4, alpha=0.001/9.0, beta=0.75, k=1.0))
+            # layers.append(nn.LocalResponseNorm(4, alpha=0.001/9.0, beta=0.75, k=1.0))
             layers.append(nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
             layers.append(nn.Conv2d(20, 50, kernel_size=5, padding=2))
-            layers.append(nn.LocalResponseNorm(4, alpha=0.001/9.0, beta=0.75, k=1.0))
+            # layers.append(nn.LocalResponseNorm(4, alpha=0.001/9.0, beta=0.75, k=1.0))
             layers.append(nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
             layers.append(nn.Flatten())
             layers.append(nn.Linear(3200, 800))

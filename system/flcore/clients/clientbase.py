@@ -15,6 +15,7 @@ class Client(object):
     def __init__(self, args, id, train_data, test_data, train_samples, test_samples, **kwargs):
         torch.manual_seed(0)
         self.model = copy.deepcopy(args.model)
+        self.args = args
         self.algorithm = args.algorithm
         self.dataset = args.dataset
         self.device = args.device
@@ -45,7 +46,12 @@ class Client(object):
         self.send_time_cost = {'num_rounds': 0, 'total_cost': 0.0}
 
         self.loss = nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
+        if args.optimizer == "sgd":
+            self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
+        elif args.optimizer == "adam":
+            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
+        else:
+            raise ValueError(f"Unsupported optimizer: {args.optimizer}.")
         self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
             optimizer=self.optimizer, 
             gamma=args.learning_rate_decay_gamma
@@ -69,7 +75,16 @@ class Client(object):
 
     def next_task(self, train, test, label_info = None, if_label = True):
         
-        # update last model:
+        if self.learning_rate_decay:
+            # update last model:
+            for param_group in self.optimizer.param_groups:
+                param_group['lr'] = self.learning_rate  # Đặt lại về giá trị ban đầu
+
+            self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
+                optimizer=self.optimizer, 
+                gamma=self.args.learning_rate_decay_gamma
+            )
+
         self.last_copy  = copy.deepcopy(self.model)
         self.last_copy.cuda()
         self.if_last_copy = True

@@ -41,7 +41,7 @@ def run(args):
             project="FCL",
             entity="letuanhf-hanoi-university-of-science-and-technology",
             config=args, 
-            name=f"{args.dataset}_{args.model}_localep{args.local_epochs}",
+            name=f"{args.dataset}_{args.model}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}" if args.learning_rate_decay == False else f"{args.dataset}_{args.model}_{args.optimizer}_lr{args.local_learning_rate}_ld{args.learning_rate_decay_gamma}",
         )
 
     time_list = []
@@ -62,6 +62,10 @@ def run(args):
             else:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=10816).to(args.device)
 
+        elif model_str == "LeNet_big":
+            args.model = LeNet_big(in_features=3, num_classes=args.num_classes, dim=4096).to(args.device)
+        elif model_str == "LeNet_normal":
+            args.model = LeNet_normal(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
         elif model_str == "ResNet18":
             args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
         elif model_str == "ResNet10":
@@ -107,6 +111,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # general
     parser.add_argument("--wandb", type=bool, default=False)
+    parser.add_argument("--optimizer", type=str, default="sgd")
     parser.add_argument("--datadir", type=str, default="dataset")
     parser.add_argument("--data_split_file", type=str, default="data_split/CIFAR100_split.pkl")
     parser.add_argument('-go', "--goal", type=str, default="test", 
@@ -122,7 +127,7 @@ if __name__ == "__main__":
     parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
                         help="Local learning rate")
     parser.add_argument('-ld', "--learning_rate_decay", type=bool, default=False)
-    parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.99)
+    parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.999)
     parser.add_argument('-gr', "--global_rounds", type=int, default=2000)
     parser.add_argument('-tc', "--top_cnt", type=int, default=100, 
                         help="For auto_break")

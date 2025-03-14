@@ -40,7 +40,6 @@ class FedAvg(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-                    print(u.task_dict)
 
                 for u in self.clients:
                     u.available_labels = list(available_labels)
@@ -60,7 +59,7 @@ class FedAvg(Server):
 
                     # update dataset
                     self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
-                    print(self.clients[i].task_dict)
+                    # print(self.clients[i].task_dict)
 
                 # update labels info.
                 available_labels = set()
@@ -74,6 +73,8 @@ class FedAvg(Server):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
+
+                    print(available_labels)
 
             for i in range(self.global_rounds):
 
