@@ -12,20 +12,16 @@ from flcore.clients.clientbase import Client
 
 
 class clientMFCL(Client):
-    def __init__(self, args, id, train_data, test_data, train_samples, test_samples, initial_weights, **kwargs):
+    def __init__(self, args, id, train_data, test_data, train_samples, test_samples, kd_weight, ft_weight, syn_size, **kwargs):
         super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
         
         self.args = args
         self.kd_criterion = nn.MSELoss(reduction='none')
         self.last_valid_dim = 0
         self.valid_dim = 0
-
-        self.init_model(initial_weights)
-
-    def init_model(self, initial_weights):
-        decomposed = True if self.args.algorithm in ['FedWeIT'] else False
-        if self.args.base_network == 'lenet':
-            self.nets.build_lenet(initial_weights, decomposed=decomposed)
+        self.mu = kd_weight
+        self.ft_weight = ft_weight
+        self.syn_size = syn_size
 
     def train(self, model, lr, teacher, generator_server, glob_iter_):
         model.to('cuda')

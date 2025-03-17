@@ -34,10 +34,8 @@ class FedMFCL(Server):
                             train_data=train_data,
                             test_data=test_data,
                             train_samples=len(train_data), 
-                            test_samples=len(test_data), 
-                            train_slow=train_slow, 
-                            send_slow=send_slow,
-                            initial_weights=self.global_weights)
+                            test_samples=len(test_data),
+                            )
             self.clients.append(client)
             
             # update classes so far & current labels
