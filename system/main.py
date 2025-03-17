@@ -14,6 +14,7 @@ from flcore.servers.serveravg import FedAvg
 from flcore.servers.serverala import FedALA
 from flcore.servers.serverdbe import FedDBE
 from flcore.servers.serverweit import FedWeIT
+from flcore.servers.serverMFCL import FedMFCL
 
 from flcore.trainmodel.models import *
 
@@ -88,6 +89,8 @@ def run(args):
         elif args.algorithm == "FedWeIT":
             server = FedWeIT(args, i)
 
+        elif args.algorithm == "FedMFCL":
+            server = FedMFCL(args, i)
 
         else:
             raise NotImplementedError
