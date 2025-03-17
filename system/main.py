@@ -191,6 +191,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_tasks', type=int, default=500, help="num tasks")
 
     #FedMFCL
+    parser.add_argument('--syn_size', type=int, default=128, help='size of mini-batch')
     parser.add_argument('--z_dim', type=int, default=1000)
     parser.add_argument('--conv_dim', type=int, default=64)
     parser.add_argument('--ie_loss', type=int, default=1)

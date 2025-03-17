@@ -145,6 +145,7 @@ class FedMFCL(Server):
             print(sum(self.Budget[1:])/len(self.Budget[1:]))
 
             if task == N_TASKS - 1:
+                
                 pass
 
             # self.save_results()
