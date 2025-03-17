@@ -9,7 +9,9 @@ import numpy as np
 class FedMFCL(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
+
         self.Budget = []
+
         self.set_slow_clients()
         self.set_clients(clientMFCL)
 
@@ -48,8 +50,11 @@ class FedMFCL(Server):
 
 
     def train(self):
+        # Initialization
         teacher, generator = None, None
         gamma = np.log(self.args.lr_end / self.args.lr)
+        
+        # Task
         if self.args.dataset == 'IMAGENET1k':
             N_TASKS = 2
         else:
@@ -108,11 +113,12 @@ class FedMFCL(Server):
 
             for i in range(self.global_rounds):
                 
-                print("Change glob round")
+                # MFCL lr
                 lr = self.args.lr * np.exp(i / self.args.global_rounds * gamma)
+
                 glob_iter = i + self.global_rounds * task
                 self.updates = []
-                self.curr_round = glob_iter+1
+                self.curr_round = glob_iter+1 
                 self.is_last_round = i==0
                 if self.is_last_round:
                     self.client_adapts = []
@@ -129,6 +135,8 @@ class FedMFCL(Server):
                     update = client.train(self.get_weights, lr, teacher, generator)
                     if not update == None:
                         self.updates.append(update)
+                        # if self.is_last_round:
+                        #     self.client_adapts.append(client.get_adapts(glob_iter=glob_iter))
 
                 aggr = self.train.aggregate(self.updates)
                 self.set_weights(aggr)
