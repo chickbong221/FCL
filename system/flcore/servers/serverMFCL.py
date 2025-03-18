@@ -1,5 +1,6 @@
 import time
 import torch
+import copy
 import glog as logger
 from flcore.clients.clientMFCL import clientMFCL
 from flcore.servers.serverbase import Server
@@ -12,41 +13,43 @@ class FedMFCL(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
         self.Budget = []
+
         feature_extractor = ResNet.resnet18(args.num_classes)
         self.model = network(numclass=self.args.num_classes_per_task, feature_extractor=feature_extractor)
+
         self.set_slow_clients()
         self.set_clients(clientMFCL)
 
 
-    def set_clients(self, clientObj):
-        total_clients = 10
-        for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
+    # def set_clients(self, clientObj):
+    #     total_clients = 10
+    #     for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
             
-            if self.args.dataset == 'IMAGENET1k':
-                id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
-            else:
-                id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=0)
+    #         if self.args.dataset == 'IMAGENET1k':
+    #             id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+    #         else:
+    #             id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=0)
             
-            # count total samples (accumulative)
-            self.total_train_samples +=len(train_data)
-            self.total_test_samples += len(test_data)
-            id = i
-            client = clientObj(self.args, 
-                            id=i,
-                            train_data=train_data,
-                            test_data=test_data,
-                            train_samples=len(train_data), 
-                            test_samples=len(test_data),
-                            )
-            self.clients.append(client)
+    #         # count total samples (accumulative)
+    #         self.total_train_samples +=len(train_data)
+    #         self.total_test_samples += len(test_data)
+    #         id = i
+    #         client = clientObj(self.args, 
+    #                         id=i,
+    #                         train_data=train_data,
+    #                         test_data=test_data,
+    #                         train_samples=len(train_data), 
+    #                         test_samples=len(test_data),
+    #                         )
+    #         self.clients.append(client)
             
-            # update classes so far & current labels
-            client.classes_so_far.extend(label_info['labels'])
-            client.current_labels.extend(label_info['labels'])
+    #         # update classes so far & current labels
+    #         client.classes_so_far.extend(label_info['labels'])
+    #         client.current_labels.extend(label_info['labels'])
 
-        logger.info("Number of Train/Test samples: %d/%d"%(self.total_train_samples, self.total_test_samples))
-        logger.info("Data from {} clients in total.".format(total_clients))
-        logger.info("Finished creating FedMFCL server.")
+    #     logger.info("Number of Train/Test samples: %d/%d"%(self.total_train_samples, self.total_test_samples))
+    #     logger.info("Data from {} clients in total.".format(total_clients))
+    #     logger.info("Finished creating FedMFCL server.")
 
 
     def train(self):
@@ -88,28 +91,29 @@ class FedMFCL(Server):
                         id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
                     else:
                         id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=task)
-
-                    # update dataset
-                    self.clients[i].train_data = train_data
-                    self.clients[i].test_data = test_data
-                    self.clients[i].train_samples = len(train_data)
-                    self.clients[i].test_samples = len(test_data)
-                    self.clients[i].initial_weights = self.global_weights
-                    self.clients[i].classes_so_far.extend(label_info['labels'])
-                    self.clients[i].current_labels.extend(label_info['labels'])
+                    
+                    self.clients[i].next_task(train_data, test_data, label_info)
+                    # # update dataset
+                    # self.clients[i].train_data = train_data
+                    # self.clients[i].test_data = test_data
+                    # self.clients[i].train_samples = len(train_data)
+                    # self.clients[i].test_samples = len(test_data)
+                    # self.clients[i].initial_weights = self.global_weights
+                    # self.clients[i].classes_so_far.extend(label_info['labels'])
+                    # self.clients[i].current_labels.extend(label_info['labels'])
 
                     # update available labels
-                    available_labels = set()
-                    available_labels_current = set()
-                    available_labels_past = set()
-                    for u in self.clients:
-                        available_labels = available_labels.union(set(u.classes_so_far))
-                        available_labels_current = available_labels_current.union(set(u.current_labels))
-                        
-                    for u in self.clients:
-                        u.available_labels = list(available_labels)
-                        u.available_labels_current = list(available_labels_current)
-                        u.available_labels_past = list(available_labels_past)
+                available_labels = set()
+                available_labels_current = set()
+                available_labels_past = set()
+                for u in self.clients:
+                    available_labels = available_labels.union(set(u.classes_so_far))
+                    available_labels_current = available_labels_current.union(set(u.current_labels))
+                    
+                for u in self.clients:
+                    u.available_labels = list(available_labels)
+                    u.available_labels_current = list(available_labels_current)
+                    u.available_labels_past = list(available_labels_past)
 
             for i in range(self.global_rounds):
                 
@@ -132,7 +136,8 @@ class FedMFCL(Server):
                     self.evaluate(glob_iter=glob_iter)
 
                 for client in self.selected_clients:
-                    update = client.train(self.get_weights, lr, teacher, generator)
+                    model = copy.deepcopy(self.model)
+                    update = client.train(model, lr, teacher, generator)
                     if not update == None:
                         self.updates.append(update)
                         # if self.is_last_round:
