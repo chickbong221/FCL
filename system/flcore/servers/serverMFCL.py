@@ -3,15 +3,17 @@ import torch
 import glog as logger
 from flcore.clients.clientMFCL import clientMFCL
 from flcore.servers.serverbase import Server
+from flcore.trainmodel.fedMFCL_models import *
+from utils.fedMFCL_utils import *
 from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
 import numpy as np
 
 class FedMFCL(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
-
         self.Budget = []
-
+        feature_extractor = ResNet.resnet18(args.num_classes)
+        self.model = network(numclass=self.args.num_classes_per_task, feature_extractor=feature_extractor)
         self.set_slow_clients()
         self.set_clients(clientMFCL)
 
