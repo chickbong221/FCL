@@ -438,14 +438,11 @@ class Server(object):
         # Convert lists to sets of tuples for easy comparison
         unique_set = {tuple(task) for task in self.unique_task}
         old_unique_set = {tuple(task) for task in self.old_unique_task}
-        print(f"old_unique: {old_unique_set}")
-        print(f"    unique: {unique_set}")
+
         # Find new tasks by taking the difference
         new_tasks = unique_set - old_unique_set
-        print(f"new_tasks: {new_tasks}")
+        # print(f"new_tasks: {new_tasks}")
         # Loop over new tasks and assign them to task_dict
         for task in new_tasks:
-            print(task)
-            print(self.current_task)
             self.current_task += 1
             self.task_dict[self.current_task] = list(task)

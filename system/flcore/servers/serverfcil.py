@@ -117,10 +117,6 @@ class FedFCIL(Server):
 
             self.old_unique_task = self.unique_task
             self.unique_task = get_unique_tasks(task_list)
-            # print(f"current_list: {get_unique_tasks(current_list)}")
-            # print(f"  old_unique: {self.old_unique_task}")
-            # print(f"   task_list: {task_list}")
-            # print(f"      unique: {self.unique_task}")
             self.assign_unique_tasks()
             print(f"task_dict: {self.task_dict}")
 
