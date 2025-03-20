@@ -58,9 +58,11 @@ class FedFCIL(Server):
         task_list = []
 
         for task in range(N_TASKS):
-
+            current_list = []
+            sofar_list = []
             print(f"\n================ Current Task: {task} =================")
             if task == 0:
+
                 # update labels info. for the first task
                 available_labels = set()
                 available_labels_current = set()
@@ -68,6 +70,8 @@ class FedFCIL(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
+                    sofar_list.append(u.classes_so_far)
+                    current_list.append(u.current_labels)
                     task_list.append(u.current_labels)
                     # print(f"u.current_labels on client {u.id}: {u.current_labels}")
 
@@ -77,7 +81,6 @@ class FedFCIL(Server):
                     u.available_labels_past = list(available_labels_past)
 
             else:
-                self.current_task = task
 
                 torch.cuda.empty_cache()
                 for i in range(len(self.clients)):
@@ -102,6 +105,8 @@ class FedFCIL(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
+                    sofar_list.append(u.classes_so_far)
+                    current_list.append(u.current_labels)
                     task_list.append(u.current_labels)
                     # print(f"u.current_labels on client {u.id}: {u.current_labels}")
 
@@ -112,8 +117,12 @@ class FedFCIL(Server):
 
             self.old_unique_task = self.unique_task
             self.unique_task = get_unique_tasks(task_list)
+            # print(f"current_list: {get_unique_tasks(current_list)}")
+            # print(f"  old_unique: {self.old_unique_task}")
+            # print(f"   task_list: {task_list}")
+            # print(f"      unique: {self.unique_task}")
             self.assign_unique_tasks()
-            print(self.task_dict)
+            print(f"task_dict: {self.task_dict}")
 
             # for i in range(self.global_rounds):
             #
