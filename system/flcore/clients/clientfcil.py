@@ -9,6 +9,7 @@ import torch.optim as optim
 from torch.nn import functional as F
 from torch.autograd import Variable
 from torchvision import transforms
+import random
 
 
 class clientFCIL(Client):
@@ -129,6 +130,8 @@ class clientFCIL(Client):
             if group != 0:
                 if self.current_class != None:
                     self.last_class = self.current_class
+                # print(f"num classes: {self.num_classes} / task size: {self.task_size} / ")
+                print(f"x: {[x for x in range(self.num_classes - self.task_size, self.num_classes)]}")
                 self.current_class = random.sample([x for x in range(self.num_classes - self.task_size, self.num_classes)], 6)
                 # print(self.current_class)
             else:
@@ -153,8 +156,6 @@ class clientFCIL(Client):
                 self._construct_exemplar_set(images, m)
 
         self.model.train()
-
-        self.train_loader = self._get_train_and_test_dataloader(self.current_class, True)
 
     def efficient_old_class_weight(self, output, label):
         pred = torch.sigmoid(output)

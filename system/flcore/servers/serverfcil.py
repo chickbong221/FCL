@@ -118,100 +118,87 @@ class FedFCIL(Server):
             self.old_unique_task = self.unique_task
             self.unique_task = get_unique_tasks(task_list)
             self.assign_unique_tasks()
-            print(f"task_dict: {self.task_dict}")
+            # print(f"task_dict: {self.task_dict}")
 
-            # for i in range(self.global_rounds):
-            #
-            #     glob_iter = i + self.global_rounds * task
-            #     s_t = time.time()
-            #     """
-            #         L85-L103 FCIL/fl_main.py
-            #         - model_g -> global_model
-            #         - proxy_server -> ?
-            #         -
-            #     """
-            #     pool_grad = []
-            #     model_old = self.model_back()
-            #     task_id = task  # ep_g // args.tasks_global (exchange with this)
-            #     ep_g = (task*self.global_rounds + i)
-            #
-            #     if task_id != old_task_id and old_task_id != -1:
-            #         overall_client = len(old_client_0) + len(old_client_1) + len(new_client)
-            #         new_client = [i for i in range(overall_client, overall_client + self.task_size)]
-            #         old_client_1 = random.sample([i for i in range(overall_client)], int(overall_client * 0.9))
-            #         old_client_0 = [i for i in range(overall_client) if i not in old_client_1]
-            #         num_clients = len(new_client) + len(old_client_1) + len(old_client_0)
-            #         print(old_client_0)
-            #
-            #     print('federated global round: {}, task_id: {}'.format(ep_g, task_id))
-            #     w_local = []
-            #
-            #     self.selected_clients = self.select_clients()
-            #     self.send_models()
-            #
-            #     if i % self.eval_gap == 0:
-            #         print(f"\n-------------Round number: {i}-------------")
-            #         print("\nEvaluate global model")
-            #         self.evaluate(glob_iter=glob_iter)
-            #
-            #     for client in self.selected_clients:
-            #         if self.cil:
-            #             if client.id in old_client_0:
-            #                 client.beforeTrain(task_id, 0)
-            #             else:
-            #                 client.beforeTrain(task_id, 1)
-            #             client.update_new_set()
-            #         print(client.signal)
-            #
-            #         client.train(ep_g, model_old)
-            #         local_model = client.model.state_dict()
-            #         proto_grad = client.proto_grad_sharing()
-            #         print(f"ProtoGrad: {proto_grad}")
-            #         print('*' * 60)
-            #
-            #         w_local.append(local_model)
-            #         if proto_grad != None:
-            #             for grad_i in proto_grad:
-            #                 pool_grad.append(grad_i)
-            #
-            #     # threads = [Thread(target=client.train)
-            #     #            for client in self.selected_clients]
-            #     # [t.start() for t in threads]
-            #     # [t.join() for t in threads]
-            #
-            #     self.receive_models()
-            #     if self.dlg_eval and i % self.dlg_gap == 0:
-            #         self.call_dlg(i)
-            #
-            #     w_g_last = copy.deepcopy(self.global_model)
-            #     self.aggregate_parameters()
-            #     """
-            #         - Aggregate parameters returns self.global_model (w_g_new)
-            #     """
-            #     self.dataloader(pool_grad)
-            #
-            #     self.Budget.append(time.time() - s_t)
-            #     print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
-            #
-            #     if self.auto_break and self.check_done(acc_lss=[self.rs_test_acc], top_cnt=self.top_cnt):
-            #         break
-            #
-            # print("\nBest accuracy.")
-            # # self.print_(max(self.rs_test_acc), max(
-            # #     self.rs_train_acc), min(self.rs_train_loss))
-            # print(max(self.rs_test_acc))
-            # print("\nAverage time cost per round.")
-            # print(sum(self.Budget[1:]) / len(self.Budget[1:]))
-            #
-            # # self.save_results()
-            # # self.save_global_model()
-            #
-            # if self.num_new_clients > 0:
-            #     self.eval_new_clients = True
-            #     self.set_new_clients(clientFCIL)
-            #     print(f"\n-------------Fine tuning round-------------")
-            #     print("\nEvaluate new clients")
-            #     self.evaluate(glob_iter=glob_iter)
+            for i in range(self.global_rounds):
+
+                glob_iter = i + self.global_rounds * task
+                s_t = time.time()
+                """
+                    L85-L103 FCIL/fl_main.py
+                    - model_g -> global_model
+                    - proxy_server -> ?
+                    -
+                """
+                pool_grad = []
+                model_old = self.model_back()
+                task_id = task  # ep_g // args.tasks_global (exchange with this)
+                ep_g = (task*self.global_rounds + i)
+
+                print('federated global round: {}, task_id: {}'.format(ep_g, task_id))
+                w_local = []
+
+                self.selected_clients = self.select_clients()
+                self.send_models()
+
+                if i % self.eval_gap == 0:
+                    print(f"\n-------------Round number: {i}-------------")
+                    print("\nEvaluate global model")
+                    self.evaluate(glob_iter=glob_iter)
+
+                for client in self.selected_clients:
+                    client.update_new_set()
+                    print(client.signal)
+
+                    client.train(ep_g, model_old)
+                    local_model = client.model.state_dict()
+                    proto_grad = client.proto_grad_sharing()
+                    print(f"ProtoGrad: {proto_grad}")
+                    print('*' * 60)
+
+                    w_local.append(local_model)
+                    if proto_grad != None:
+                        for grad_i in proto_grad:
+                            pool_grad.append(grad_i)
+
+                # threads = [Thread(target=client.train)
+                #            for client in self.selected_clients]
+                # [t.start() for t in threads]
+                # [t.join() for t in threads]
+
+                self.receive_models()
+                if self.dlg_eval and i % self.dlg_gap == 0:
+                    self.call_dlg(i)
+
+                w_g_last = copy.deepcopy(self.global_model)
+                self.aggregate_parameters()
+                """
+                    - Aggregate parameters returns self.global_model (w_g_new)
+                """
+                self.dataloader(pool_grad)
+
+                self.Budget.append(time.time() - s_t)
+                print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
+
+                if self.auto_break and self.check_done(acc_lss=[self.rs_test_acc], top_cnt=self.top_cnt):
+                    break
+
+            print("\nBest accuracy.")
+            # self.print_(max(self.rs_test_acc), max(
+            #     self.rs_train_acc), min(self.rs_train_loss))
+            print(max(self.rs_test_acc))
+            print("\nAverage time cost per round.")
+            print(sum(self.Budget[1:]) / len(self.Budget[1:]))
+
+            # self.save_results()
+            # self.save_global_model()
+
+            if self.num_new_clients > 0:
+                self.eval_new_clients = True
+                self.set_new_clients(clientFCIL)
+                print(f"\n-------------Fine tuning round-------------")
+                print("\nEvaluate new clients")
+                self.evaluate(glob_iter=glob_iter)
 
     def model_back(self):
         return [self.best_model_1, self.best_model_2]

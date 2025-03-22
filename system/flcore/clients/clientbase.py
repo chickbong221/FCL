@@ -23,15 +23,17 @@ class Client(object):
         self.save_folder_name = args.save_folder_name
 
         self.num_classes = args.num_classes
+
         self.train_data = train_data
         self.test_data = test_data
+        self.train_loader = None
+        self.test_loader = None
+
         self.train_samples = train_samples
         self.test_samples = test_samples
         self.batch_size = args.batch_size
         self.learning_rate = args.local_learning_rate
         self.local_epochs = args.local_epochs
-        self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True, shuffle=True)
-        self.testloader = DataLoader(self.test_data, self.batch_size, drop_last=True)
 
         # check BatchNorm
         self.has_BatchNorm = False
@@ -79,16 +81,11 @@ class Client(object):
         self.train_data = train
         self.test_data = test
 
+        self.train_loader = DataLoader(self.train_data, self.batch_size, drop_last=True,  shuffle = True)
+        self.test_loader =  DataLoader(self.test_data, self.batch_size, drop_last=True)
+
         self.train_samples = len(self.train_data)
         self.test_samples = len(self.test_data)
-
-        self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True, shuffle=True)
-        self.testloader = DataLoader(self.test_data, self.batch_size, drop_last=True)
-
-        self.testloaderfull = DataLoader(self.test_data, len(self.test_data))
-        self.trainloaderfull = DataLoader(self.train_data, len(self.train_data), shuffle=True)
-        self.iter_trainloader = iter(self.trainloader)
-        self.iter_testloader = iter(self.testloader)
 
         # update classes_past_task
         self.classes_past_task = copy.deepcopy(self.classes_so_far)
