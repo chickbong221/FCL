@@ -60,7 +60,9 @@ class clientWeIT(Client):
     def init_new_task(self):
         self.state['curr_task'] += 1
         self.state['round_cnt'] = 0
+        # this is update the client training model
         self.train.init_learning_rate()
+        # set new training model ? 
         self.update_train_config_by_tid(self.state['curr_task'])
         self.load_data()
 
@@ -125,7 +127,7 @@ class clientWeIT(Client):
 
     def train_one_round(self, client_id, curr_round, selected, global_weights=None, from_kb=None):
         ######################################
-        self.switch_state(client_id) # check if new client or not, update accordingly
+        self.switch_state(client_id) # check if new client or not, update accordingly, init both net and train model 
         ######################################
         self.state['round_cnt'] += 1
         self.state['curr_round'] = curr_round
@@ -136,7 +138,9 @@ class clientWeIT(Client):
                 tid = self.state['curr_task'] + 1
                 self.nets.decomposed_variables['from_kb'][tid][lid].data = torch.tensor(weights)
         
+        # curr_task = -1 means the client is new
         if self.state['curr_task'] < 0:
+            # what is init_new_task doing here?
             self.init_new_task()
             self.set_weights(global_weights) 
         else:
@@ -145,6 +149,7 @@ class clientWeIT(Client):
             is_last = is_last_task and is_last_round
             if is_last_round:
                 if is_last_task:
+                    # check this later
                     if self.train.state['early_stop']:
                         self.train.evaluate()
                     self.stop()
@@ -154,8 +159,10 @@ class clientWeIT(Client):
                     self.state['prev_body_weights'] = self.nets.get_body_weights(self.state['curr_task'])
 
         if selected:
+            # set weight for net model
             self.set_weights(global_weights)
 
+        # using train call to train the client model
         self.train.train_one_round(self.state['curr_round'], self.state['round_cnt'], self.state['curr_task'])
         
         # self.logger.save_current_state(self.state['client_id'], {
