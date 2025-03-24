@@ -32,6 +32,9 @@ class Client(object):
 
         self.train_data = train_data
         self.test_data = test_data
+        
+        self.train_targets = [label for _, label in self.train_data]
+
         self.train_loader = self.load_train_data()
         self.test_loader = self.load_test_data()
 
@@ -80,6 +83,8 @@ class Client(object):
         # update dataset:
         self.train_data = train
         self.test_data = test
+
+        self.train_targets = [label for _, label in self.train_data]
 
         self.train_loader = DataLoader(self.train_data, self.batch_size, drop_last=True,  shuffle = True)
         self.test_loader =  DataLoader(self.test_data, self.batch_size, drop_last=True)

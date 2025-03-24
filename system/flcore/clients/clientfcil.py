@@ -148,7 +148,7 @@ class clientFCIL(Client):
             m = int(self.memory_size / self.learned_numclass)
             self._reduce_exemplar_sets(m)
             for i in self.last_class:
-                images = self.train_dataset.get_image_class(i)
+                images = self.train_data[np.array(self.train_targets) == i]
                 self._construct_exemplar_set(images, m)
 
         self.model.train()
@@ -208,7 +208,7 @@ class clientFCIL(Client):
                                              transforms.ToTensor(),
                                             transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
         for i in self.current_labels:
-            images = self.train_dataset.get_image_class(i)
+            images = self.train_data[np.array(self.train_targets) == i]
             class_mean, feature_extractor_output = self.compute_class_mean(images, self.transform)
             dis = class_mean - feature_extractor_output
             dis = np.linalg.norm(dis, axis=1)
