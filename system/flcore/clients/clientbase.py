@@ -106,7 +106,14 @@ class Client(object):
         # update test data for CL: (test per task)
         self.test_data_per_task.append(self.test_data)
 
-        return
+    def assign_task_id(self, task_dict):
+        if not isinstance(task_dict, dict):
+            raise ValueError("task_dict must be a dictionary")
+
+        label_key = tuple(sorted(self.current_labels)) if isinstance(self.current_labels,
+                                                                     (set, list)) else self.current_labels
+
+        return task_dict.get(label_key, -1)  # Returns -1 if labels are not in task_dict
 
     def load_train_data(self, batch_size=None):
         if batch_size == None:

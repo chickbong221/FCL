@@ -126,21 +126,14 @@ class clientFCIL(Client):
     def beforeTrain(self, task_id_new, group):
         if task_id_new != self.task_id_old:
             self.task_id_old = task_id_new
-            self.num_classes = self.task_size * (task_id_new + 1)
             if group != 0:
                 if self.current_class != None:
-                    self.last_class = self.current_class
-                # print(f"num classes: {self.num_classes} / task size: {self.task_size} / ")
-                print(f"x: {[x for x in range(self.num_classes - self.task_size, self.num_classes)]}")
-                self.current_class = random.sample([x for x in range(self.num_classes - self.task_size, self.num_classes)], 6)
+                    self.last_class = self.current_labels
                 # print(self.current_class)
             else:
                 self.last_class = None
 
-        self.train_loader = self._get_train_and_test_dataloader(self.current_class, False)
-
     def update_new_set(self):
-        self.model = model_to_device(self.model, False, self.device)
         self.model.eval()
         self.signal = False
         self.signal = self.entropy_signal(self.train_loader)

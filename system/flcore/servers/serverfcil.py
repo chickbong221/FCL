@@ -79,9 +79,7 @@ class FedFCIL(Server):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
-
             else:
-
                 torch.cuda.empty_cache()
                 for i in range(len(self.clients)):
 
@@ -118,7 +116,9 @@ class FedFCIL(Server):
             self.old_unique_task = self.unique_task
             self.unique_task = get_unique_tasks(task_list)
             self.assign_unique_tasks()
-            # print(f"task_dict: {self.task_dict}")
+            print(f"task_dict: {self.task_dict}")
+            for u in self.clients:
+                u.assign_task_id(self.task_dict)
 
             for i in range(self.global_rounds):
 
@@ -147,6 +147,10 @@ class FedFCIL(Server):
                     self.evaluate(glob_iter=glob_iter)
 
                 for client in self.selected_clients:
+                    if client.id in old_client_0:
+                        client.beforeTrain(task_id, 0)
+                    else:
+                        client.beforeTrain(task_id, 1)
                     client.update_new_set()
                     print(client.signal)
 
