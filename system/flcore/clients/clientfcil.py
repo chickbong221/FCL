@@ -36,6 +36,11 @@ class clientFCIL(Client):
 
         self.old_model = None
 
+        self.transform = transforms.Compose([#transforms.Resize(img_size),
+                                             transforms.ToTensor(),
+                                             transforms.Normalize((0.5071, 0.4867, 0.4408),
+                                                                 (0.2675, 0.2565, 0.2761))])
+
 
     def train(self, ep_g, model_old):
         self.train_loader = self.load_train_data()
@@ -199,7 +204,9 @@ class clientFCIL(Client):
         criterion = nn.CrossEntropyLoss().to(self.device)
         proto = []
         proto_grad = []
-
+        self.transform = transforms.Compose([#transforms.Resize(img_size),
+                                             transforms.ToTensor(),
+                                            transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
         for i in self.current_labels:
             images = self.train_dataset.get_image_class(i)
             class_mean, feature_extractor_output = self.compute_class_mean(images, self.transform)
@@ -271,3 +278,42 @@ class clientFCIL(Client):
         self.model.train()
 
         return res
+
+    def _reduce_exemplar_sets(self, m):
+        for index in range(len(self.exemplar_set)):
+            self.exemplar_set[index] = self.exemplar_set[index][:m]
+
+    def _construct_exemplar_set(self, images, m):
+        class_mean, feature_extractor_output = self.compute_class_mean(images, self.transform)
+        exemplar = []
+        now_class_mean = np.zeros((1, 512))
+
+        for i in range(m):
+            x = class_mean - (now_class_mean + feature_extractor_output) / (i + 1)
+            x = np.linalg.norm(x, axis=1)
+            index = np.argmin(x)
+            now_class_mean += feature_extractor_output[index]
+            exemplar.append(images[index])
+
+        self.exemplar_set.append(exemplar)
+
+    def compute_exemplar_class_mean(self):
+        self.class_mean_set = []
+        for index in range(len(self.exemplar_set)):
+            exemplar=self.exemplar_set[index]
+            class_mean, _ = self.compute_class_mean(exemplar, self.transform)
+            class_mean_,_=self.compute_class_mean(exemplar,self.classify_transform)
+            class_mean=(class_mean/np.linalg.norm(class_mean)+class_mean_/np.linalg.norm(class_mean_))/2
+            self.class_mean_set.append(class_mean)
+
+    def Image_transform(self, images, transform):
+        data = transform(Image.fromarray(images[0])).unsqueeze(0)
+        for index in range(1, len(images)):
+            data = torch.cat((data, self.transform(Image.fromarray(images[index])).unsqueeze(0)), dim=0)
+        return data
+
+    def compute_class_mean(self, images, transform):
+        x = self.Image_transform(images, transform).cuda(self.device)
+        feature_extractor_output = F.normalize(self.model.feature_extractor(x).detach()).cpu().numpy()
+        class_mean = np.mean(feature_extractor_output, axis=0)
+        return class_mean, feature_extractor_output
