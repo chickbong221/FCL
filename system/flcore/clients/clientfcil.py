@@ -30,8 +30,6 @@ class clientFCIL(Client):
         self.memory_size = args.memory_size
         self.task_size = 2      # Check it out later
 
-        self.train_loader = None
-        self.current_class = None
         self.last_class = None
         self.task_id_old = -1
         self.last_entropy = 0
@@ -127,9 +125,9 @@ class clientFCIL(Client):
         if task_id_new != self.task_id_old:
             self.task_id_old = task_id_new
             if group != 0:
-                if self.current_class != None:
+                if self.current_labels != None:
                     self.last_class = self.current_labels
-                # print(self.current_class)
+                # print(self.current_labels)
             else:
                 self.last_class = None
 
@@ -202,7 +200,7 @@ class clientFCIL(Client):
         proto = []
         proto_grad = []
 
-        for i in self.current_class:
+        for i in self.current_labels:
             images = self.train_dataset.get_image_class(i)
             class_mean, feature_extractor_output = self.compute_class_mean(images, self.transform)
             dis = class_mean - feature_extractor_output
@@ -213,7 +211,7 @@ class clientFCIL(Client):
         for i in range(len(proto)):
             self.model.eval()
             data = proto[i]
-            label = self.current_class[i]
+            label = self.current_labels[i]
             data = Image.fromarray(data)
             label_np = label
 
@@ -248,7 +246,7 @@ class clientFCIL(Client):
         start_ent = True
         res = False
 
-        for step, (indexs, imgs, labels) in enumerate(loader):
+        for step, (imgs, labels) in enumerate(loader):
             imgs, labels = imgs.cuda(self.device), labels.cuda(self.device)
             with torch.no_grad():
                 outputs = self.model(imgs)

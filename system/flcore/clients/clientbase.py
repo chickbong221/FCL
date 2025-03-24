@@ -24,16 +24,16 @@ class Client(object):
 
         self.num_classes = args.num_classes
 
-        self.train_data = train_data
-        self.test_data = test_data
-        self.train_loader = None
-        self.test_loader = None
-
         self.train_samples = train_samples
         self.test_samples = test_samples
         self.batch_size = args.batch_size
         self.learning_rate = args.local_learning_rate
         self.local_epochs = args.local_epochs
+
+        self.train_data = train_data
+        self.test_data = test_data
+        self.train_loader = self.load_train_data()
+        self.test_loader = self.load_test_data()
 
         # check BatchNorm
         self.has_BatchNorm = False
