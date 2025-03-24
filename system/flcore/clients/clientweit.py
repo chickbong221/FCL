@@ -125,11 +125,12 @@ class clientWeIT(Client):
 
     def train_one_round(self, client_id, curr_round, selected, global_weights=None, from_kb=None):
         ######################################
-        self.switch_state(client_id)
+        self.switch_state(client_id) # check if new client or not, update accordingly
         ######################################
         self.state['round_cnt'] += 1
         self.state['curr_round'] = curr_round
         
+        # No need this call
         if from_kb is not None:
             for lid, weights in enumerate(from_kb):
                 tid = self.state['curr_task'] + 1

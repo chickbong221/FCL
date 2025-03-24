@@ -75,7 +75,7 @@ class FedWeIT(Server):
         if self.args.dataset == 'IMAGENET1k':
             N_TASKS = 2
         else:
-            N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
+            N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x']) # len(train_data) of client 0 with attibute 'x' ?
         print(str(N_TASKS) + " tasks are available")
 
         for task in range(N_TASKS):
@@ -126,12 +126,14 @@ class FedWeIT(Server):
             for i in range(self.global_rounds):
                 
                 print("Change glob round")
-                glob_iter = i + self.global_rounds * task
+                glob_iter = i + self.global_rounds * task # run follow task id from 0 -> N_TASKS
                 self.updates = []
                 self.curr_round = glob_iter+1
-                self.is_last_round = i==0
+
+                self.is_last_round = i==0 # ?? last round 
                 if self.is_last_round:
                     self.client_adapts = []
+
                 s_t = time.time()
                 self.selected_clients = self.select_clients()
                 self.send_models()
@@ -142,9 +144,12 @@ class FedWeIT(Server):
                     self.evaluate(glob_iter=glob_iter)
 
                 for client in self.selected_clients:
+                    # train one round
+                    # Identify the input and output form of this call 
                     update = client.train_one_round(client.id, glob_iter, True, self.get_weights(), self.get_adapts(glob_iter=glob_iter))
                     if not update == None:
                         self.updates.append(update)
+                        # Not consider this case
                         if self.is_last_round:
                             self.client_adapts.append(client.get_adaptives())
 
