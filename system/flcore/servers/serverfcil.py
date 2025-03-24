@@ -1,5 +1,8 @@
 import time
 import torch
+import torch.nn as nn
+
+import numpy as np
 import random
 import copy
 from flcore.clients.clientfcil import clientFCIL
@@ -9,6 +12,7 @@ from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagene
 from utils.data_utils import get_unique_tasks
 from flcore.trainmodel.models import LeNet2, weights_init
 from flcore.utils.fcil_utils import Proxy_Data
+from torchvision import transforms
 
 
 class FedFCIL(Server):
@@ -116,7 +120,7 @@ class FedFCIL(Server):
             self.old_unique_task = self.unique_task
             self.unique_task = get_unique_tasks(task_list)
             self.assign_unique_tasks()
-            print(f"task_dict: {self.task_dict}")
+            # print(f"task_dict: {self.task_dict}")
             for u in self.clients:
                 u.assign_task_id(self.task_dict)
 
@@ -152,13 +156,11 @@ class FedFCIL(Server):
                     else:
                         client.beforeTrain(task_id, 1)
                     client.update_new_set()
-                    print(client.signal)
-
                     client.train(ep_g, model_old)
                     local_model = client.model.state_dict()
                     proto_grad = client.proto_grad_sharing()
-                    print(f"ProtoGrad: {proto_grad}")
-                    print('*' * 60)
+                    # print(f"ProtoGrad: {proto_grad}")
+                    # print('*' * 60)
 
                     w_local.append(local_model)
                     if proto_grad != None:
@@ -208,7 +210,7 @@ class FedFCIL(Server):
         return [self.best_model_1, self.best_model_2]
 
     def dataloader(self, pool_grad):
-        print(self.pool_grad)
+
         self.pool_grad = pool_grad
         if len(pool_grad) != 0:
             self.reconstruction()
@@ -250,6 +252,7 @@ class FedFCIL(Server):
         return pool_label
 
     def reconstruction(self):
+        Iteration = 250
         self.new_set, self.new_set_label = [], []
 
         tt = transforms.Compose([transforms.ToTensor()])
@@ -257,12 +260,13 @@ class FedFCIL(Server):
         pool_label = self.gradient2label()
         pool_label = np.array(pool_label)
         # print(pool_label)
-        class_ratio = np.zeros((1, 100))
+        class_ratio = np.zeros((1, self.num_classes))
 
         for i in pool_label:
             class_ratio[0, i] += 1
 
-        for label_i in range(100):
+        self.num_image = 20
+        for label_i in range(self.num_classes):
             if class_ratio[0, label_i] > 0:
                 num_augmentation = self.num_image
                 augmentation = []
@@ -278,10 +282,9 @@ class FedFCIL(Server):
                     optimizer = torch.optim.LBFGS([dummy_data, ], lr=0.1)
                     criterion = nn.CrossEntropyLoss().to(self.device)
 
-                    recon_model = copy.deepcopy(self.encode_model)
-                    recon_model = model_to_device(recon_model, False, self.device)
+                    recon_model = copy.deepcopy(self.encode_model).to(self.device)
 
-                    for iters in range(self.Iteration):
+                    for iters in range(Iteration):
                         def closure():
                             optimizer.zero_grad()
                             pred = recon_model(dummy_data)
@@ -293,15 +296,15 @@ class FedFCIL(Server):
                             for gx, gy in zip(dummy_dy_dx, grad_truth_temp):
                                 grad_diff += ((gx - gy) ** 2).sum()
                             grad_diff.backward()
-                            return grad_diff
+                            return grad_diff.to(self.device)
 
                         optimizer.step(closure)
                         current_loss = closure().item()
 
-                        if iters == self.Iteration - 1:
+                        if iters == Iteration - 1:
                             print(current_loss)
 
-                        if iters >= self.Iteration - self.num_image:
+                        if iters >= Iteration - self.num_image:
                             dummy_data_temp = np.asarray(tp(dummy_data.clone().squeeze(0).cpu()))
                             augmentation.append(dummy_data_temp)
 

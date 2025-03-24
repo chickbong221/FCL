@@ -3,8 +3,11 @@ import torch
 import torch.nn as nn
 import numpy as np
 import time
+
 from flcore.clients.clientbase import Client
 from flcore.utils.fcil_utils import entropy, get_one_hot
+from flcore.trainmodel.models import LeNet2, weights_init
+
 import torch.optim as optim
 from torch.nn import functional as F
 from torch.autograd import Variable
@@ -37,6 +40,8 @@ class clientFCIL(Client):
         self.last_entropy = 0
 
         self.old_model = None
+        self.encode_model = LeNet2(num_classes=1000).to(self.device)
+        self.encode_model.apply(weights_init)
 
         self.transform = transforms.Compose([#transforms.Resize(img_size),
                                              transforms.ToTensor(),
@@ -57,7 +62,7 @@ class clientFCIL(Client):
 
         opt = optim.SGD(self.model.parameters(), lr=self.learning_rate, weight_decay=0.00001)
 
-        print(model_old)
+        # print(model_old)
         if model_old[1] != None:
             if self.signal:
                 self.old_model = model_old[1]
@@ -134,7 +139,7 @@ class clientFCIL(Client):
             if group != 0:
                 if self.current_labels != None:
                     self.last_class = self.current_labels
-                # print(self.current_labels)
+                # print(self.current_labels)outputs
             else:
                 self.last_class = None
 
@@ -227,10 +232,11 @@ class clientFCIL(Client):
             label_np = label
 
             # data, label = tt(data), torch.Tensor([label]).long()
-            data, label = torch.Tensor([data]), torch.Tensor([label]).long()
+            data, label = torch.Tensor(data), torch.Tensor([label]).long()
 
             data, label = data.cuda(self.device), label.cuda(self.device)
             data = data.unsqueeze(0).requires_grad_(True)
+
             target = get_one_hot(label, self.num_classes, self.device)
 
             opt = optim.SGD([data, ], lr=self.learning_rate / 10, weight_decay=0.00001)
@@ -245,6 +251,7 @@ class clientFCIL(Client):
 
             data = data.detach().clone().to(self.device).requires_grad_(False)
             outputs = self.encode_model(data)
+
             loss_cls = criterion(outputs, label)
             dy_dx = torch.autograd.grad(loss_cls, self.encode_model.parameters())
             original_dy_dx = list((_.detach().clone() for _ in dy_dx))

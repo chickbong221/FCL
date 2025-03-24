@@ -86,8 +86,6 @@ class Server(object):
             else:
                 id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=0)
 
-            print(f"train_data: {train_data}")
-
             # count total samples (accumulative)
             self.total_train_samples +=len(train_data)
             self.total_test_samples += len(test_data)
