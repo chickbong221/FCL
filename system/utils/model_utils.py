@@ -24,6 +24,7 @@ def read_client_data_FCL_imagenet1k(index, task=0, classes_per_task=2, count_lab
     x_train, y_train, x_test, y_test = load_imagenet(class_order[task * classes_per_task:(task + 1) * classes_per_task])
     x_train, x_test = x_train.type(torch.FloatTensor), x_test.type(torch.FloatTensor)
     y_train, y_test = torch.Tensor(y_train.type(torch.long)), torch.Tensor(y_test.type(torch.long))
+
     train_data = Transform_dataset(x_train, y_train)
     test_data = Transform_dataset(x_test, y_test)
 
@@ -72,10 +73,12 @@ def read_client_data_FCL(index, data, dataset='', count_labels=False, task=0):
                                               transforms.RandomHorizontalFlip(p=0.5),
                                               transforms.ColorJitter(brightness=0.24705882352941178),
                                               transforms.ToTensor(),
-                                              transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
+                                              transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))
+                                              ])
         test_transform = transforms.Compose([transforms.Resize(img_size),
                                              transforms.ToTensor(),
-                                             transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
+                                             transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))
+                                             ])
 
         train_data = Transform_dataset(X_train, y_train, train_transform)
         test_data = Transform_dataset(X_test, y_test, test_transform)

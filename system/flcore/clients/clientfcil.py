@@ -9,6 +9,8 @@ import torch.optim as optim
 from torch.nn import functional as F
 from torch.autograd import Variable
 from torchvision import transforms
+
+from PIL import Image
 import random
 
 
@@ -148,7 +150,8 @@ class clientFCIL(Client):
             m = int(self.memory_size / self.learned_numclass)
             self._reduce_exemplar_sets(m)
             for i in self.last_class:
-                images = self.train_data[np.array(self.train_targets) == i]
+                mask = np.array(self.train_targets) == i
+                images = np.array(self.train_source)[mask]
                 self._construct_exemplar_set(images, m)
 
         self.model.train()
@@ -208,7 +211,8 @@ class clientFCIL(Client):
                                              transforms.ToTensor(),
                                             transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
         for i in self.current_labels:
-            images = self.train_data[np.array(self.train_targets) == i]
+            mask = np.array(self.train_targets) == i
+            images = np.array(self.train_source)[mask]
             class_mean, feature_extractor_output = self.compute_class_mean(images, self.transform)
             dis = class_mean - feature_extractor_output
             dis = np.linalg.norm(dis, axis=1)
@@ -219,17 +223,18 @@ class clientFCIL(Client):
             self.model.eval()
             data = proto[i]
             label = self.current_labels[i]
-            data = Image.fromarray(data)
+            # data = Image.fromarray(data)
             label_np = label
 
-            data, label = tt(data), torch.Tensor([label]).long()
+            # data, label = tt(data), torch.Tensor([label]).long()
+            data, label = torch.Tensor([data]), torch.Tensor([label]).long()
+
             data, label = data.cuda(self.device), label.cuda(self.device)
             data = data.unsqueeze(0).requires_grad_(True)
-            target = get_one_hot(label, self.numclass, self.device)
+            target = get_one_hot(label, self.num_classes, self.device)
 
             opt = optim.SGD([data, ], lr=self.learning_rate / 10, weight_decay=0.00001)
             proto_model = copy.deepcopy(self.model)
-            proto_model = model_to_device(proto_model, False, self.device)
 
             for ep in range(iters):
                 outputs = proto_model(data)
@@ -238,7 +243,6 @@ class clientFCIL(Client):
                 loss_cls.backward()
                 opt.step()
 
-            self.encode_model = model_to_device(self.encode_model, False, self.device)
             data = data.detach().clone().to(self.device).requires_grad_(False)
             outputs = self.encode_model(data)
             loss_cls = criterion(outputs, label)
@@ -269,7 +273,6 @@ class clientFCIL(Client):
                 all_label = torch.cat((all_label, labels.long().cpu()), 0)
 
         overall_avg = torch.mean(all_ent).item()
-        print(overall_avg)
         if overall_avg - self.last_entropy > 1.2:
             res = True
 
@@ -307,13 +310,21 @@ class clientFCIL(Client):
             self.class_mean_set.append(class_mean)
 
     def Image_transform(self, images, transform):
-        data = transform(Image.fromarray(images[0])).unsqueeze(0)
-        for index in range(1, len(images)):
-            data = torch.cat((data, self.transform(Image.fromarray(images[index])).unsqueeze(0)), dim=0)
+        """
+        Later, this part should apply transform to images
+
+        Args:
+            images:
+            transform:
+
+        Returns:
+
+        """
+        data = torch.from_numpy(images)
         return data
 
     def compute_class_mean(self, images, transform):
         x = self.Image_transform(images, transform).cuda(self.device)
-        feature_extractor_output = F.normalize(self.model.feature_extractor(x).detach()).cpu().numpy()
+        feature_extractor_output = F.normalize(self.model.base(x).detach()).cpu().numpy()
         class_mean = np.mean(feature_extractor_output, axis=0)
         return class_mean, feature_extractor_output

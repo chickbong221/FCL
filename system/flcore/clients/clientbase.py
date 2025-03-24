@@ -32,7 +32,8 @@ class Client(object):
 
         self.train_data = train_data
         self.test_data = test_data
-        
+
+        self.train_source = [image for image, _ in self.train_data]
         self.train_targets = [label for _, label in self.train_data]
 
         self.train_loader = self.load_train_data()
