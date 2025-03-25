@@ -10,6 +10,7 @@ from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagene
 class FedPrecise(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
+        self.classifier_head_list = ['classifier.fc_classifier', 'classifier.fc2']
         
         # select slow clients
         self.set_slow_clients()
@@ -160,3 +161,32 @@ class FedPrecise(Server):
             # replace all!
             for server_param, client_param in zip(self.global_model.parameters(), client.model.parameters()):
                 server_param.data = server_param.data + client_param.data.clone() * ratio
+
+    def set_clients(self, clientObj):
+        total_clients = 10
+        for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
+            
+            if self.args.dataset == 'IMAGENET1k':
+                id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+            else:
+                id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=0)
+            
+            # count total samples (accumulative)
+            self.total_train_samples += len(train_data)
+            self.total_test_samples += len(test_data)
+            id = i
+
+            client = clientObj(self.args, 
+                        id=i,
+                        train_data=train_data,
+                        test_data=test_data,
+                        classifier_head_list = self.classifier_head_list,
+                        train_slow=train_slow, 
+                        send_slow=send_slow)
+
+            self.clients.append(client)
+
+            # update classes so far & current labels
+            client.classes_so_far.extend(label_info['labels'])
+            client.current_labels.extend(label_info['labels'])
+            client.task_dict[0] = label_info['labels']

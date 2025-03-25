@@ -1,9 +1,12 @@
 import copy
 from torch.utils.data import DataLoader
 import torch
+import torch.nn as nn
 import glog as logger
 import numpy as np
 import wandb
+from sklearn.preprocessing import label_binarize
+from sklearn import metrics
 
 from flcore.clients.clientbase import Client
 from utils.precise_utils import str_in_list, Meter
@@ -18,6 +21,9 @@ class ClientPreciseFCL(Client):
         self.k_loss_flow = args.k_loss_flow
         self.classifier_head_list = classifier_head_list
         self.use_lastflow_x = args.use_lastflow_x
+        self.classifier_global_mode = args.classifier_global_mode
+        self.beta = args.beta
+        self.init_loss_fn()
     
     def train(
         self,
@@ -105,3 +111,80 @@ class ClientPreciseFCL(Client):
         return {'acc': acc, 'c_loss': result_dict['c_loss'], 'kd_loss': result_dict['kd_loss'], 'flow_prob_mean': result_dict['flow_prob_mean'],
                  'flow_loss': result_dict['flow_loss'], 'flow_loss_last': result_dict['flow_loss_last'], 'c_loss_flow': result_dict['c_loss_flow'],
                    'kd_loss_flow': result_dict['kd_loss_flow']}
+
+    def test_metrics(self):
+        testloader = self.load_test_data()
+        # self.model = self.load_model('model')
+        # self.model.to(self.device)
+
+        self.model.eval()
+
+        test_acc = 0
+        test_num = 0
+        y_prob = []
+        y_true = []
+        
+        with torch.no_grad():
+            for x, y in testloader:
+                if type(x) == type([]):
+                    x[0] = x[0].to(self.device)
+                else:
+                    x = x.to(self.device)
+                y = y.to(self.device)
+
+                output, _, _ = self.model.classifier(x)
+
+                test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
+                test_num += y.shape[0]
+
+                y_prob.append(output.detach().cpu().numpy())
+                nc = self.num_classes
+                if self.num_classes == 2:
+                    nc += 1
+                lb = label_binarize(y.detach().cpu().numpy(), classes=np.arange(nc))
+                if self.num_classes == 2:
+                    lb = lb[:, :2]
+                y_true.append(lb)
+
+        # self.model.cpu()
+        # self.save_model(self.model, 'model')
+
+        y_prob = np.concatenate(y_prob, axis=0)
+        y_true = np.concatenate(y_true, axis=0)
+
+        auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
+        
+        return test_acc, test_num, auc
+
+    def train_metrics(self):
+        trainloader = self.load_train_data()
+        # self.model = self.load_model('model')
+        # self.model.to(self.device)
+        self.model.eval()
+
+        train_num = 0
+        losses = 0
+        with torch.no_grad():
+            for x, y in trainloader:
+                if type(x) == type([]):
+                    x[0] = x[0].to(self.device)
+                else:
+                    x = x.to(self.device)
+                y = y.to(self.device)
+
+                output, _, _ = self.model.classifier(x)
+                loss = self.model.classify_criterion(torch.log(output+1e-30), y)
+                
+                train_num += y.shape[0]
+                losses += loss.item() * y.shape[0]
+
+        # self.model.cpu()
+        # self.save_model(self.model, 'model')
+
+        return losses, train_num
+    
+    def init_loss_fn(self):
+        self.loss=nn.NLLLoss()
+        self.dist_loss = nn.MSELoss()
+        self.ensemble_loss=nn.KLDivLoss(reduction="batchmean")
+        self.ce_loss = nn.CrossEntropyLoss()

@@ -73,17 +73,6 @@ class Client(object):
         self.if_last_copy = False
         self.args = args
 
-        if self.args.algorithm == "PreciseFCL":
-            self.classifier_global_mode = args.classifier_global_mode
-            self.beta = args.beta
-            self.init_loss_fn()
-
-    def init_loss_fn(self):
-        self.loss=nn.NLLLoss()
-        self.dist_loss = nn.MSELoss()
-        self.ensemble_loss=nn.KLDivLoss(reduction="batchmean")
-        self.ce_loss = nn.CrossEntropyLoss()
-
     def next_task(self, train, test, label_info = None, if_label = True):
         
         if self.args.algorithm != "PreciseFCL" and self.learning_rate_decay:
@@ -173,10 +162,7 @@ class Client(object):
                     x = x.to(self.device)
                 y = y.to(self.device)
 
-                if self.args.algorithm == "PreciseFCL":
-                    output, _, _ = self.model.classifier(x)
-                else:
-                    output = self.model(x)
+                output = self.model(x)
 
                 test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
                 test_num += y.shape[0]
@@ -216,12 +202,8 @@ class Client(object):
                     x = x.to(self.device)
                 y = y.to(self.device)
 
-                if self.args.algorithm == "PreciseFCL":
-                    output, _, _ = self.model.classifier(x)
-                    loss = self.model.classify_criterion(torch.log(output+1e-30), y)
-                else:
-                    output = self.model(x)
-                    loss = self.loss(output, y)
+                output = self.model(x)
+                loss = self.loss(output, y)
                 
                 train_num += y.shape[0]
                 losses += loss.item() * y.shape[0]

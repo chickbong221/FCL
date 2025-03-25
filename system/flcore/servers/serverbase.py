@@ -73,9 +73,6 @@ class Server(object):
         self.total_train_samples = 0
         self.total_test_samples = 0
 
-        if self.args.algorithm == "PreciseFCL":
-            self.classifier_head_list = ['classifier.fc_classifier', 'classifier.fc2']
-
     def set_clients(self, clientObj):
         total_clients = 10
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
@@ -90,21 +87,12 @@ class Server(object):
             self.total_test_samples += len(test_data)
             id = i
 
-            if self.args.algorithm == "PreciseFCL":
-                client = clientObj(self.args, 
-                            id=i,
-                            train_data=train_data,
-                            test_data=test_data,
-                            classifier_head_list = self.classifier_head_list,
-                            train_slow=train_slow, 
-                            send_slow=send_slow)
-            else:
-                client = clientObj(self.args, 
-                            id=i,
-                            train_data=train_data,
-                            test_data=test_data,
-                            train_slow=train_slow,
-                            send_slow=send_slow)
+            client = clientObj(self.args, 
+                        id=i,
+                        train_data=train_data,
+                        test_data=test_data,
+                        train_slow=train_slow,
+                        send_slow=send_slow)
             self.clients.append(client)
 
             # update classes so far & current labels
