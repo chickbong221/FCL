@@ -1,34 +1,33 @@
-import time
+import glog as logger
 import torch
-from flcore.clients.clientavg import clientAVG
+import time
+import numpy as np
+
+from flcore.clients.clientprecise import ClientPreciseFCL
 from flcore.servers.serverbase import Server
-from threading import Thread
 from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
 
-
-class FedAvg(Server):
+class FedPrecise(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
-
+        
         # select slow clients
         self.set_slow_clients()
-        self.set_clients(clientAVG)
+        self.set_clients(ClientPreciseFCL)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
 
-        # self.load_model()
         self.Budget = []
-
-
+    
     def train(self):
-
+        
         if self.args.dataset == 'IMAGENET1k':
             N_TASKS = 500
         else:
             N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
         print(str(N_TASKS) + " tasks are available")
-
+        
         for task in range(N_TASKS):
 
             print(f"\n================ Current Task: {task} =================")
@@ -73,13 +72,11 @@ class FedAvg(Server):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
-
-                    # print(available_labels)
-
+            
             # ============ train ==============
 
             for i in range(self.global_rounds):
-
+                
                 glob_iter = i + self.global_rounds * task
                 s_t = time.time()
                 self.selected_clients = self.select_clients()
@@ -90,13 +87,12 @@ class FedAvg(Server):
                     print("\nEvaluate global model")
                     self.evaluate(glob_iter=glob_iter)
 
+                global_classifier = self.global_model.classifier
+                global_classifier.eval()
+                
                 for client in self.selected_clients:
-                    client.train()
-
-                # threads = [Thread(target=client.train)
-                #            for client in self.selected_clients]
-                # [t.start() for t in threads]
-                # [t.join() for t in threads]
+                    verbose = False
+                    client.train(glob_iter, global_classifier, verbose=verbose)
 
                 self.receive_models()
                 if self.dlg_eval and i%self.dlg_gap == 0:
@@ -108,18 +104,59 @@ class FedAvg(Server):
 
                 if self.auto_break and self.check_done(acc_lss=[self.rs_test_acc], top_cnt=self.top_cnt):
                     break
-
+                    
             print("\nBest accuracy.")
             print(max(self.rs_test_acc))
             print("\nAverage time cost per round.")
             print(sum(self.Budget[1:])/len(self.Budget[1:]))
 
             self.save_results()
-            # self.save_global_model()
 
-            if self.num_new_clients > 0:
-                self.eval_new_clients = True
-                self.set_new_clients(clientAVG)
-                print(f"\n-------------Fine tuning round-------------")
-                print("\nEvaluate new clients")
-                self.evaluate(glob_iter=glob_iter)
+    def aggregate_parameters(self, class_partial=False):
+        assert (self.selected_clients is not None and len(self.selected_clients) > 0)
+        
+        param_dict = {}
+        for name, param in self.global_model.named_parameters():
+            param_dict[name] = torch.zeros_like(param.data)
+        
+        total_train = 0
+        for client in self.selected_clients:
+            total_train += len(client.train_data) # length of the train data for weighted importance
+        
+        param_weight_sum = {}
+        for client in self.selected_clients:
+            for name, param in client.model.named_parameters():
+                if ('fc_classifier' in name and class_partial):
+                    class_available = torch.Tensor(client.classes_so_far).long()
+                    param_dict[name][class_available] += param.data[class_available] * len(client.train_data) / total_train
+                    
+                    add_weight = torch.zeros([param.data.shape[0]]).cuda()
+                    add_weight[class_available] = len(client.train_data) / total_train
+                else:
+                    param_dict[name] += param.data * len(client.train_data) / total_train
+                    add_weight = len(client.train_data) / total_train
+                
+                if name not in param_weight_sum.keys():
+                    param_weight_sum[name] = add_weight
+                else:
+                    param_weight_sum[name] += add_weight
+                
+        for name, param in self.global_model.named_parameters():
+
+            if 'fc_classifier' in name and class_partial:
+                valid_class = (param_weight_sum[name]>0)
+                weight_sum = param_weight_sum[name][valid_class]
+                if 'weight' in name:
+                    weight_sum = weight_sum.view(-1, 1)
+                param.data[valid_class] = param_dict[name][valid_class]/weight_sum
+            else:
+                param.data = param_dict[name]/param_weight_sum[name]
+
+    def add_parameters(self, client, ratio, partial=False):
+        if partial:
+            for server_param, client_param in zip(self.global_model.get_shared_parameters(), client.model.get_shared_parameters()):
+                server_param.data = server_param.data + client_param.data.clone() * ratio
+        else:
+            # replace all!
+            for server_param, client_param in zip(self.global_model.parameters(), client.model.parameters()):
+                server_param.data = server_param.data + client_param.data.clone() * ratio

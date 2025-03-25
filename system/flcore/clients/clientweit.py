@@ -11,8 +11,8 @@ from sklearn.preprocessing import label_binarize
 from sklearn import metrics
 
 class clientWeIT(Client):
-    def __init__(self, args, id, train_data, test_data, train_samples, test_samples, initial_weights, **kwargs):
-        super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
+    def __init__(self, args, id, train_data, test_data, initial_weights, **kwargs):
+        super().__init__(args, id, train_data, test_data, **kwargs)
 
         self.args = args
         self.device = self.args.device

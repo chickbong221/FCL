@@ -12,7 +12,7 @@ class Client(object):
     Base class for clients in federated learning.
     """
 
-    def __init__(self, args, id, train_data, test_data, train_samples, test_samples, **kwargs):
+    def __init__(self, args, id, train_data, test_data, **kwargs):
         torch.manual_seed(0)
         self.model = copy.deepcopy(args.model)
         self.args = args
@@ -25,8 +25,6 @@ class Client(object):
         self.num_classes = args.num_classes
         self.train_data = train_data
         self.test_data = test_data
-        self.train_samples = train_samples
-        self.test_samples = test_samples
         self.batch_size = args.batch_size
         self.learning_rate = args.local_learning_rate
         self.local_epochs = args.local_epochs
@@ -46,17 +44,19 @@ class Client(object):
         self.send_time_cost = {'num_rounds': 0, 'total_cost': 0.0}
 
         self.loss = nn.CrossEntropyLoss()
-        if args.optimizer == "sgd":
-            self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
-        elif args.optimizer == "adam":
-            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
-        else:
-            raise ValueError(f"Unsupported optimizer: {args.optimizer}.")
-        self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
-            optimizer=self.optimizer, 
-            gamma=args.learning_rate_decay_gamma
-        )
-        self.learning_rate_decay = args.learning_rate_decay
+
+        if args.algorithm != "PreciseFCL":
+            if args.optimizer == "sgd":
+                self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
+            elif args.optimizer == "adam":
+                self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
+            else:
+                raise ValueError(f"Unsupported optimizer: {args.optimizer}.")
+            self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
+                optimizer=self.optimizer, 
+                gamma=args.learning_rate_decay_gamma
+            )
+            self.learning_rate_decay = args.learning_rate_decay
 
         # continual federated learning
         self.test_data_so_far_loader = [DataLoader(self.test_data, 64)]
@@ -73,9 +73,20 @@ class Client(object):
         self.if_last_copy = False
         self.args = args
 
+        if self.args.algorithm == "PreciseFCL":
+            self.classifier_global_mode = args.classifier_global_mode
+            self.beta = args.beta
+            self.init_loss_fn()
+
+    def init_loss_fn(self):
+        self.loss=nn.NLLLoss()
+        self.dist_loss = nn.MSELoss()
+        self.ensemble_loss=nn.KLDivLoss(reduction="batchmean")
+        self.ce_loss = nn.CrossEntropyLoss()
+
     def next_task(self, train, test, label_info = None, if_label = True):
         
-        if self.learning_rate_decay:
+        if self.args.algorithm != "PreciseFCL" and self.learning_rate_decay:
             # update last model:
             for param_group in self.optimizer.param_groups:
                 param_group['lr'] = self.learning_rate  # Đặt lại về giá trị ban đầu
@@ -92,17 +103,9 @@ class Client(object):
         # update dataset: 
         self.train_data = train
         self.test_data = test
-        
-        self.train_samples = len(self.train_data)
-        self.test_samples = len(self.test_data)
  
         self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True,  shuffle = True)
         self.testloader =  DataLoader(self.test_data, self.batch_size, drop_last=True)
-        
-        self.testloaderfull = DataLoader(self.test_data, len(self.test_data))
-        self.trainloaderfull = DataLoader(self.train_data, len(self.train_data),  shuffle = True)
-        self.iter_trainloader = iter(self.trainloader)
-        self.iter_testloader = iter(self.testloader)
         
         # update classes_past_task
         self.classes_past_task = copy.deepcopy(self.classes_so_far)
@@ -151,9 +154,10 @@ class Client(object):
             param.data = new_param.data.clone()
 
     def test_metrics(self):
-        testloaderfull = self.load_test_data()
+        testloader = self.load_test_data()
         # self.model = self.load_model('model')
         # self.model.to(self.device)
+
         self.model.eval()
 
         test_acc = 0
@@ -162,13 +166,17 @@ class Client(object):
         y_true = []
         
         with torch.no_grad():
-            for x, y in testloaderfull:
+            for x, y in testloader:
                 if type(x) == type([]):
                     x[0] = x[0].to(self.device)
                 else:
                     x = x.to(self.device)
                 y = y.to(self.device)
-                output = self.model(x)
+
+                if self.args.algorithm == "PreciseFCL":
+                    output, _, _ = self.model.classifier(x)
+                else:
+                    output = self.model(x)
 
                 test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
                 test_num += y.shape[0]
@@ -207,8 +215,14 @@ class Client(object):
                 else:
                     x = x.to(self.device)
                 y = y.to(self.device)
-                output = self.model(x)
-                loss = self.loss(output, y)
+
+                if self.args.algorithm == "PreciseFCL":
+                    output, _, _ = self.model.classifier(x)
+                    loss = self.model.classify_criterion(torch.log(output+1e-30), y)
+                else:
+                    output = self.model(x)
+                    loss = self.loss(output, y)
+                
                 train_num += y.shape[0]
                 losses += loss.item() * y.shape[0]
 
@@ -216,23 +230,6 @@ class Client(object):
         # self.save_model(self.model, 'model')
 
         return losses, train_num
-
-    # def get_next_train_batch(self):
-    #     try:
-    #         # Samples a new batch for persionalizing
-    #         (x, y) = next(self.iter_trainloader)
-    #     except StopIteration:
-    #         # restart the generator if the previous generator is exhausted.
-    #         self.iter_trainloader = iter(self.trainloader)
-    #         (x, y) = next(self.iter_trainloader)
-
-    #     if type(x) == type([]):
-    #         x = x[0]
-    #     x = x.to(self.device)
-    #     y = y.to(self.device)
-
-    #     return x, y
-
 
     def save_item(self, item, item_name, item_path=None):
         if item_path == None:

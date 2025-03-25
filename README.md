@@ -6,7 +6,7 @@ Then download a file [here](https://drive.google.com/file/d/1qt6ucxtgVKsRdGvw72P
 Create a directory named `dataset` and extract the downloaded data folder in `dataset`. Also move the downloaded file `class_order`  to `dataset`.
 ```sh
 cd FCL/
-mkdir data
+mkdir dataset
 ```
 
 Remember to change the name of the extracted folder as `imagenet1k-classes`. Do not change the name of the `class_order` file. Then run the following command to run the code

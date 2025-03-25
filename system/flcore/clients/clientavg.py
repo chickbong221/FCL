@@ -6,12 +6,11 @@ from flcore.clients.clientbase import Client
 
 
 class clientAVG(Client):
-    def __init__(self, args, id, train_data, test_data, train_samples, test_samples, **kwargs):
-        super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
+    def __init__(self, args, id, train_data, test_data, **kwargs):
+        super().__init__(args, id, train_data, test_data, **kwargs)
 
     def train(self):
         trainloader = self.load_train_data()
-        # self.model.to(self.device)
         self.model.train()
         
         start_time = time.time()

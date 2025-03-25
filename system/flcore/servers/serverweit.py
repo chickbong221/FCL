@@ -56,9 +56,7 @@ class FedWeIT(Server):
             client = clientObj(self.args, 
                             id=i,
                             train_data=train_data,
-                            test_data=test_data,
-                            train_samples=len(train_data), 
-                            test_samples=len(test_data), 
+                            test_data=test_data, 
                             train_slow=train_slow, 
                             send_slow=send_slow,
                             initial_weights=self.global_weights)

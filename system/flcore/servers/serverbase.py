@@ -73,6 +73,9 @@ class Server(object):
         self.total_train_samples = 0
         self.total_test_samples = 0
 
+        if self.args.algorithm == "PreciseFCL":
+            self.classifier_head_list = ['classifier.fc_classifier', 'classifier.fc2']
+
     def set_clients(self, clientObj):
         total_clients = 10
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
@@ -83,17 +86,24 @@ class Server(object):
                 id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=0)
             
             # count total samples (accumulative)
-            self.total_train_samples +=len(train_data)
+            self.total_train_samples += len(train_data)
             self.total_test_samples += len(test_data)
             id = i
 
-            client = clientObj(self.args, 
-                            id=i, 
+            if self.args.algorithm == "PreciseFCL":
+                client = clientObj(self.args, 
+                            id=i,
                             train_data=train_data,
                             test_data=test_data,
-                            train_samples=len(train_data), 
-                            test_samples=len(test_data), 
+                            classifier_head_list = self.classifier_head_list,
                             train_slow=train_slow, 
+                            send_slow=send_slow)
+            else:
+                client = clientObj(self.args, 
+                            id=i,
+                            train_data=train_data,
+                            test_data=test_data,
+                            train_slow=train_slow,
                             send_slow=send_slow)
             self.clients.append(client)
 
@@ -101,10 +111,6 @@ class Server(object):
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
             client.task_dict[0] = label_info['labels']
-
-        logger.info("Number of Train/Test samples: %d/%d"%(self.total_train_samples, self.total_test_samples))
-        logger.info("Data from {} clients in total.".format(total_clients))
-        logger.info("Finished creating FedAvg server.")
 
     # random select slow clients
     def select_slow_clients(self, slow_rate):
@@ -159,9 +165,9 @@ class Server(object):
             except ZeroDivisionError:
                 client_time_cost = 0
             if client_time_cost <= self.time_threthold:
-                tot_samples += client.train_samples
+                tot_samples += len(client.train_data)
                 self.uploaded_ids.append(client.id)
-                self.uploaded_weights.append(client.train_samples)
+                self.uploaded_weights.append(len(client.train_data))
                 self.uploaded_models.append(client.model)
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples
@@ -364,8 +370,6 @@ class Server(object):
             test_data = read_client_data(self.dataset, i, is_train=False)
             client = clientObj(self.args, 
                             id=i, 
-                            train_samples=len(train_data), 
-                            test_samples=len(test_data), 
                             train_slow=False, 
                             send_slow=False)
             self.new_clients.append(client)

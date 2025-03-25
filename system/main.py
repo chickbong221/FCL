@@ -14,9 +14,11 @@ from flcore.servers.serveravg import FedAvg
 from flcore.servers.serverala import FedALA
 from flcore.servers.serverdbe import FedDBE
 from flcore.servers.serverweit import FedWeIT
+from flcore.servers.serverprecise import FedPrecise
 
 from flcore.trainmodel.models import *
 
+from flcore.trainmodel.precise_models import PreciseModel
 from flcore.trainmodel.bilstm import *
 from flcore.trainmodel.resnet import *
 from flcore.trainmodel.alexnet import *
@@ -70,6 +72,8 @@ def run(args):
             args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
         elif model_str == "ResNet10":
             args.model = resnet10(num_classes=args.num_classes).to(args.device)
+        elif model_str == "PreciseModel":    
+            args.model = PreciseModel(args).to(args.device)
         else:
             raise NotImplementedError
 
@@ -88,8 +92,13 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedDBE(args, i)
+
         elif args.algorithm == "FedWeIT":
             server = FedWeIT(args, i)
+
+        elif args.algorithm == "PreciseFCL":
+            server = FedPrecise(args, i)
+
         else:
             raise NotImplementedError
 
@@ -192,6 +201,21 @@ if __name__ == "__main__":
     parser.add_argument('--lambda_mask', type=float, default=0.0, help="Mask regularization coefficient")
     parser.add_argument('--num_tasks', type=int, default=500, help="num tasks")
 
+    # PreciseFCL
+    parser.add_argument("--k_loss_flow", type=float, default=0.1)
+    parser.add_argument("--k_kd_global_cls", type=float, default=0)
+    parser.add_argument("--k_kd_last_cls", type=float, default=0.2)
+    parser.add_argument("--k_kd_feature", type=float, default=0.5)
+    parser.add_argument("--k_kd_output", type=float, default=0.1)
+    parser.add_argument("--k_flow_lastflow", type=float, default=0.4)
+    parser.add_argument("--flow_epoch", type=int, default=5)
+    parser.add_argument("--flow_explore_theta", type=float, default=0.2)
+    parser.add_argument("--classifier_global_mode", type=str, default='all', help='[head, extractor, none, all]')
+    parser.add_argument('--flow_lr', type=float, default=0.005)  
+    parser.add_argument('--fedprox_k', type=float, default=0) 
+    parser.add_argument('--use_lastflow_x', action="store_true")
+    parser.add_argument("--beta", type=float, default=1.0, help="Average moving parameter for pFedMe, or Second learning rate of Per-FedAvg") 
+    parser.add_argument('--c_channel_size', type=int, default=64)
 
     args = parser.parse_args()
     args.log_dir = os.path.join(args.output_path, 'logs/{}-{}'.format(args.model, args.dataset))
