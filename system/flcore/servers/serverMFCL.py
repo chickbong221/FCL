@@ -5,7 +5,7 @@ import glog as logger
 from flcore.clients.clientMFCL import clientMFCL
 from flcore.servers.serverbase import Server
 from flcore.trainmodel.fedMFCL_models import *
-from flcore.utils.fedMFCL_utils import *
+from utils.fedMFCL_utils import *
 from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
 import numpy as np
 
