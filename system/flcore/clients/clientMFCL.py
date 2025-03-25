@@ -6,6 +6,7 @@ import time
 import torch.nn as nn
 import torch.optim as optim
 from copy import deepcopy
+import torch.nn.functional as F
 
 from utils.fedMFCL_utils import *
 from flcore.clients.clientbase import Client
@@ -23,16 +24,16 @@ class clientMFCL(Client):
         self.ft_weight = ft_weight
         self.syn_size = syn_size
 
-    def train(self, model, lr, teacher, generator_server, glob_iter_):
+    def train(self, model, lr, teacher, generator_server):
         model.to('cuda')
         model.train()
         opt = optim.SGD(model.parameters(), lr=lr, weight_decay=0.00001)
         if teacher is None:
-            for epoch in range(self.local_epoch):
+            for epoch in range(self.args.local_epochs):
                 for i, (x, y) in enumerate(self.train_loader):
                     x, y = x.to('cuda'), y.to('cuda')
                     logits = model(x)
-                    loss = self.criterion_fn(logits, y)
+                    loss = F.cross_entropy(logits, y)
                     opt.zero_grad()
                     loss.backward()
                     opt.step()
@@ -42,7 +43,7 @@ class clientMFCL(Client):
     def train_cl(self, model, teacher, opt):
         self.dw_k = torch.ones((self.valid_dim + 1), dtype=torch.float32)
         previous_teacher, previous_linear = deepcopy(teacher[0]), deepcopy(teacher[1])
-        for epoch in range(self.local_epoch):
+        for epoch in range(self.args.local_epochs):
             for i, (x, y) in enumerate(self.train_loader):
                 x, y = x.to('cuda'), y.to('cuda')
                 idx1 = torch.where(y >= self.last_valid_dim)[0]
