@@ -142,7 +142,7 @@ class FedMFCL(Server):
             print("\nAverage time cost per round.")
             print(sum(self.Budget[1:])/len(self.Budget[1:]))
 
-            if task == N_TASKS - 1:
+            if task != N_TASKS - 1:
                 original_global = deepcopy(self.global_model)
                 teacher = train_gen(deepcopy(self.global_model), classes_learned, generator, self.args)
                 for client in self.clients:
