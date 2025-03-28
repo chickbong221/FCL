@@ -227,7 +227,7 @@ class clientWeIT(Client):
         return adapts
 
     def test_metrics(self):
-        testloaderfull = self.load_test_data()
+        testloader = self.load_test_data()
         if hasattr(clientWeIT, 'state'):
             self.curr_model = self.nets.get_model_by_tid(self.state['curr_task'])
         else:
@@ -242,7 +242,7 @@ class clientWeIT(Client):
         y_true = []
         
         with torch.no_grad():
-            for x, y in testloaderfull:
+            for x, y in testloader:
                 if type(x) == type([]):
                     x[0] = x[0].to(self.device)
                 else:

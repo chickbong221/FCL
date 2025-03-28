@@ -6,15 +6,8 @@ from flcore.servers.serverbase import Server
 from flcore.trainmodel.fedewit_models import *
 from utils.fedweit_utils import *
 from threading import Thread
-from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
+from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 import shutil
-# import psutil
-# import os
-
-# def print_memory_usage(step_name=""):
-#     process = psutil.Process(os.getpid())
-#     mem_usage = process.memory_info().rss / 1e9  # Đổi sang GB
-#     print(f"[{step_name}] RAM Usage: {mem_usage:.2f} GB")
 
 class FedWeIT(Server):
     def __init__(self, args, times):
@@ -39,36 +32,6 @@ class FedWeIT(Server):
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
-
-    def set_clients(self, clientObj):
-        total_clients = 10
-        for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
-            
-            if self.args.dataset == 'IMAGENET1k':
-                id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
-            else:
-                id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=0)
-            
-            # count total samples (accumulative)
-            self.total_train_samples +=len(train_data)
-            self.total_test_samples += len(test_data)
-            id = i
-            client = clientObj(self.args, 
-                            id=i,
-                            train_data=train_data,
-                            test_data=test_data, 
-                            train_slow=train_slow, 
-                            send_slow=send_slow,
-                            initial_weights=self.global_weights)
-            self.clients.append(client)
-            
-            # update classes so far & current labels
-            client.classes_so_far.extend(label_info['labels'])
-            client.current_labels.extend(label_info['labels'])
-
-        logger.info("Number of Train/Test samples: %d/%d"%(self.total_train_samples, self.total_test_samples))
-        logger.info("Data from {} clients in total.".format(total_clients))
-        logger.info("Finished creating FedAvg server.")
 
     def train(self):
         if os.path.exists("/media/tuannl1/heavy_weight/FCL/PFLlib/output_fedweit"):
@@ -104,9 +67,11 @@ class FedWeIT(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                    elif self.args.dataset == 'CIFAR100':
+                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
                     else:
-                        id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=task)
+                        raise NotImplementedError("Not supported dataset")
 
                     # update dataset
                     # assert (self.users[i].id == id)
@@ -198,3 +163,31 @@ class FedWeIT(Server):
             return from_kb
         else:
             return None
+        
+    def set_clients(self, clientObj):
+        total_clients = 10
+        for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
+            
+            if self.args.dataset == 'IMAGENET1k':
+                train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+            elif self.args.dataset == 'CIFAR100':
+                train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=2, count_labels=True)
+            else:
+                raise NotImplementedError("Not supported dataset")
+            
+            # count total samples (accumulative)
+            self.total_train_samples += len(train_data)
+            self.total_test_samples += len(test_data)
+            id = i
+            client = clientObj(self.args, 
+                            id=i,
+                            train_data=train_data,
+                            test_data=test_data, 
+                            train_slow=train_slow, 
+                            send_slow=send_slow,
+                            initial_weights=self.global_weights)
+            self.clients.append(client)
+            
+            # update classes so far & current labels
+            client.classes_so_far.extend(label_info['labels'])
+            client.current_labels.extend(label_info['labels'])

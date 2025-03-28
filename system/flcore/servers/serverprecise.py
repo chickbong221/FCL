@@ -5,7 +5,7 @@ import numpy as np
 
 from flcore.clients.clientprecise import ClientPreciseFCL
 from flcore.servers.serverbase import Server
-from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
+from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
 class FedPrecise(Server):
     def __init__(self, args, times):
@@ -53,9 +53,11 @@ class FedPrecise(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                    elif self.args.dataset == 'CIFAR100':
+                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
                     else:
-                        id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=task)
+                        raise NotImplementedError("Not supported dataset")
 
                     # update dataset
                     self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
@@ -96,8 +98,6 @@ class FedPrecise(Server):
                     client.train(glob_iter, global_classifier, verbose=verbose)
 
                 self.receive_models()
-                if self.dlg_eval and i%self.dlg_gap == 0:
-                    self.call_dlg(i)
                 self.aggregate_parameters()
 
                 self.Budget.append(time.time() - s_t)
@@ -167,10 +167,12 @@ class FedPrecise(Server):
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
             
             if self.args.dataset == 'IMAGENET1k':
-                id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+                train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+            elif self.args.dataset == 'CIFAR100':
+                train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=2, count_labels=True)
             else:
-                id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=0)
-            
+                raise NotImplementedError("Not supported dataset")
+
             # count total samples (accumulative)
             self.total_train_samples += len(train_data)
             self.total_test_samples += len(test_data)

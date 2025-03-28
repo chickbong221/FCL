@@ -85,16 +85,9 @@ class FedAS(Server):
                 client.train(client.id in selected_ids)
             # assert 1==0
 
-
             self.print_fim_histories()
 
-
-
             self.receive_models()
-            if self.dlg_eval and i%self.dlg_gap == 0:
-                self.call_dlg(i)
-
-
             self.aggregate_wrt_fisher()
 
             self.Budget.append(time.time() - s_t)

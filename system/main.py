@@ -11,8 +11,8 @@ import logging
 import wandb
 
 from flcore.servers.serveravg import FedAvg
-from flcore.servers.serverala import FedALA
-from flcore.servers.serverdbe import FedDBE
+# from flcore.servers.serverala import FedALA
+# from flcore.servers.serverdbe import FedDBE
 from flcore.servers.serverweit import FedWeIT
 from flcore.servers.serverprecise import FedPrecise
 
@@ -84,14 +84,14 @@ def run(args):
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedAvg(args, i)
 
-        elif args.algorithm == "FedALA":
-            server = FedALA(args, i)
+        # elif args.algorithm == "FedALA":
+        #     server = FedALA(args, i)
 
-        elif args.algorithm == "FedDBE":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
-            server = FedDBE(args, i)
+        # elif args.algorithm == "FedDBE":
+        #     args.head = copy.deepcopy(args.model.fc)
+        #     args.model.fc = nn.Identity()
+        #     args.model = BaseHeadSplit(args.model, args.head)
+        #     server = FedDBE(args, i)
 
         elif args.algorithm == "FedWeIT":
             server = FedWeIT(args, i)
@@ -100,7 +100,7 @@ def run(args):
             server = FedPrecise(args, i)
 
         else:
-            raise NotImplementedError
+            raise NotImplementedError("Not supported model")
 
         print("Done Algo")
         server.train()
@@ -157,8 +157,6 @@ if __name__ == "__main__":
                         help="Rounds gap for evaluation")
     parser.add_argument('-sfn', "--save_folder_name", type=str, default='items')
     parser.add_argument('-ab', "--auto_break", type=bool, default=False)
-    parser.add_argument('-dlg', "--dlg_eval", type=bool, default=False)
-    parser.add_argument('-dlgg', "--dlg_gap", type=int, default=100)
     parser.add_argument('-bnpc', "--batch_num_per_client", type=int, default=2)
     parser.add_argument('-nnc', "--num_new_clients", type=int, default=0)
     parser.add_argument('-ften', "--fine_tuning_epoch_new", type=int, default=0)

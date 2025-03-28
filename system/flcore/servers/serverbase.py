@@ -8,10 +8,7 @@ import h5py
 import copy
 import time
 import random
-from utils.data_utils import read_client_data
-from utils.dlg import DLG
-from utils.dataset import get_dataset
-from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
+from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
 class Server(object):
     def __init__(self, args, times):
@@ -19,10 +16,6 @@ class Server(object):
         self.args = args
         self.device = args.device
         self.dataset = args.dataset
-        if self.args.dataset == 'IMAGENET1k':
-            self.data = None
-        else:
-            self.data = get_dataset(args, args.dataset, args.datadir, args.data_split_file)
         self.num_classes = args.num_classes
         self.global_rounds = args.global_rounds
         self.local_epochs = args.local_epochs
@@ -38,7 +31,6 @@ class Server(object):
         self.time_select = args.time_select
         self.goal = args.goal
         self.time_threthold = args.time_threthold
-        self.save_folder_name = args.save_folder_name
         self.top_cnt = args.top_cnt
         self.auto_break = args.auto_break
 
@@ -52,7 +44,6 @@ class Server(object):
         self.uploaded_models = []
 
         self.rs_test_acc = []
-        self.rs_test_auc = []
         self.rs_train_loss = []
 
         self.times = times
@@ -61,8 +52,6 @@ class Server(object):
         self.train_slow_rate = args.train_slow_rate
         self.send_slow_rate = args.send_slow_rate
 
-        self.dlg_eval = args.dlg_eval
-        self.dlg_gap = args.dlg_gap
         self.batch_num_per_client = args.batch_num_per_client
 
         self.num_new_clients = args.num_new_clients
@@ -78,9 +67,11 @@ class Server(object):
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
             
             if self.args.dataset == 'IMAGENET1k':
-                id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+                train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+            elif self.args.dataset == 'CIFAR100':
+                train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=2, count_labels=True)
             else:
-                id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=0)
+                raise NotImplementedError("Not supported dataset")
             
             # count total samples (accumulative)
             self.total_train_samples += len(train_data)
@@ -205,16 +196,7 @@ class Server(object):
 
             with h5py.File(file_path, 'w') as hf:
                 hf.create_dataset('rs_test_acc', data=self.rs_test_acc)
-                hf.create_dataset('rs_test_auc', data=self.rs_test_auc)
                 hf.create_dataset('rs_train_loss', data=self.rs_train_loss)
-
-    def save_item(self, item, item_name):
-        if not os.path.exists(self.save_folder_name):
-            os.makedirs(self.save_folder_name)
-        torch.save(item, os.path.join(self.save_folder_name, "server_" + item_name + ".pt"))
-
-    def load_item(self, item_name):
-        return torch.load(os.path.join(self.save_folder_name, "server_" + item_name + ".pt"))
 
     def test_metrics(self):
         if self.eval_new_clients and self.num_new_clients > 0:
@@ -223,16 +205,14 @@ class Server(object):
         
         num_samples = []
         tot_correct = []
-        tot_auc = []
         for c in self.clients:
-            ct, ns, auc = c.test_metrics()
+            ct, ns= c.test_metrics()
             tot_correct.append(ct*1.0)
-            tot_auc.append(auc*ns)
             num_samples.append(ns)
 
         ids = [c.id for c in self.clients]
 
-        return ids, num_samples, tot_correct, tot_auc
+        return ids, num_samples, tot_correct
 
     def train_metrics(self):
         if self.eval_new_clients and self.num_new_clients > 0:
@@ -255,10 +235,8 @@ class Server(object):
         stats_train = self.train_metrics()
 
         test_acc = sum(stats[2])*1.0 / sum(stats[1])
-        test_auc = sum(stats[3])*1.0 / sum(stats[1])
         train_loss = sum(stats_train[2])*1.0 / sum(stats_train[1])
         accs = [a / n for a, n in zip(stats[2], stats[1])]
-        aucs = [a / n for a, n in zip(stats[3], stats[1])]
         
         if acc == None:
             self.rs_test_acc.append(test_acc)
@@ -278,15 +256,7 @@ class Server(object):
 
         print("Averaged Train Loss: {:.4f}".format(train_loss))
         print("Averaged Test Accurancy: {:.4f}".format(test_acc))
-        print("Averaged Test AUC: {:.4f}".format(test_auc))
-        # self.print_(test_acc, train_acc, train_loss)
         print("Std Test Accurancy: {:.4f}".format(np.std(accs)))
-        print("Std Test AUC: {:.4f}".format(np.std(aucs)))
-
-    def print_(self, test_acc, test_auc, train_loss):
-        print("Average Test Accurancy: {:.4f}".format(test_acc))
-        print("Average Test AUC: {:.4f}".format(test_auc))
-        print("Average Train Loss: {:.4f}".format(train_loss))
 
     def check_done(self, acc_lss, top_cnt=None, div_value=None):
         for acc_ls in acc_lss:
@@ -312,88 +282,3 @@ class Server(object):
             else:
                 raise NotImplementedError
         return True
-
-    def call_dlg(self, R):
-        # items = []
-        cnt = 0
-        psnr_val = 0
-        for cid, client_model in zip(self.uploaded_ids, self.uploaded_models):
-            client_model.eval()
-            origin_grad = []
-            for gp, pp in zip(self.global_model.parameters(), client_model.parameters()):
-                origin_grad.append(gp.data - pp.data)
-
-            target_inputs = []
-            trainloader = self.clients[cid].load_train_data()
-            with torch.no_grad():
-                for i, (x, y) in enumerate(trainloader):
-                    if i >= self.batch_num_per_client:
-                        break
-
-                    if type(x) == type([]):
-                        x[0] = x[0].to(self.device)
-                    else:
-                        x = x.to(self.device)
-                    y = y.to(self.device)
-                    output = client_model(x)
-                    target_inputs.append((x, output))
-
-            d = DLG(client_model, origin_grad, target_inputs)
-            if d is not None:
-                psnr_val += d
-                cnt += 1
-            
-            # items.append((client_model, origin_grad, target_inputs))
-                
-        if cnt > 0:
-            print('PSNR value is {:.2f} dB'.format(psnr_val / cnt))
-        else:
-            print('PSNR error')
-
-        # self.save_item(items, f'DLG_{R}')
-
-    def set_new_clients(self, clientObj):
-        for i in range(self.num_clients, self.num_clients + self.num_new_clients):
-            train_data = read_client_data(self.dataset, i, is_train=True)
-            test_data = read_client_data(self.dataset, i, is_train=False)
-            client = clientObj(self.args, 
-                            id=i, 
-                            train_slow=False, 
-                            send_slow=False)
-            self.new_clients.append(client)
-
-    # fine-tuning on new clients
-    def fine_tuning_new_clients(self):
-        for client in self.new_clients:
-            client.set_parameters(self.global_model)
-            opt = torch.optim.SGD(client.model.parameters(), lr=self.learning_rate)
-            CEloss = torch.nn.CrossEntropyLoss()
-            trainloader = client.load_train_data()
-            client.model.train()
-            for e in range(self.fine_tuning_epoch_new):
-                for i, (x, y) in enumerate(trainloader):
-                    if type(x) == type([]):
-                        x[0] = x[0].to(client.device)
-                    else:
-                        x = x.to(client.device)
-                    y = y.to(client.device)
-                    output = client.model(x)
-                    loss = CEloss(output, y)
-                    opt.zero_grad()
-                    loss.backward()
-                    opt.step()
-
-    # evaluating on new clients
-    def test_metrics_new_clients(self):
-        num_samples = []
-        tot_correct = []
-        tot_auc = []
-        for c in self.new_clients:
-            ct, ns, auc = c.test_metrics()
-            tot_correct.append(ct*1.0)
-            tot_auc.append(auc*ns)
-            num_samples.append(ns)
-
-        ids = [c.id for c in self.new_clients]
-
-        return ids, num_samples, tot_correct, tot_auc

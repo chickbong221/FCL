@@ -28,8 +28,6 @@ class Client(object):
         self.batch_size = args.batch_size
         self.learning_rate = args.local_learning_rate
         self.local_epochs = args.local_epochs
-        self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True,  shuffle = True)
-        self.testloader =  DataLoader(self.test_data, self.batch_size, drop_last=True)
 
         # check BatchNorm
         self.has_BatchNorm = False
@@ -92,9 +90,6 @@ class Client(object):
         # update dataset: 
         self.train_data = train
         self.test_data = test
- 
-        self.trainloader = DataLoader(self.train_data, self.batch_size, drop_last=True,  shuffle = True)
-        self.testloader =  DataLoader(self.test_data, self.batch_size, drop_last=True)
         
         # update classes_past_task
         self.classes_past_task = copy.deepcopy(self.classes_so_far)
@@ -151,8 +146,6 @@ class Client(object):
 
         test_acc = 0
         test_num = 0
-        y_prob = []
-        y_true = []
         
         with torch.no_grad():
             for x, y in testloader:
@@ -166,30 +159,11 @@ class Client(object):
 
                 test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
                 test_num += y.shape[0]
-
-                y_prob.append(output.detach().cpu().numpy())
-                nc = self.num_classes
-                if self.num_classes == 2:
-                    nc += 1
-                lb = label_binarize(y.detach().cpu().numpy(), classes=np.arange(nc))
-                if self.num_classes == 2:
-                    lb = lb[:, :2]
-                y_true.append(lb)
-
-        # self.model.cpu()
-        # self.save_model(self.model, 'model')
-
-        y_prob = np.concatenate(y_prob, axis=0)
-        y_true = np.concatenate(y_true, axis=0)
-
-        auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
         
-        return test_acc, test_num, auc
+        return test_acc, test_num
 
     def train_metrics(self):
         trainloader = self.load_train_data()
-        # self.model = self.load_model('model')
-        # self.model.to(self.device)
         self.model.eval()
 
         train_num = 0
@@ -208,23 +182,4 @@ class Client(object):
                 train_num += y.shape[0]
                 losses += loss.item() * y.shape[0]
 
-        # self.model.cpu()
-        # self.save_model(self.model, 'model')
-
         return losses, train_num
-
-    def save_item(self, item, item_name, item_path=None):
-        if item_path == None:
-            item_path = self.save_folder_name
-        if not os.path.exists(item_path):
-            os.makedirs(item_path)
-        torch.save(item, os.path.join(item_path, "client_" + str(self.id) + "_" + item_name + ".pt"))
-
-    def load_item(self, item_name, item_path=None):
-        if item_path == None:
-            item_path = self.save_folder_name
-        return torch.load(os.path.join(item_path, "client_" + str(self.id) + "_" + item_name + ".pt"))
-
-    # @staticmethod
-    # def model_exists():
-    #     return os.path.exists(os.path.join("models", "server" + ".pt"))

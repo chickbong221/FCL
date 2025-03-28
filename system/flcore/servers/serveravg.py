@@ -3,7 +3,7 @@ import torch
 from flcore.clients.clientavg import clientAVG
 from flcore.servers.serverbase import Server
 from threading import Thread
-from utils.model_utils import read_client_data_FCL, read_client_data_FCL_imagenet1k
+from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
 
 class FedAvg(Server):
@@ -20,13 +20,14 @@ class FedAvg(Server):
         # self.load_model()
         self.Budget = []
 
-
     def train(self):
 
         if self.args.dataset == 'IMAGENET1k':
             N_TASKS = 500
+        elif self.args.dataset == 'CIFAR100':
+            N_TASKS = 50
         else:
-            N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
+            raise NotImplementedError("Not supported dataset")
         print(str(N_TASKS) + " tasks are available")
 
         for task in range(N_TASKS):
@@ -53,9 +54,11 @@ class FedAvg(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        id, train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                    elif self.args.dataset == 'CIFAR100':
+                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
                     else:
-                        id, train_data, test_data, label_info = read_client_data_FCL(i, self.data, dataset=self.args.dataset, count_labels=True, task=task)
+                        raise NotImplementedError("Not supported dataset")
 
                     # update dataset
                     self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
@@ -99,8 +102,6 @@ class FedAvg(Server):
                 # [t.join() for t in threads]
 
                 self.receive_models()
-                if self.dlg_eval and i%self.dlg_gap == 0:
-                    self.call_dlg(i)
                 self.aggregate_parameters()
 
                 self.Budget.append(time.time() - s_t)
