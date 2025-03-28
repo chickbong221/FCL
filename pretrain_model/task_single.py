@@ -63,7 +63,7 @@ def get_optimizer(optimizer_name, model, learning_rate):
         raise ValueError(f"Unsupported optimizer: {optimizer_name}")
 
 # Training function
-def train_and_evaluate(args, model, trainloader, testloader, optimizer, num_epochs, device):
+def train_and_evaluate(args, task, model, trainloader, testloader, optimizer, num_epochs, device):
     loss_fn = nn.CrossEntropyLoss()
     for epoch in range(num_epochs):
         total_loss = 0
@@ -99,6 +99,8 @@ def train_and_evaluate(args, model, trainloader, testloader, optimizer, num_epoc
                 "Global/Averaged Test Accurancy": acc,
             }, step=epoch+1)
         print(f"Epoch [{epoch+1}/{num_epochs}] - Loss: {avg_loss:.4f}, Test Accuracy: {acc:.2f}%")
+
+    torch.save(model.state_dict(), f"task_single_model/{task}.pth")
 
 # Main execution function
 def run():
@@ -147,7 +149,7 @@ def run():
         trainloader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, drop_last=True)
         testloader = DataLoader(test_data, batch_size=args.batch_size, drop_last=True)
         
-        train_and_evaluate(args, model, trainloader, testloader, optimizer, args.epochs, device)
+        train_and_evaluate(args, task, model, trainloader, testloader, optimizer, args.epochs, device)
 
 if __name__ == "__main__":
     total_start = time.time()
