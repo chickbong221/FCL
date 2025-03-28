@@ -9,18 +9,16 @@ import math
 import tqdm
 
 class network(nn.Module):
-    def __init__(self, numclass, feature_extractor):
+    def __init__(self, feature_extractor, num_classes):
         super(network, self).__init__()
         self.feature = feature_extractor
+        self.fc = nn.Linear(feature_extractor.fc.in_features, num_classes, bias=True)
         self.feature.fc = nn.Identity()
-        # self.fc = nn.Linear(feature_extractor.fc.in_features, numclass, bias=True)
-        self.fc = nn.Linear(512, numclass, bias=True)
 
     def forward(self, input):
         x = self.feature(input)
         x = self.fc(x)
         return x
-
     def Incremental_learning(self, numclass):
         weight = self.fc.weight.data
         bias = self.fc.bias.data

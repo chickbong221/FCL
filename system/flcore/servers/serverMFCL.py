@@ -55,12 +55,12 @@ class FedMFCL(Server):
         # Initialization
         teacher, generator = None, None
         gamma = np.log(self.args.lr_end / self.args.lr)
-        classes_learned = 0 
+        classes_learned = 2 
         generator = GeneratorBig(zdim=self.args.z_dim, in_channel=3, img_sz=32, convdim=self.args.conv_dim)
 
         # Task
         if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = 2
+            N_TASKS = 500
         else:
             N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
         print(str(N_TASKS) + " tasks are available")
@@ -115,7 +115,7 @@ class FedMFCL(Server):
                 s_t = time.time()
 
                 self.selected_clients = self.select_clients()
-                # self.global_model =  network(numclass=self.args.num_classes_per_task, feature_extractor=self.global_model)
+                self.global_model = network(feature_extractor=self.global_model,num_classes=self.args.num_classes)
                 self.send_models()
 
                 if i%self.eval_gap == 0:

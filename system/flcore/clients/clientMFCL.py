@@ -66,6 +66,14 @@ class clientMFCL(Client):
                 opt.step()
 
     def kd(self, x_com, previous_linear, logits_pen, previous_teacher):
+
+        try:
+            has_nan = torch.isnan(logits_pen).any()
+            has_inf = torch.isinf(logits_pen).any()
+            print(f"kd: logits_pen has NaN: {has_nan}, has Inf: {has_inf}")
+        except RuntimeError as e:
+            print(f"kd: Failed to check logits_pen: {e}")
+            
         kd_index = np.arange(x_com.size(0))
         dw_KD = self.dw_k[-1 * torch.ones(len(kd_index),).long()].to('cuda')
         logits_KD = previous_linear(logits_pen[kd_index])[:, :self.last_valid_dim]
@@ -77,4 +85,4 @@ class clientMFCL(Client):
         return teacher.sample(dim, return_scores=return_scores)
 
     def criterion(self, logits, targets, data_weights):
-        return (self.criterion_fn(logits, targets) * data_weights).mean()
+        return (F.cross_entropy(logits, targets) * data_weights).mean()
