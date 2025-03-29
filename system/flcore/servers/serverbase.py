@@ -258,6 +258,31 @@ class Server(object):
         print("Averaged Test Accurancy: {:.4f}".format(test_acc))
         print("Std Test Accurancy: {:.4f}".format(np.std(accs)))
 
+    # evaluate selected clients before aggregation
+    def evaluate_before_aggregation(self, glob_iter, acc=None, loss=None):
+        stats = self.test_metrics()
+        stats_train = self.train_metrics()
+
+        test_acc = sum(stats[2])*1.0 / sum(stats[1])
+        train_loss = sum(stats_train[2])*1.0 / sum(stats_train[1])
+        accs = [a / n for a, n in zip(stats[2], stats[1])]
+        
+        if acc == None:
+            self.rs_test_acc.append(test_acc)
+        else:
+            acc.append(test_acc)
+        
+        if loss == None:
+            self.rs_train_loss.append(train_loss)
+        else:
+            loss.append(train_loss)
+
+        if self.args.wandb:
+            wandb.log({
+                "Client/Averaged Train Loss": train_loss,
+                "Client/Averaged Test Accurancy": test_acc,
+            }, step=glob_iter)
+
     def check_done(self, acc_lss, top_cnt=None, div_value=None):
         for acc_ls in acc_lss:
             if top_cnt is not None and div_value is not None:

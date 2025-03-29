@@ -26,7 +26,7 @@ def read_all_client_data_FCL_imagenet1k_task_single(num_clients, task = 0, class
     if count_labels:
         label_info = {}
         unique_y, counts=torch.unique(y_train, return_counts=True)
-        print("unique_y: " + str(unique_y))
+        # print("unique_y: " + str(unique_y))
         unique_y=unique_y.detach().numpy()
         counts=counts.detach().numpy()
         label_info['labels']=unique_y
@@ -59,8 +59,8 @@ def read_all_client_data_FCL_imagenet1k_task_sofar(num_clients, task = 0, classe
     if count_labels:
         label_info = {}
         unique_y, counts=torch.unique(y_train, return_counts=True)
-        print(f"unique_y: {unique_y}")
-        print(f"unique_y_len: {len(unique_y)}")
+        # print(f"unique_y: {unique_y}")
+        # print(f"unique_y_len: {len(unique_y)}")
         unique_y=unique_y.detach().numpy()
         counts=counts.detach().numpy()
         label_info['labels']=unique_y

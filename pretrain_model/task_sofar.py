@@ -100,7 +100,7 @@ def train_and_evaluate(args, task, model, trainloader, testloader, optimizer, nu
             }, step=epoch+1)
         print(f"Epoch [{epoch+1}/{num_epochs}] - Loss: {avg_loss:.4f}, Test Accuracy: {acc:.2f}%")
 
-    torch.save(model.state_dict(), f"task_sofar_model/{task}.pth")
+    torch.save(model.state_dict(), f"pretrain_model/task_sofar_model/{task}.pth")
 
 # Main execution function
 def run():
@@ -125,16 +125,19 @@ def run():
     num_tasks = get_num_tasks(args.dataset)
     print(f"{num_tasks} tasks are available")
     
+    if args.wandb:
+        wandb.login(key="b1d6eed8871c7668a889ae74a621b5dbd2f3b070")
+
     for task in range(num_tasks):
 
         # Setup Wandb
         if args.wandb:
-            wandb.login(key="b1d6eed8871c7668a889ae74a621b5dbd2f3b070")
             wandb.init(
                 project="FCL-pretrained",
                 entity="letuanhf-hanoi-university-of-science-and-technology",
                 config=args, 
-                name=f"{args.dataset}_{task}" 
+                name=f"{args.dataset}_{task}_sofar",
+                reinit=True 
             )
 
         model = get_model(args.model, args.num_classes, device)
@@ -145,11 +148,14 @@ def run():
             train_data, test_data, _ = read_all_client_data_FCL_cifar100_task_sofar(args.num_clients, task, 2, True)
         elif args.dataset == "IMAGENET1k":
             train_data, test_data, _ = read_all_client_data_FCL_imagenet1k_task_sofar(args.num_clients, task, 2, True)
-        
+
         trainloader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, drop_last=True)
         testloader = DataLoader(test_data, batch_size=args.batch_size, drop_last=True)
         
         train_and_evaluate(args, task, model, trainloader, testloader, optimizer, args.epochs, device)
+
+        if args.wandb:
+            wandb.finish()
 
 if __name__ == "__main__":
     total_start = time.time()
