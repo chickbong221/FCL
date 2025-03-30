@@ -157,8 +157,6 @@ if __name__ == "__main__":
                         help="Rounds gap for evaluation")
     parser.add_argument('-sfn', "--save_folder_name", type=str, default='items')
     parser.add_argument('-ab', "--auto_break", type=bool, default=False)
-    parser.add_argument('-bnpc', "--batch_num_per_client", type=int, default=2)
-    parser.add_argument('-nnc', "--num_new_clients", type=int, default=0)
     parser.add_argument('-ften', "--fine_tuning_epoch_new", type=int, default=0)
     parser.add_argument('-fd', "--feature_dim", type=int, default=512)
     parser.add_argument('-vs', "--vocab_size", type=int, default=32000, 

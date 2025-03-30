@@ -22,15 +22,7 @@ class FedAvg(Server):
 
     def train(self):
 
-        if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = 500
-        elif self.args.dataset == 'CIFAR100':
-            N_TASKS = 50
-        else:
-            raise NotImplementedError("Not supported dataset")
-        print(str(N_TASKS) + " tasks are available")
-
-        for task in range(N_TASKS):
+        for task in range(self.N_TASKS):
 
             print(f"\n================ Current Task: {task} =================")
             if task == 0:
@@ -85,13 +77,16 @@ class FedAvg(Server):
 
                 glob_iter = i + self.global_rounds * task
                 s_t = time.time()
+
+                self.evaluate_before_sendmodel(task=task, glob_iter=glob_iter)
+
                 self.selected_clients = self.select_clients()
                 self.send_models()
 
                 if i%self.eval_gap == 0:
-                    print(f"\n-------------Round number: {i}-------------")
-                    print("\nEvaluate global model")
-                    self.evaluate(glob_iter=glob_iter)
+                    # print(f"\n-------------Round number: {i}-------------")
+                    # print("\nEvaluate global model")
+                    self.evaluate(task=task, glob_iter=glob_iter)
 
                 for client in self.selected_clients:
                     client.train()
@@ -105,22 +100,6 @@ class FedAvg(Server):
                 self.aggregate_parameters()
 
                 self.Budget.append(time.time() - s_t)
-                print('-'*25, 'time cost', '-'*25, self.Budget[-1])
+                # print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
-                if self.auto_break and self.check_done(acc_lss=[self.rs_test_acc], top_cnt=self.top_cnt):
-                    break
-
-            print("\nBest accuracy.")
-            print(max(self.rs_test_acc))
-            print("\nAverage time cost per round.")
-            print(sum(self.Budget[1:])/len(self.Budget[1:]))
-
-            self.save_results()
-            # self.save_global_model()
-
-            if self.num_new_clients > 0:
-                self.eval_new_clients = True
-                self.set_new_clients(clientAVG)
-                print(f"\n-------------Fine tuning round-------------")
-                print("\nEvaluate new clients")
-                self.evaluate(glob_iter=glob_iter)
+            self.calculate_forgetting(task=task, glob_iter=glob_iter)

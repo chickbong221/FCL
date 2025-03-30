@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.utils.data as data
 
+# client data 1 task
 def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count_labels=False):
     
     datadir = 'dataset/imagenet1k-classes/'
@@ -67,6 +68,9 @@ def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_l
         return train_data, test_data, label_info
     
     return train_data, test_data
+
+# client data all task so far
+# pass
 
 class Transform_dataset(data.Dataset):
     def __init__(self, X, Y, transform=None) -> None:

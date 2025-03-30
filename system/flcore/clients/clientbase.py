@@ -6,6 +6,7 @@ import os
 from torch.utils.data import DataLoader
 from sklearn.preprocessing import label_binarize
 from sklearn import metrics
+from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
 class Client(object):
     """
@@ -57,8 +58,26 @@ class Client(object):
             self.learning_rate_decay = args.learning_rate_decay
 
         # continual federated learning
-        self.test_data_so_far_loader = [DataLoader(self.test_data, 64)]
-        self.test_data_per_task = [self.test_data]
+        if self.args.dataset == 'IMAGENET1k':
+            self.N_TASKS = 500
+        elif self.args.dataset == 'CIFAR100':
+            self.N_TASKS = 50
+        else:
+            raise NotImplementedError("Not supported dataset")
+        print("Anh Duong dep trai")
+        
+        self.test_data_all_task = []
+        for task in range(self.N_TASKS):
+            
+            if self.args.dataset == 'IMAGENET1k':
+                _, test_data, _ = read_client_data_FCL_imagenet1k(self.id, task=task, classes_per_task=2, count_labels=True)
+            elif self.args.dataset == 'CIFAR100':
+                _, test_data, _ = read_client_data_FCL_cifar100(self.id, task=task, classes_per_task=2, count_labels=True)
+            else:
+                raise NotImplementedError("Not supported dataset")
+
+            self.test_data_all_task.append(test_data)
+
         self.classes_so_far = [] # all labels of a client so far 
         self.available_labels_current = [] # labels from all clients on T (current)
         self.current_labels = [] # current labels for itself
@@ -104,12 +123,7 @@ class Client(object):
 
             self.current_labels.clear()
             self.current_labels.extend(label_info['labels'])
-
-        self.test_data_so_far_loader.append(DataLoader(self.test_data, 64))
-
-        # update test data for CL: (test per task)        
-        self.test_data_per_task.append(self.test_data)
-        
+    
         return
 
     def load_train_data(self, batch_size=None):
@@ -118,10 +132,10 @@ class Client(object):
         train_data = self.train_data
         return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
 
-    def load_test_data(self, batch_size=None):
+    def load_test_data(self, task, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        test_data = self.test_data
+        test_data = self.test_data_all_task[task]
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
         
     def set_parameters(self, model):
@@ -137,8 +151,8 @@ class Client(object):
         for param, new_param in zip(model.parameters(), new_params):
             param.data = new_param.data.clone()
 
-    def test_metrics(self):
-        testloader = self.load_test_data()
+    def test_metrics(self, task):
+        testloader = self.load_test_data(task=task)
         # self.model = self.load_model('model')
         # self.model.to(self.device)
 
