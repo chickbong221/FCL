@@ -252,7 +252,7 @@ class Server(object):
 
             print("Global Averaged Forgetting: {:.4f}".format(forgetting))
 
-            csv_filename = "global_accuracy_matrix.csv"
+            csv_filename = f"{self.args.algorithm}_global_accuracy_matrix.csv"
             if os.path.exists(csv_filename):
                 os.remove(csv_filename)  # Xóa file cũ
 
@@ -271,7 +271,7 @@ class Server(object):
 
             print("Local Averaged Forgetting: {:.4f}".format(forgetting))
 
-            csv_filename = "local_accuracy_matrix.csv"
+            csv_filename = f"{self.args.algorithm}_local_accuracy_matrix.csv"
             if os.path.exists(csv_filename):
                 os.remove(csv_filename)  # Xóa file cũ
 

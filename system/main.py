@@ -201,7 +201,7 @@ if __name__ == "__main__":
     parser.add_argument("--flow_epoch", type=int, default=5)
     parser.add_argument("--flow_explore_theta", type=float, default=0.2)
     parser.add_argument("--classifier_global_mode", type=str, default='all', help='[head, extractor, none, all]')
-    parser.add_argument('--flow_lr', type=float, default=0.005)  
+    parser.add_argument('--flow_lr', type=float, default=1e-4)  
     parser.add_argument('--fedprox_k', type=float, default=0) 
     parser.add_argument('--use_lastflow_x', action="store_true")
     parser.add_argument("--beta", type=float, default=1.0, help="Average moving parameter for pFedMe, or Second learning rate of Per-FedAvg") 

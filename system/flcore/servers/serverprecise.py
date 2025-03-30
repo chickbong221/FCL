@@ -23,13 +23,7 @@ class FedPrecise(Server):
     
     def train(self):
         
-        if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = 500
-        else:
-            N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
-        print(str(N_TASKS) + " tasks are available")
-        
-        for task in range(N_TASKS):
+        for task in range(self.N_TASKS):
 
             print(f"\n================ Current Task: {task} =================")
             if task == 0:
@@ -82,13 +76,13 @@ class FedPrecise(Server):
                 
                 glob_iter = i + self.global_rounds * task
                 s_t = time.time()
+
                 self.selected_clients = self.select_clients()
                 self.send_models()
 
                 if i%self.eval_gap == 0:
                     print(f"\n-------------Round number: {i}-------------")
-                    print("\nEvaluate global model")
-                    self.evaluate(glob_iter=glob_iter)
+                    self.eval(task=task, glob_iter=glob_iter, flag="global")
 
                 global_classifier = self.global_model.classifier
                 global_classifier.eval()
@@ -100,18 +94,17 @@ class FedPrecise(Server):
                 self.receive_models()
                 self.aggregate_parameters()
 
+                if i%self.eval_gap == 0:
+                    self.eval(task=task, glob_iter=glob_iter, flag="local")
+
                 self.Budget.append(time.time() - s_t)
                 print('-'*25, 'time cost', '-'*25, self.Budget[-1])
-
-                if self.auto_break and self.check_done(acc_lss=[self.rs_test_acc], top_cnt=self.top_cnt):
-                    break
                     
-            print("\nBest accuracy.")
-            print(max(self.rs_test_acc))
-            print("\nAverage time cost per round.")
-            print(sum(self.Budget[1:])/len(self.Budget[1:]))
-
-            self.save_results()
+            self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+            
+            # need eval before data update
+            self.send_models()
+            self.eval_task(task=task, glob_iter=glob_iter, flag="global")
 
     def aggregate_parameters(self, class_partial=False):
         assert (self.selected_clients is not None and len(self.selected_clients) > 0)
@@ -172,11 +165,6 @@ class FedPrecise(Server):
                 train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=2, count_labels=True)
             else:
                 raise NotImplementedError("Not supported dataset")
-
-            # count total samples (accumulative)
-            self.total_train_samples += len(train_data)
-            self.total_test_samples += len(test_data)
-            id = i
 
             client = clientObj(self.args, 
                         id=i,

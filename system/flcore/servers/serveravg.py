@@ -82,9 +82,8 @@ class FedAvg(Server):
                 self.send_models()
 
                 if i%self.eval_gap == 0:
+                    print(f"\n-------------Round number: {i}-------------")
                     self.eval(task=task, glob_iter=glob_iter, flag="global")
-
-                print(f"\n-------------Round number: {i}-------------")
 
                 for client in self.selected_clients:
                     client.train()
@@ -104,5 +103,7 @@ class FedAvg(Server):
                 # print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
             self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+            
+            # need eval before data update
             self.send_models()
             self.eval_task(task=task, glob_iter=glob_iter, flag="global")
