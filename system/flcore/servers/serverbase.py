@@ -4,7 +4,7 @@ import torch
 import wandb
 import glog as logger
 import numpy as np
-import h5py
+import csv
 import copy
 import time
 import random
@@ -50,7 +50,8 @@ class Server(object):
         self.train_slow_rate = args.train_slow_rate
         self.send_slow_rate = args.send_slow_rate
 
-        self.accuracy_matrix = []
+        self.global_accuracy_matrix = []
+        self.local_accuracy_matrix = []
 
         if self.args.dataset == 'IMAGENET1k':
             self.N_TASKS = 500
@@ -157,16 +158,32 @@ class Server(object):
         for server_param, client_param in zip(self.global_model.parameters(), client_model.parameters()):
             server_param.data += client_param.data.clone() * w
 
-    def test_metrics(self, task):
+    def test_metrics(self, task, glob_iter, flag):
         
         num_samples = []
         tot_correct = []
         for c in self.clients:
             ct, ns = c.test_metrics(task=task)
-            print(f"task {task}, client {c.id}, correct: {ct}")
+            # print(f"task {task}, client {c.id}, correct: {ct}")
             # print(f"num_sample: {ns}")
             tot_correct.append(ct*1.0)
             num_samples.append(ns)
+
+            if flag == "global":
+                test_acc = sum(tot_correct)*1.0 / sum(num_samples)
+
+                if self.args.wandb:
+                    wandb.log({
+                        f"Client_Global/Client_{c.id}/Averaged Test Accurancy": test_acc,
+                    }, step=glob_iter)
+
+            if flag == "local":
+                test_acc = sum(tot_correct)*1.0 / sum(num_samples)
+
+                if self.args.wandb:
+                    wandb.log({
+                        f"Client_Local/Client_{c.id}/Averaged Test Accurancy": test_acc,
+                    }, step=glob_iter)
 
         ids = [c.id for c in self.clients]
 
@@ -186,59 +203,78 @@ class Server(object):
         return ids, num_samples, losses
 
     # evaluate selected clients
-    def evaluate(self, task, glob_iter):
+    def eval(self, task, glob_iter, flag):
 
-        stats = self.test_metrics(task=task)
+        stats = self.test_metrics(task, glob_iter, flag=flag)
         stats_train = self.train_metrics()
 
         test_acc = sum(stats[2])*1.0 / sum(stats[1])
         train_loss = sum(stats_train[2])*1.0 / sum(stats_train[1])
 
-        if self.args.wandb:
-            wandb.log({
-                "Global/Averaged Train Loss": train_loss,
-                "Global/Averaged Test Accurancy": test_acc,
-            }, step=glob_iter)
+        if flag == "global":
+            if self.args.wandb:
+                wandb.log({
+                    "Global/Averaged Train Loss": train_loss,
+                    "Global/Averaged Test Accurancy": test_acc,
+                }, step=glob_iter)
 
-        # print("Averaged Train Loss: {:.4f}".format(train_loss))
-        # print("Averaged Test Accurancy: {:.4f}".format(test_acc))
+            # print("Averaged Train Loss: {:.4f}".format(train_loss))
+            # print("Averaged Test Accurancy: {:.4f}".format(test_acc))
 
-    # evaluate selected clients before send model
-    def evaluate_before_sendmodel(self, task, glob_iter):
-        stats = self.test_metrics(task=task)
-        stats_train = self.train_metrics()
+        if flag == "local":
+            if self.args.wandb:
+                wandb.log({
+                    "Local/Averaged Train Loss": train_loss,
+                    "Local/Averaged Test Accurancy": test_acc,
+                }, step=glob_iter)
 
-        test_acc = sum(stats[2])*1.0 / sum(stats[1])
-        train_loss = sum(stats_train[2])*1.0 / sum(stats_train[1])
+            # print("Averaged Client Train Loss: {:.4f}".format(train_loss))
+            # print("Averaged Client Test Accurancy: {:.4f}".format(test_acc))
 
-        if self.args.wandb:
-            wandb.log({
-                "Client/Averaged Train Loss": train_loss,
-                "Client/Averaged Test Accurancy": test_acc,
-            }, step=glob_iter)
-
-        # print("Averaged Client Train Loss: {:.4f}".format(train_loss))
-        # print("Averaged Client Test Accurancy: {:.4f}".format(test_acc))
-
-    # Calculate forgetting
-    def calculate_forgetting(self, task, glob_iter):
+    # evaluate after end 1 task
+    def eval_task(self, task, glob_iter, flag):
 
         accuracy_on_all_task = []
 
         for t in range(self.N_TASKS):
-            stats = self.test_metrics(task=t)
-            test_acc = sum(stats[2])*1.0 / sum(stats[1])
+            stats = self.test_metrics(task=t, glob_iter=glob_iter, flag="off")
+            test_acc = sum(stats[2]) * 1.0 / sum(stats[1])
             accuracy_on_all_task.append(test_acc)
-            # print(test_acc)
 
-        self.accuracy_matrix.append(accuracy_on_all_task)
-        # print(self.accuracy_matrix)
+        if flag == "global":
+            self.global_accuracy_matrix.append(accuracy_on_all_task)
+            forgetting = metric_average_forgetting(task, self.global_accuracy_matrix)
 
-        forgetting = metric_average_forgetting(task, self.accuracy_matrix)
+            if self.args.wandb:
+                wandb.log({
+                    "Global/Averaged Forgetting": forgetting
+                }, step=glob_iter)
 
-        if self.args.wandb:
-            wandb.log({
-                "Global/Averaged Forgetting": forgetting
-            }, step=glob_iter)
+            print("Global Averaged Forgetting: {:.4f}".format(forgetting))
 
-        print("Averaged Forgetting: {:.4f}".format(forgetting))
+            csv_filename = "global_accuracy_matrix.csv"
+            if os.path.exists(csv_filename):
+                os.remove(csv_filename)  # Xóa file cũ
+
+            with open(csv_filename, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(self.global_accuracy_matrix)
+
+        if flag == "local":
+            self.local_accuracy_matrix.append(accuracy_on_all_task)
+            forgetting = metric_average_forgetting(task, self.local_accuracy_matrix)
+
+            if self.args.wandb:
+                wandb.log({
+                    "Local/Averaged Forgetting": forgetting
+                }, step=glob_iter)
+
+            print("Local Averaged Forgetting: {:.4f}".format(forgetting))
+
+            csv_filename = "local_accuracy_matrix.csv"
+            if os.path.exists(csv_filename):
+                os.remove(csv_filename)  # Xóa file cũ
+
+            with open(csv_filename, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(self.local_accuracy_matrix)

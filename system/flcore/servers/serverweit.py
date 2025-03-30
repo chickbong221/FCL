@@ -4,7 +4,7 @@ import glog as logger
 from flcore.clients.clientweit import clientWeIT
 from flcore.servers.serverbase import Server
 from flcore.trainmodel.fedewit_models import *
-from utils.fedweit_utils import *
+from flcore.utils_core.fedweit_utils import *
 from threading import Thread
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 import shutil

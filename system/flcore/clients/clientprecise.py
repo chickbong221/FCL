@@ -9,7 +9,7 @@ from sklearn.preprocessing import label_binarize
 from sklearn import metrics
 
 from flcore.clients.clientbase import Client
-from utils.precise_utils import str_in_list, Meter
+from flcore.utils_core.precise_utils import str_in_list, Meter
 
 eps = 1e-30
 

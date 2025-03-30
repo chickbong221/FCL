@@ -6,7 +6,7 @@ from sklearn import metrics
 import numpy as np
 import time
 
-from utils.fedweit_utils import *
+from flcore.utils_core.fedweit_utils import *
 
 class TrainModule:
 

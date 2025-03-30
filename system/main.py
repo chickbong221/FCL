@@ -25,9 +25,6 @@ from flcore.trainmodel.alexnet import *
 from flcore.trainmodel.mobilenet_v2 import *
 from flcore.trainmodel.transformer import *
 
-from utils.result_utils import average_data
-from utils.mem_utils import MemReporter
-
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
@@ -47,7 +44,6 @@ def run(args):
         )
 
     time_list = []
-    reporter = MemReporter()
     model_str = args.model
 
     for i in range(args.prev, args.times):
@@ -110,9 +106,7 @@ def run(args):
     print(f"\nAverage time cost: {round(np.average(time_list), 2)}s.")
     
     # Global average
-    average_data(dataset=args.dataset, algorithm=args.algorithm, goal=args.goal, times=args.times)
     print("All done!")
-    reporter.report()
 
 if __name__ == "__main__":
     total_start = time.time()

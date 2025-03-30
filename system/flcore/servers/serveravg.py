@@ -78,15 +78,13 @@ class FedAvg(Server):
                 glob_iter = i + self.global_rounds * task
                 s_t = time.time()
 
-                self.evaluate_before_sendmodel(task=task, glob_iter=glob_iter)
-
                 self.selected_clients = self.select_clients()
                 self.send_models()
 
                 if i%self.eval_gap == 0:
-                    # print(f"\n-------------Round number: {i}-------------")
-                    # print("\nEvaluate global model")
-                    self.evaluate(task=task, glob_iter=glob_iter)
+                    self.eval(task=task, glob_iter=glob_iter, flag="global")
+
+                print(f"\n-------------Round number: {i}-------------")
 
                 for client in self.selected_clients:
                     client.train()
@@ -99,7 +97,12 @@ class FedAvg(Server):
                 self.receive_models()
                 self.aggregate_parameters()
 
+                if i%self.eval_gap == 0:
+                    self.eval(task=task, glob_iter=glob_iter, flag="local")
+
                 self.Budget.append(time.time() - s_t)
                 # print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
-            self.calculate_forgetting(task=task, glob_iter=glob_iter)
+            self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+            self.send_models()
+            self.eval_task(task=task, glob_iter=glob_iter, flag="global")

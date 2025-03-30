@@ -6,7 +6,7 @@ import time
 
 from flcore.clients.clientbase import Client
 from flcore.trainmodel.fedewit_models import *
-from utils.fedweit_utils import *
+from flcore.utils_core.fedweit_utils import *
 from sklearn.preprocessing import label_binarize
 from sklearn import metrics
 
