@@ -14,6 +14,7 @@ Remember to change the name of the extracted folder as `imagenet1k-classes`. Do 
 ```sh
 python system/main.py --dataset IMAGENET1k --num_classes 1000 --wandb True 
 python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 1 -lr 1e-5 --flow_lr 1e-4 --optimizer adam
+ python system/main.py --dataset CIFAR100 --num_classes 100  -did 1 -lr 0.001 -gr 1000
 ```
 
 

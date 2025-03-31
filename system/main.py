@@ -40,7 +40,7 @@ def run(args):
             project="FCL",
             entity="letuanhf-hanoi-university-of-science-and-technology",
             config=args, 
-            name=f"{args.dataset}_{args.model}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}" if args.learning_rate_decay == False else f"{args.dataset}_{args.model}_{args.optimizer}_lr{args.local_learning_rate}_ld{args.learning_rate_decay_gamma}",
+            name=f"{args.dataset}_{args.model}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}" 
         )
 
     time_list = []
@@ -116,9 +116,6 @@ if __name__ == "__main__":
     parser.add_argument("--wandb", type=bool, default=False)
     parser.add_argument("--optimizer", type=str, default="sgd")
     parser.add_argument("--datadir", type=str, default="dataset")
-    parser.add_argument("--data_split_file", type=str, default="data_split/CIFAR100_split.pkl")
-    parser.add_argument('-go', "--goal", type=str, default="test", 
-                        help="The goal for this experiment")
     parser.add_argument('-dev', "--device", type=str, default="cuda",
                         choices=["cpu", "cuda"])
     parser.add_argument('-did', "--device_id", type=str, default="0")
@@ -149,12 +146,8 @@ if __name__ == "__main__":
                         help="Running times")
     parser.add_argument('-eg', "--eval_gap", type=int, default=1,
                         help="Rounds gap for evaluation")
-    parser.add_argument('-sfn', "--save_folder_name", type=str, default='items')
-    parser.add_argument('-ab', "--auto_break", type=bool, default=False)
-    parser.add_argument('-ften', "--fine_tuning_epoch_new", type=int, default=0)
+    parser.add_argument('-sfn', "--out_folder", type=str, default='out')
     parser.add_argument('-fd', "--feature_dim", type=int, default=512)
-    parser.add_argument('-vs', "--vocab_size", type=int, default=32000, 
-                        help="Set this for text tasks. 80 for Shakespeare. 32000 for AG_News and SogouNews.")
     parser.add_argument('-ml', "--max_len", type=int, default=200)
     # practical
     parser.add_argument('-cdr', "--client_drop_rate", type=float, default=0.0,

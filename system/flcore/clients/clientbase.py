@@ -21,7 +21,6 @@ class Client(object):
         self.dataset = args.dataset
         self.device = args.device
         self.id = id  # integer
-        self.save_folder_name = args.save_folder_name
 
         self.num_classes = args.num_classes
         self.train_data = train_data

@@ -1,8 +1,7 @@
 import os
-import sys
-import torch
+import json
+import shutil
 import wandb
-import glog as logger
 import numpy as np
 import csv
 import copy
@@ -30,10 +29,12 @@ class Server(object):
         self.current_num_join_clients = self.num_join_clients
         self.algorithm = args.algorithm
         self.time_select = args.time_select
-        self.goal = args.goal
         self.time_threthold = args.time_threthold
         self.top_cnt = args.top_cnt
-        self.auto_break = args.auto_break
+        self.save_folder = f"{args.out_folder}/{args.dataset}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}"
+        if os.path.exists(self.save_folder):
+            shutil.rmtree(self.save_folder)
+        os.makedirs(self.save_folder, exist_ok=True)
 
         self.clients = []
         self.selected_clients = []
@@ -164,26 +165,31 @@ class Server(object):
         tot_correct = []
         for c in self.clients:
             ct, ns = c.test_metrics(task=task)
-            # print(f"task {task}, client {c.id}, correct: {ct}")
-            # print(f"num_sample: {ns}")
             tot_correct.append(ct*1.0)
             num_samples.append(ns)
 
+            test_acc = sum(tot_correct)*1.0 / sum(num_samples)
+
             if flag == "global":
-                test_acc = sum(tot_correct)*1.0 / sum(num_samples)
+                subdir = os.path.join(self.save_folder, f"Client_Global/Client_{c.id}")
+                log_key = f"Client_Global/Client_{c.id}/Averaged Test Accurancy"
+            elif flag == "local":
+                subdir = os.path.join(self.save_folder, f"Client_Local/Client_{c.id}")
+                log_key = f"Client_Local/Client_{c.id}/Averaged Test Accurancy"
 
-                if self.args.wandb:
-                    wandb.log({
-                        f"Client_Global/Client_{c.id}/Averaged Test Accurancy": test_acc,
-                    }, step=glob_iter)
+            if self.args.wandb:
+                wandb.log({log_key: test_acc}, step=glob_iter)
+            
+            os.makedirs(subdir, exist_ok=True)
 
-            if flag == "local":
-                test_acc = sum(tot_correct)*1.0 / sum(num_samples)
+            file_path = os.path.join(subdir, "test_accuracy.csv")
+            file_exists = os.path.isfile(file_path)
 
-                if self.args.wandb:
-                    wandb.log({
-                        f"Client_Local/Client_{c.id}/Averaged Test Accurancy": test_acc,
-                    }, step=glob_iter)
+            with open(file_path, mode="w", newline="") as f:
+                writer = csv.writer(f)
+                if not file_exists:
+                    writer.writerow(["Step", "Test Accuracy"])  
+                writer.writerow([glob_iter, test_acc]) 
 
         ids = [c.id for c in self.clients]
 
@@ -212,28 +218,34 @@ class Server(object):
         train_loss = sum(stats_train[2])*1.0 / sum(stats_train[1])
 
         if flag == "global":
-            if self.args.wandb:
-                wandb.log({
-                    "Global/Averaged Train Loss": train_loss,
-                    "Global/Averaged Test Accurancy": test_acc,
-                }, step=glob_iter)
+            subdir = os.path.join(self.save_folder, "Global")
+            log_keys = {
+                "Global/Averaged Train Loss": train_loss,
+                "Global/Averaged Test Accuracy": test_acc,
+            }
+        elif flag == "local":
+            subdir = os.path.join(self.save_folder, "Local")
+            log_keys = {
+                "Local/Averaged Train Loss": train_loss,
+                "Local/Averaged Test Accuracy": test_acc,
+            }
+        
+        if self.args.wandb:
+            wandb.log(log_keys, step=glob_iter)
 
-            # print("Averaged Train Loss: {:.4f}".format(train_loss))
-            # print("Averaged Test Accurancy: {:.4f}".format(test_acc))
+        os.makedirs(subdir, exist_ok=True)
 
-        if flag == "local":
-            if self.args.wandb:
-                wandb.log({
-                    "Local/Averaged Train Loss": train_loss,
-                    "Local/Averaged Test Accurancy": test_acc,
-                }, step=glob_iter)
+        file_path = os.path.join(subdir, "metrics.csv")
+        file_exists = os.path.isfile(file_path)
 
-            # print("Averaged Client Train Loss: {:.4f}".format(train_loss))
-            # print("Averaged Client Test Accurancy: {:.4f}".format(test_acc))
+        with open(file_path, mode="a", newline="") as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                writer.writerow(["Step", "Train Loss", "Test Accuracy"])  
+            writer.writerow([glob_iter, train_loss, test_acc]) 
 
     # evaluate after end 1 task
     def eval_task(self, task, glob_iter, flag):
-
         accuracy_on_all_task = []
 
         for t in range(self.N_TASKS):
@@ -243,38 +255,25 @@ class Server(object):
 
         if flag == "global":
             self.global_accuracy_matrix.append(accuracy_on_all_task)
-            forgetting = metric_average_forgetting(task, self.global_accuracy_matrix)
-
-            if self.args.wandb:
-                wandb.log({
-                    "Global/Averaged Forgetting": forgetting
-                }, step=glob_iter)
-
-            print("Global Averaged Forgetting: {:.4f}".format(forgetting))
-
-            csv_filename = f"{self.args.algorithm}_global_accuracy_matrix.csv"
-            if os.path.exists(csv_filename):
-                os.remove(csv_filename)  # Xóa file cũ
-
-            with open(csv_filename, mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerows(self.global_accuracy_matrix)
-
-        if flag == "local":
+            accuracy_matrix = self.global_accuracy_matrix
+            subdir = os.path.join(self.save_folder, "Global")
+            log_key = "Global/Averaged Forgetting"
+        elif flag == "local":
             self.local_accuracy_matrix.append(accuracy_on_all_task)
-            forgetting = metric_average_forgetting(task, self.local_accuracy_matrix)
+            accuracy_matrix = self.local_accuracy_matrix
+            subdir = os.path.join(self.save_folder, "Local")
+            log_key = "Local/Averaged Forgetting"
 
-            if self.args.wandb:
-                wandb.log({
-                    "Local/Averaged Forgetting": forgetting
-                }, step=glob_iter)
+        forgetting = metric_average_forgetting(task, accuracy_matrix)
 
-            print("Local Averaged Forgetting: {:.4f}".format(forgetting))
+        if self.args.wandb:
+            wandb.log({log_key: forgetting}, step=glob_iter)
 
-            csv_filename = f"{self.args.algorithm}_local_accuracy_matrix.csv"
-            if os.path.exists(csv_filename):
-                os.remove(csv_filename)  # Xóa file cũ
+        print(f"{log_key}: {forgetting:.4f}")
 
-            with open(csv_filename, mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerows(self.local_accuracy_matrix)
+        os.makedirs(subdir, exist_ok=True)
+
+        csv_filename = os.path.join(subdir, f"{self.args.algorithm}_accuracy_matrix.csv")
+        with open(csv_filename, mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerows(accuracy_matrix)
