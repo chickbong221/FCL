@@ -170,26 +170,27 @@ class Server(object):
 
             test_acc = sum(tot_correct)*1.0 / sum(num_samples)
 
-            if flag == "global":
-                subdir = os.path.join(self.save_folder, f"Client_Global/Client_{c.id}")
-                log_key = f"Client_Global/Client_{c.id}/Averaged Test Accurancy"
-            elif flag == "local":
-                subdir = os.path.join(self.save_folder, f"Client_Local/Client_{c.id}")
-                log_key = f"Client_Local/Client_{c.id}/Averaged Test Accurancy"
+            if flag != "off":
+                if flag == "global":
+                    subdir = os.path.join(self.save_folder, f"Client_Global/Client_{c.id}")
+                    log_key = f"Client_Global/Client_{c.id}/Averaged Test Accurancy"
+                elif flag == "local":
+                    subdir = os.path.join(self.save_folder, f"Client_Local/Client_{c.id}")
+                    log_key = f"Client_Local/Client_{c.id}/Averaged Test Accurancy"
 
-            if self.args.wandb:
-                wandb.log({log_key: test_acc}, step=glob_iter)
-            
-            os.makedirs(subdir, exist_ok=True)
+                if self.args.wandb:
+                    wandb.log({log_key: test_acc}, step=glob_iter)
+                
+                os.makedirs(subdir, exist_ok=True)
 
-            file_path = os.path.join(subdir, "test_accuracy.csv")
-            file_exists = os.path.isfile(file_path)
+                file_path = os.path.join(subdir, "test_accuracy.csv")
+                file_exists = os.path.isfile(file_path)
 
-            with open(file_path, mode="w", newline="") as f:
-                writer = csv.writer(f)
-                if not file_exists:
-                    writer.writerow(["Step", "Test Accuracy"])  
-                writer.writerow([glob_iter, test_acc]) 
+                with open(file_path, mode="w", newline="") as f:
+                    writer = csv.writer(f)
+                    if not file_exists:
+                        writer.writerow(["Step", "Test Accuracy"])  
+                    writer.writerow([glob_iter, test_acc]) 
 
         ids = [c.id for c in self.clients]
 
