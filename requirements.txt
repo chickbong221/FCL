@@ -3,6 +3,6 @@ scipy
 Pillow
 matplotlib
 tqdm
-h5py
 scikit-learn
 seaborn
+
