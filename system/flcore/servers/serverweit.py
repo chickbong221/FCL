@@ -1,6 +1,5 @@
 import time
 import torch
-import glog as logger
 from flcore.clients.clientweit import clientWeIT
 from flcore.servers.serverbase import Server
 from flcore.trainmodel.fedewit_models import *

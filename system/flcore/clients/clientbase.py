@@ -4,8 +4,6 @@ import torch.nn as nn
 import numpy as np
 import os
 from torch.utils.data import DataLoader
-from sklearn.preprocessing import label_binarize
-from sklearn import metrics
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
 class Client(object):

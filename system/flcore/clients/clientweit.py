@@ -1,4 +1,3 @@
-import copy
 import math
 import torch
 import numpy as np
@@ -7,8 +6,6 @@ import time
 from flcore.clients.clientbase import Client
 from flcore.trainmodel.fedewit_models import *
 from flcore.utils_core.fedweit_utils import *
-from sklearn.preprocessing import label_binarize
-from sklearn import metrics
 
 class clientWeIT(Client):
     def __init__(self, args, id, train_data, test_data, initial_weights, **kwargs):
@@ -252,25 +249,8 @@ class clientWeIT(Client):
 
                 test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
                 test_num += y.shape[0]
-
-                y_prob.append(output.detach().cpu().numpy())
-                nc = self.num_classes
-                if self.num_classes == 2:
-                    nc += 1
-                lb = label_binarize(y.detach().cpu().numpy(), classes=np.arange(nc))
-                if self.num_classes == 2:
-                    lb = lb[:, :2]
-                y_true.append(lb)
-
-        # self.model.cpu()
-        # self.save_model(self.model, 'model')
-
-        y_prob = np.concatenate(y_prob, axis=0)
-        y_true = np.concatenate(y_true, axis=0)
-
-        auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
         
-        return test_acc, test_num, auc
+        return test_acc, test_num
 
     def train_metrics(self):
         trainloader = self.load_train_data()

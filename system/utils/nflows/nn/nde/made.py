@@ -3,7 +3,6 @@
 
 import numpy as np
 import torch
-from matplotlib import pyplot as plt
 from torch import distributions, nn
 from torch.nn import functional as F
 from torch.nn import init

@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as transforms
+import shutil
 
 # Download CIFAR-100 dataset
 transform = transforms.ToTensor()
@@ -32,3 +33,22 @@ for class_id, images in cifar100_classes.items():
     print(f"Saved {save_path} with {len(images)} images.")
 
 print("CIFAR-100 saved in 'cifar100-classes' folder.")
+
+# Delete .gz files and data files after extraction
+gz_files = [f for f in os.listdir('dataset') if f.endswith('.gz')]
+for gz_file in gz_files:
+    gz_path = os.path.join('dataset', gz_file)
+    os.remove(gz_path)
+    print(f"Deleted {gz_path}")
+
+# Delete extracted data files
+extracted_files = [
+    'dataset/cifar-100-python'
+]
+
+for file_path in extracted_files:
+    if os.path.exists(file_path):
+        shutil.rmtree(file_path)
+        print(f"Deleted {file_path}")
+
+print("Deleted .gz files and extracted data files.")

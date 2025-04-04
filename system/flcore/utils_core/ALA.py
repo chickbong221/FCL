@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import copy
 import random
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from typing import List, Tuple
 
 class ALA:
@@ -71,8 +71,10 @@ class ALA:
         rand_ratio = self.rand_percent / 100
         rand_num = int(rand_ratio*len(self.train_data))
         rand_idx = random.randint(0, len(self.train_data)-rand_num)
-        rand_loader = DataLoader(self.train_data[rand_idx:rand_idx+rand_num], self.batch_size, drop_last=False)
 
+        indices = list(range(rand_idx, rand_idx + rand_num))
+        subset = Subset(self.train_data, indices)
+        rand_loader = DataLoader(subset, self.batch_size, drop_last=False)
 
         # obtain the references of the parameters
         params_g = list(global_model.parameters())

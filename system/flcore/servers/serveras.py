@@ -1,9 +1,11 @@
 import time
 import copy
 import numpy as np
+import torch
 # from flcore.clients.clientavg import clientAVG
 from flcore.clients.clientas import clientAS
 from flcore.servers.serverbase import Server
+from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
 
 class FedAS(Server):
@@ -30,7 +32,7 @@ class FedAS(Server):
         for client in [client for client in self.clients if (client.id in selected_ids)]:
             start_time = time.time()
 
-            progress = epoch / self.global_rounds
+            progress = (epoch+1) / self.global_rounds
             
             client.set_parameters(self.global_model, progress)
 
@@ -55,68 +57,108 @@ class FedAS(Server):
             self.add_parameters(w, client_model)
 
     def train(self):
-        for i in range(self.global_rounds+1):
-            s_t = time.time()
-            self.selected_clients = self.select_clients()
-            self.alled_clients = self.all_clients()
-
-            selected_ids = [client.id for client in self.selected_clients]
-
-
-            # self.send_models()
-
-            # evaluate personalized models, ie FedAvg-C
-            if i%self.eval_gap == 0:
-                print(f"\n-------------Round number: {i}-------------")
-                print("\nEvaluate global model")
-                self.evaluate()
-
-            # self.send_models()
-            self.send_selected_models(selected_ids, i)
-
-            # print(f'send selected models done')
-
-            # for client in self.selected_clients:
-            #     client.train()
         
+        for task in range(self.N_TASKS):
 
-            for client in self.alled_clients:
-                # print("===============")
-                client.train(client.id in selected_ids)
-            # assert 1==0
+            print(f"\n================ Current Task: {task} =================")
+            if task == 0:
+                 # update labels info. for the first task
+                available_labels = set()
+                available_labels_current = set()
+                available_labels_past = set()
+                for u in self.clients:
+                    available_labels = available_labels.union(set(u.classes_so_far))
+                    available_labels_current = available_labels_current.union(set(u.current_labels))
 
-            self.print_fim_histories()
+                for u in self.clients:
+                    u.available_labels = list(available_labels)
+                    u.available_labels_current = list(available_labels_current)
+                    u.available_labels_past = list(available_labels_past)
 
-            self.receive_models()
-            self.aggregate_wrt_fisher()
+            else:
+                self.current_task = task
+                
+                torch.cuda.empty_cache()
+                for i in range(len(self.clients)):
+                    
+                    if self.args.dataset == 'IMAGENET1k':
+                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                    elif self.args.dataset == 'CIFAR100':
+                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
+                    else:
+                        raise NotImplementedError("Not supported dataset")
 
-            self.Budget.append(time.time() - s_t)
-            print('-'*25, 'time cost', '-'*25, self.Budget[-1])
+                    # update dataset
+                    self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
+                    # print(self.clients[i].task_dict)
 
-            if self.auto_break and self.check_done(acc_lss=[self.rs_test_acc], top_cnt=self.top_cnt):
-                break
+                # update labels info.
+                available_labels = set()
+                available_labels_current = set()
+                available_labels_past = self.clients[0].available_labels
+                for u in self.clients:
+                    available_labels = available_labels.union(set(u.classes_so_far))
+                    available_labels_current = available_labels_current.union(set(u.current_labels))
 
-        print("\nBest accuracy.")
-        # self.print_(max(self.rs_test_acc), max(
-        #     self.rs_train_acc), min(self.rs_train_loss))
-        print(max(self.rs_test_acc))
-        print("\nAverage time cost per round.")
-        print(sum(self.Budget[1:])/len(self.Budget[1:]))
+                for u in self.clients:
+                    u.available_labels = list(available_labels)
+                    u.available_labels_current = list(available_labels_current)
+                    u.available_labels_past = list(available_labels_past)
 
-        print(f'+++++++++++++++++++++++++++++++++++++++++')
-        gen_acc = self.avg_generalization_metrics()
-        print(f'Generalization Acc: {gen_acc}')
-        print(f'+++++++++++++++++++++++++++++++++++++++++')
+            # ============ train ==============
+                
+            for i in range(self.global_rounds):
 
-        self.save_results()
-        self.save_global_model()
+                glob_iter = i + self.global_rounds * task
+                s_t = time.time()
+                
+                self.selected_clients = self.select_clients()
+                self.alled_clients = self.all_clients()
 
-        if self.num_new_clients > 0:
-            self.eval_new_clients = True
-            self.set_new_clients(clientAS)
-            print(f"\n-------------Fine tuning round-------------")
-            print("\nEvaluate new clients")
-            self.evaluate()
+                selected_ids = [client.id for client in self.selected_clients]
+
+                # self.send_models()
+
+                # evaluate personalized models, ie FedAvg-C
+                if i%self.eval_gap == 0:
+                    print(f"\n-------------Round number: {i}-------------")
+                    self.eval(task=task, glob_iter=glob_iter, flag="global")
+
+                # self.send_models()
+                self.send_selected_models(selected_ids, i)
+
+                # print(f'send selected models done')
+
+                # for client in self.selected_clients:
+                #     client.train()
+
+                for client in self.alled_clients:
+                    # print("===============")
+                    client.train(client.id in selected_ids)
+                # assert 1==0
+
+                self.print_fim_histories()
+
+                self.receive_models()
+                self.aggregate_wrt_fisher()
+
+                if i%self.eval_gap == 0:
+                    self.eval(task=task, glob_iter=glob_iter, flag="local")
+
+                self.Budget.append(time.time() - s_t)
+                # print('-'*25, 'time cost', '-'*25, self.Budget[-1])
+
+            self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+
+            # need eval before data update
+            # self.send_models()
+            self.send_selected_models(selected_ids, self.global_rounds-1)
+            self.eval_task(task=task, glob_iter=glob_iter, flag="global")
+
+            # print(f'+++++++++++++++++++++++++++++++++++++++++')
+            # gen_acc = self.avg_generalization_metrics()
+            # print(f'Generalization Acc: {gen_acc}')
+            # print(f'+++++++++++++++++++++++++++++++++++++++++')
 
     def print_fim_histories(self):
         avg_fim_histories = []

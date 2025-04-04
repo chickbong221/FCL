@@ -8,13 +8,11 @@ from flcore.clients.clientbase import Client
 from torch.autograd import grad
 
 
-
-
 class clientAS(Client):
 
 
-    def __init__(self, args, id, train_samples, test_samples, **kwargs):
-        super().__init__(args, id, train_samples, test_samples, **kwargs)
+    def __init__(self, args, id, train_data, test_data, **kwargs):
+        super().__init__(args, id, train_data, test_data, **kwargs)
         self.fim_trace_history = []
 
     def train(self, is_selected):

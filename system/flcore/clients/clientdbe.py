@@ -1,33 +1,14 @@
-# PFLlib: Personalized Federated Learning Algorithm Library
-# Copyright (C) 2021  Jianqing Zhang
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 import torch
 import torch.nn as nn
 import numpy as np
 import time
 from flcore.clients.clientbase import Client
-from sklearn.preprocessing import label_binarize
-from sklearn import metrics
 from torch.autograd import Variable
 
 
 class clientDBE(Client):
-    def __init__(self, args, id, train_samples, test_samples, **kwargs):
-        super().__init__(args, id, train_samples, test_samples, **kwargs)
+    def __init__(self, args, id, train_data, test_data, **kwargs):
+        super().__init__(args, id, train_data, test_data, **kwargs)
 
         self.klw = args.kl_weight
         self.momentum = args.momentum
@@ -135,14 +116,12 @@ class clientDBE(Client):
 
         return losses, train_num
 
-    def test_metrics(self):
-        testloaderfull = self.load_test_data()
+    def test_metrics(self, task):
+        testloaderfull = self.load_test_data(task=task)
         self.model.eval()
 
         test_acc = 0
         test_num = 0
-        y_prob = []
-        y_true = []
         reps = []
         
         with torch.no_grad():
@@ -158,19 +137,6 @@ class clientDBE(Client):
                 test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
                 test_num += y.shape[0]
 
-                y_prob.append(output.detach().cpu().numpy())
-                nc = self.num_classes
-                if self.num_classes == 2:
-                    nc += 1
-                lb = label_binarize(y.detach().cpu().numpy(), classes=np.arange(nc))
-                if self.num_classes == 2:
-                    lb = lb[:, :2]
-                y_true.append(lb)
                 reps.extend(rep.detach())
 
-        y_prob = np.concatenate(y_prob, axis=0)
-        y_true = np.concatenate(y_true, axis=0)
-
-        auc = metrics.roc_auc_score(y_true, y_prob, average='micro')
-
-        return test_acc, test_num, auc
+        return test_acc, test_num

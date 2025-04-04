@@ -1,12 +1,8 @@
-import copy
-from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
 import glog as logger
 import numpy as np
 import wandb
-from sklearn.preprocessing import label_binarize
-from sklearn import metrics
 
 from flcore.clients.clientbase import Client
 from flcore.utils_core.precise_utils import str_in_list, Meter

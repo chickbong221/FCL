@@ -11,8 +11,9 @@ import logging
 import wandb
 
 from flcore.servers.serveravg import FedAvg
-# from flcore.servers.serverala import FedALA
-# from flcore.servers.serverdbe import FedDBE
+from flcore.servers.serverala import FedALA
+from flcore.servers.serverdbe import FedDBE
+from flcore.servers.serveras import FedAS
 from flcore.servers.serverweit import FedWeIT
 from flcore.servers.serverprecise import FedPrecise
 
@@ -80,20 +81,27 @@ def run(args):
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedAvg(args, i)
 
-        # elif args.algorithm == "FedALA":
-        #     server = FedALA(args, i)
+        elif args.algorithm == "FedALA":
+            server = FedALA(args, i)
 
-        # elif args.algorithm == "FedDBE":
-        #     args.head = copy.deepcopy(args.model.fc)
-        #     args.model.fc = nn.Identity()
-        #     args.model = BaseHeadSplit(args.model, args.head)
-        #     server = FedDBE(args, i)
+        elif args.algorithm == "FedDBE":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
+            server = FedDBE(args, i)
 
         elif args.algorithm == "FedWeIT":
             server = FedWeIT(args, i)
 
         elif args.algorithm == "PreciseFCL":
             server = FedPrecise(args, i)
+
+        elif args.algorithm == 'FedAS':
+
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
+            server = FedAS(args, i)
 
         else:
             raise NotImplementedError("Not supported model")
@@ -113,6 +121,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     # general
+    parser.add_argument("--offlog", type=bool, default=False)
     parser.add_argument("--wandb", type=bool, default=False)
     parser.add_argument("--optimizer", type=str, default="sgd")
     parser.add_argument("--datadir", type=str, default="dataset")

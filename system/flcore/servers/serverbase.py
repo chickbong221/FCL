@@ -31,10 +31,12 @@ class Server(object):
         self.time_select = args.time_select
         self.time_threthold = args.time_threthold
         self.top_cnt = args.top_cnt
+        self.offlog = args.offlog
         self.save_folder = f"{args.out_folder}/{args.dataset}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}"
-        if os.path.exists(self.save_folder):
-            shutil.rmtree(self.save_folder)
-        os.makedirs(self.save_folder, exist_ok=True)
+        if self.offlog:    
+            if os.path.exists(self.save_folder):
+                shutil.rmtree(self.save_folder)
+            os.makedirs(self.save_folder, exist_ok=True)
 
         self.clients = []
         self.selected_clients = []
@@ -169,7 +171,7 @@ class Server(object):
             num_samples.append(ns)
 
             test_acc = sum(tot_correct)*1.0 / sum(num_samples)
-
+    
             if flag != "off":
                 if flag == "global":
                     subdir = os.path.join(self.save_folder, f"Client_Global/Client_{c.id}")
@@ -181,16 +183,17 @@ class Server(object):
                 if self.args.wandb:
                     wandb.log({log_key: test_acc}, step=glob_iter)
                 
-                os.makedirs(subdir, exist_ok=True)
+                if self.offlog:
+                    os.makedirs(subdir, exist_ok=True)
 
-                file_path = os.path.join(subdir, "test_accuracy.csv")
-                file_exists = os.path.isfile(file_path)
+                    file_path = os.path.join(subdir, "test_accuracy.csv")
+                    file_exists = os.path.isfile(file_path)
 
-                with open(file_path, mode="w", newline="") as f:
-                    writer = csv.writer(f)
-                    if not file_exists:
-                        writer.writerow(["Step", "Test Accuracy"])  
-                    writer.writerow([glob_iter, test_acc]) 
+                    with open(file_path, mode="w", newline="") as f:
+                        writer = csv.writer(f)
+                        if not file_exists:
+                            writer.writerow(["Step", "Test Accuracy"])  
+                        writer.writerow([glob_iter, test_acc]) 
 
         ids = [c.id for c in self.clients]
 
@@ -234,16 +237,17 @@ class Server(object):
         if self.args.wandb:
             wandb.log(log_keys, step=glob_iter)
 
-        os.makedirs(subdir, exist_ok=True)
+        if self.offlog:
+            os.makedirs(subdir, exist_ok=True)
 
-        file_path = os.path.join(subdir, "metrics.csv")
-        file_exists = os.path.isfile(file_path)
+            file_path = os.path.join(subdir, "metrics.csv")
+            file_exists = os.path.isfile(file_path)
 
-        with open(file_path, mode="a", newline="") as f:
-            writer = csv.writer(f)
-            if not file_exists:
-                writer.writerow(["Step", "Train Loss", "Test Accuracy"])  
-            writer.writerow([glob_iter, train_loss, test_acc]) 
+            with open(file_path, mode="a", newline="") as f:
+                writer = csv.writer(f)
+                if not file_exists:
+                    writer.writerow(["Step", "Train Loss", "Test Accuracy"])  
+                writer.writerow([glob_iter, train_loss, test_acc]) 
 
     # evaluate after end 1 task
     def eval_task(self, task, glob_iter, flag):
@@ -272,9 +276,10 @@ class Server(object):
 
         print(f"{log_key}: {forgetting:.4f}")
 
-        os.makedirs(subdir, exist_ok=True)
+        if self.offlog:
+            os.makedirs(subdir, exist_ok=True)
 
-        csv_filename = os.path.join(subdir, f"{self.args.algorithm}_accuracy_matrix.csv")
-        with open(csv_filename, mode="w", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerows(accuracy_matrix)
+            csv_filename = os.path.join(subdir, f"{self.args.algorithm}_accuracy_matrix.csv")
+            with open(csv_filename, mode="w", newline="") as file:
+                writer = csv.writer(file)
+                writer.writerows(accuracy_matrix)

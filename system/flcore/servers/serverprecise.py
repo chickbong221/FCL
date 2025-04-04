@@ -1,4 +1,3 @@
-import glog as logger
 import torch
 import time
 import numpy as np

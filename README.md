@@ -1,20 +1,59 @@
-# FCL with Continual ImageNet
-This directory contains the implementation of the continual binary ImageNet classification problem.
+# Continual Federated Learning Benchmark
 
-The first step to replicate the results is to download the data. The data can be downloaded [here](https://drive.google.com/file/d/1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z/view?usp=sharing).
-Then download a file [here](https://drive.google.com/file/d/1qt6ucxtgVKsRdGvw72Phm916mSNlTMZB/view?usp=sharing).\
-Create a directory named `dataset` and extract the downloaded data folder in `dataset`. Also move the downloaded file `class_order`  to `dataset`.
+## Overview
+Continual Federated Learning (CFL) Benchmark is a standardized evaluation framework for assessing continual learning methods in federated settings. It provides datasets, evaluation metrics, and baseline implementations to facilitate research in CFL.
+
+## Features
+- **Diverse Datasets**: Supports multiple datasets commonly used in CFL research.
+- **Baseline Models**: Includes various baseline models for comparison.
+- **Customizable**: Easily extendable for new datasets and algorithms.
+- **Federated Learning Simulation**: Implements a federated learning environment for continual learning.
+- **Metrics & Logging**: Provides standardized metrics for evaluating performance over time.
+
+## Installation
 ```sh
-cd FCL/
-mkdir dataset
+# Clone the repository
+git clone git@github.com:chickbong221/FCL.git
+cd FCL
+
+# Create a virtual environment (optional but recommended)
+python -m venv .env
+source .env/bin/activate  # On Windows use: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Download data
+python dataset/cifar100_npy.py
 ```
 
-Remember to change the name of the extracted folder as `imagenet1k-classes`. Do not change the name of the `class_order` file. Then run the following command to run the code
-
+## Usage
+### Running an Experiment
 ```sh
 python system/main.py --dataset IMAGENET1k --num_classes 1000 --wandb True 
-python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 1 -lr 1e-5 --flow_lr 1e-4 --optimizer adam
- python system/main.py --dataset CIFAR100 --num_classes 100  -did 1 -lr 0.001 -gr 1000
+python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 0 -lr 1e-5 --flow_lr 1e-4 --optimizer adam
+python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000
+python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedDBE
 ```
 
+## Benchmarked Algorithms
+- **FedAvg** (Federated Averaging)
+- **PreciseFCL** 
+- **FedWeIT** 
+- **FedALA** 
+- **FedAS**
+- **FedDBE**
 
+## Datasets
+- PMNIST
+- CIFAR-100
+- IMAGENET1k
+
+## Contributing
+We welcome contributions! Please check our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## Contact
+For questions or collaborations, please open an issue or reach out to `Anh-Duong-dep-trai@example.com`.
