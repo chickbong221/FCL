@@ -167,8 +167,8 @@ if __name__ == "__main__":
                         help="The rate for slow clients when sending global model")
     parser.add_argument('-ts', "--time_select", type=bool, default=False,
                         help="Whether to group and select clients at each round according to time cost")
-    parser.add_argument('-tth', "--time_threthold", type=float, default=10000,
-                        help="The threthold for droping slow clients")
+    parser.add_argument('-tth', "--time_threshold", type=float, default=10000,
+                        help="The threshold for dropping slow clients")
     # FedALA
     parser.add_argument('-et', "--eta", type=float, default=1.0)
     parser.add_argument('-s', "--rand_percent", type=int, default=80)
