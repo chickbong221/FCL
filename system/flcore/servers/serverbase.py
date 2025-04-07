@@ -63,6 +63,10 @@ class Server(object):
         else:
             raise NotImplementedError("Not supported dataset")
 
+        # FCL
+        self.task_dict = {}
+        self.current_task = 0
+
     def set_clients(self, clientObj):
         total_clients = 10
         for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
@@ -146,6 +150,27 @@ class Server(object):
                 self.uploaded_models.append(client.model)
         for i, w in enumerate(self.uploaded_weights):
             self.uploaded_weights[i] = w / tot_samples
+
+    def receive_grads(self):
+
+        self.grads = copy.deepcopy(self.uploaded_models)
+        # This for copy the list to store all the gradient update value
+
+        for model in self.grads:
+            for param in model.parameters():
+                param.data.zero_()
+
+        for grad_model, local_model in zip(self.grads, self.uploaded_models):
+            for grad_param, local_param, global_param in zip(grad_model.parameters(), local_model.parameters(),
+                                                             self.global_model.parameters()):
+                grad_param.data = local_param.data - global_param.data
+
+        for w, client_model in zip(self.uploaded_weights, self.grads):
+            self.mul_params(w, client_model)
+
+    def mul_params(self, w, client_model):
+        for param in client_model.parameters():
+            param.data = param.data.clone() * w
 
     def aggregate_parameters(self):
         assert (len(self.uploaded_models) > 0)
@@ -283,3 +308,16 @@ class Server(object):
             with open(csv_filename, mode="w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerows(accuracy_matrix)
+
+    def assign_unique_tasks(self):
+        # Convert lists to sets of tuples for easy comparison
+        unique_set = {tuple(task) for task in self.unique_task}
+        old_unique_set = {tuple(task) for task in self.old_unique_task}
+
+        # Find new tasks by taking the difference
+        new_tasks = unique_set - old_unique_set
+        # print(f"new_tasks: {new_tasks}")
+        # Loop over new tasks and assign them to task_dict
+        for task in new_tasks:
+            self.current_task += 1
+            self.task_dict[self.current_task] = list(task)

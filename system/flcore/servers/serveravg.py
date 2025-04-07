@@ -33,7 +33,6 @@ class FedAvg(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-
                 for u in self.clients:
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
@@ -77,7 +76,6 @@ class FedAvg(Server):
 
                 glob_iter = i + self.global_rounds * task
                 s_t = time.time()
-
                 self.selected_clients = self.select_clients()
                 self.send_models()
 

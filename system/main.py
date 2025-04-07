@@ -20,6 +20,9 @@ from flcore.servers.serverprecise import FedPrecise
 from flcore.trainmodel.models import *
 
 from flcore.trainmodel.precise_models import PreciseModel
+from flcore.servers.serverstgm import FedSTGM
+from flcore.servers.serverfcil import FedFCIL
+
 from flcore.trainmodel.bilstm import *
 from flcore.trainmodel.resnet import *
 from flcore.trainmodel.alexnet import *
@@ -34,7 +37,7 @@ torch.manual_seed(0)
 
 
 def run(args):
-
+    
     if args.wandb:
         wandb.login(key="b1d6eed8871c7668a889ae74a621b5dbd2f3b070")
         wandb.init(
@@ -103,10 +106,20 @@ def run(args):
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedAS(args, i)
 
+        elif args.algorithm == "FedFCIL":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
+            server = FedFCIL(args, i)
+            
+        elif args.algorithm == "FedSTGM":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
+            server = FedSTGM(args, i)
         else:
-            raise NotImplementedError("Not supported model")
+            raise NotImplementedError
 
-        print("Done Algo")
         server.train()
 
         time_list.append(time.time()-start)
@@ -136,7 +149,7 @@ if __name__ == "__main__":
     parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
                         help="Local learning rate")
     parser.add_argument('-ld', "--learning_rate_decay", type=bool, default=False)
-    parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.999)
+    parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.99)
     parser.add_argument('-gr', "--global_rounds", type=int, default=2000)
     parser.add_argument('-tc', "--top_cnt", type=int, default=100, 
                         help="For auto_break")
@@ -173,7 +186,7 @@ if __name__ == "__main__":
     parser.add_argument('-et', "--eta", type=float, default=1.0)
     parser.add_argument('-s', "--rand_percent", type=int, default=80)
     parser.add_argument('-p', "--layer_idx", type=int, default=2,
-                        help="More fine-graind than its original paper.")
+                        help="More fine-grained than its original paper.")
     # FedDBE
     parser.add_argument('-mo', "--momentum", type=float, default=0.1)
     parser.add_argument('-klw', "--kl_weight", type=float, default=0.0)
@@ -212,6 +225,17 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args.log_dir = os.path.join(args.output_path, 'logs/{}-{}'.format(args.model, args.dataset))
     args.state_dir = os.path.join(args.output_path, 'states/{}-{}'.format(args.model, args.dataset))
+    
+    # FedSTGM
+    parser.add_argument('-car', "--grad_stgm_rounds", type=int, default=100)
+    parser.add_argument('-calr', "--grad_stgm_learning_rate", type=float, default=25)
+    parser.add_argument('-mmt', "--stgm_momentum", type=float, default=0.5)
+    parser.add_argument('-ss', "--step_size", type=int, default=30)
+    parser.add_argument('-gam', "--gamma", type=float, default=0.5)
+    parser.add_argument('-c', "--c_parameter", type=float, default=0.5)
+
+    args = parser.parse_args()
+
     os.environ["CUDA_VISIBLE_DEVICES"] = args.device_id
 
     if args.device == "cuda" and not torch.cuda.is_available():

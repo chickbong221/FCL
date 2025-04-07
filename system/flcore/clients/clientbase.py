@@ -27,6 +27,9 @@ class Client(object):
         self.learning_rate = args.local_learning_rate
         self.local_epochs = args.local_epochs
 
+        self.train_source = [image for image, _ in self.train_data]
+        self.train_targets = [label for _, label in self.train_data]
+
         # check BatchNorm
         self.has_BatchNorm = False
         for layer in self.model.children():
@@ -106,6 +109,8 @@ class Client(object):
         # update dataset: 
         self.train_data = train
         self.test_data = test
+
+        self.train_targets = [label for _, label in self.train_data]
         
         # update classes_past_task
         self.classes_past_task = copy.deepcopy(self.classes_so_far)
@@ -120,8 +125,17 @@ class Client(object):
 
             self.current_labels.clear()
             self.current_labels.extend(label_info['labels'])
-    
+            
         return
+
+    def assign_task_id(self, task_dict):
+        if not isinstance(task_dict, dict):
+            raise ValueError("task_dict must be a dictionary")
+
+        label_key = tuple(sorted(self.current_labels)) if isinstance(self.current_labels,
+                                                                     (set, list)) else self.current_labels
+
+        return task_dict.get(label_key, -1)  # Returns -1 if labels are not in task_dict
 
     def load_train_data(self, batch_size=None):
         if batch_size == None:
@@ -165,7 +179,6 @@ class Client(object):
                 else:
                     x = x.to(self.device)
                 y = y.to(self.device)
-
                 output = self.model(x)
 
                 test_acc += (torch.sum(torch.argmax(output, dim=1) == y)).item()
