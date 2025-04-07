@@ -30,7 +30,7 @@ class clientMFCL(Client):
         opt = optim.SGD(model.parameters(), lr=lr, weight_decay=0.00001)
         if teacher is None:
             for epoch in range(self.args.local_epochs):
-                for i, (x, y) in enumerate(self.train_loader):
+                for i, (x, y) in enumerate(self.trainloader):
                     x, y = x.to('cuda'), y.to('cuda')
                     logits = model(x)
                     loss = F.cross_entropy(logits, y)
@@ -44,7 +44,7 @@ class clientMFCL(Client):
         self.dw_k = torch.ones((self.valid_dim + 1), dtype=torch.float32)
         previous_teacher, previous_linear = deepcopy(teacher[0]), deepcopy(teacher[1])
         for epoch in range(self.args.local_epochs):
-            for i, (x, y) in enumerate(self.train_loader):
+            for i, (x, y) in enumerate(self.trainloader):
                 x, y = x.to('cuda'), y.to('cuda')
                 idx1 = torch.where(y >= self.last_valid_dim)[0]
                 x_replay, y_replay, y_replay_hat = self.sample(previous_teacher, self.args.syn_size)
@@ -67,12 +67,12 @@ class clientMFCL(Client):
 
     def kd(self, x_com, previous_linear, logits_pen, previous_teacher):
 
-        try:
-            has_nan = torch.isnan(logits_pen).any()
-            has_inf = torch.isinf(logits_pen).any()
-            print(f"kd: logits_pen has NaN: {has_nan}, has Inf: {has_inf}")
-        except RuntimeError as e:
-            print(f"kd: Failed to check logits_pen: {e}")
+        # try:
+        #     has_nan = torch.isnan(logits_pen).any()
+        #     has_inf = torch.isinf(logits_pen).any()
+        #     print(f"kd: logits_pen has NaN: {has_nan}, has Inf: {has_inf}")
+        # except RuntimeError as e:
+        #     print(f"kd: Failed to check logits_pen: {e}")
             
         kd_index = np.arange(x_com.size(0))
         dw_KD = self.dw_k[-1 * torch.ones(len(kd_index),).long()].to('cuda')

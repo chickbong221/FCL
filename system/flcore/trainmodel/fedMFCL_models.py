@@ -6,7 +6,7 @@ from sklearn import metrics
 import numpy as np
 import time
 import math
-import tqdm
+from tqdm import tqdm
 
 class network(nn.Module):
     def __init__(self, feature_extractor, num_classes):
@@ -19,6 +19,16 @@ class network(nn.Module):
         x = self.feature(input)
         x = self.fc(x)
         return x
+
+    # def forward(self, input):
+    #     print(f"Input shape: {input.shape}")
+    #     x = self.feature(input)
+    #     print(f"After feature extractor (self.feature): {x.shape}")
+    #     # print("check")
+    #     x = self.fc(x)
+    #     print(f"After fully connected layer (self.fc): {x.shape}")
+    #     return x
+
     def Incremental_learning(self, numclass):
         weight = self.fc.weight.data
         bias = self.fc.bias.data

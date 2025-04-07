@@ -23,6 +23,7 @@ from flcore.trainmodel.resnet import *
 from flcore.trainmodel.alexnet import *
 from flcore.trainmodel.mobilenet_v2 import *
 from flcore.trainmodel.transformer import *
+from flcore.trainmodel.fedMFCL_models import resnet18
 
 from utils.result_utils import average_data
 from utils.mem_utils import MemReporter
@@ -90,6 +91,7 @@ def run(args):
             server = FedWeIT(args, i)
 
         elif args.algorithm == "FedMFCL":
+            args.model = resnet18(args.num_classes)
             server = FedMFCL(args, i)
 
         else:

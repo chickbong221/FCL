@@ -45,7 +45,7 @@ class FedMFCL(Server):
             # update imagenet1k-classes so far & current labels
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
-            client.task_dict[0] = label_info['labels']
+            # client.task_dict[0] = label_info['labels']
 
         logger.info("Number of Train/Test samples: %d/%d"%(self.total_train_samples, self.total_test_samples))
         logger.info("Finished creating FedAvg server.")
@@ -60,7 +60,7 @@ class FedMFCL(Server):
 
         # Task
         if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = 500
+            N_TASKS = self.args.num_tasks
         else:
             N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
         print(str(N_TASKS) + " tasks are available")
@@ -150,7 +150,7 @@ class FedMFCL(Server):
                     client.valid_dim = classes_learned + self.args.num_classes_per_task
                 self.global_model = original_global  
                 classes_learned += self.args.num_classes_per_task
-                self.global_model.Incremental_learning(classes_learned)
+                # self.global_model.Incremental_learning(classes_learned)
 
             # self.save_results()
             # self.save_global_model()
