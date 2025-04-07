@@ -103,7 +103,7 @@ class MobileNetV2(nn.Module):
         MobileNet V2 main class
 
         Args:
-            num_classes (int): Number of classes
+            num_classes (int): Number of imagenet1k-classes
             width_mult (float): Width multiplier - adjusts number of channels in each layer by this amount
             inverted_residual_setting: Network structure
             round_nearest (int): Round the number of channels in each layer to be a multiple of this number

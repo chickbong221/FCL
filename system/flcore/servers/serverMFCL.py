@@ -42,7 +42,7 @@ class FedMFCL(Server):
                             syn_size=self.args.syn_size)
             self.clients.append(client)
 
-            # update classes so far & current labels
+            # update imagenet1k-classes so far & current labels
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
             client.task_dict[0] = label_info['labels']

@@ -37,7 +37,7 @@ class Server(object):
         self.algorithm = args.algorithm
         self.time_select = args.time_select
         self.goal = args.goal
-        self.time_threthold = args.time_threthold
+        self.time_threthold = args.time_threshold
         self.save_folder_name = args.save_folder_name
         self.top_cnt = args.top_cnt
         self.auto_break = args.auto_break
@@ -97,7 +97,7 @@ class Server(object):
                             send_slow=send_slow)
             self.clients.append(client)
 
-            # update classes so far & current labels
+            # update imagenet1k-classes so far & current labels
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
 

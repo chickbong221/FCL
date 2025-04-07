@@ -62,7 +62,7 @@ class FedWeIT(Server):
                             initial_weights=self.global_weights)
             self.clients.append(client)
             
-            # update classes so far & current labels
+            # update imagenet1k-classes so far & current labels
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
 
