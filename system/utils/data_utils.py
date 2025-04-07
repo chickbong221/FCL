@@ -94,6 +94,7 @@ def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per
     for idx, _class in enumerate(classes):
         data_file = datadir + str(_class) + '.npy'
         new_x = np.load(data_file)
+        print(new_x[0].shape)
         x_train.append(new_x[:train_images_per_class])
         x_test.append(new_x[train_images_per_class:])
         y_train.append(np.array([_class] * train_images_per_class))
@@ -103,3 +104,6 @@ def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per
     y_train = torch.from_numpy(np.concatenate(y_train))
     y_test = torch.from_numpy(np.concatenate(y_test))
     return x_train, y_train, x_test, y_test
+
+
+# load_data('/root/projects/FCL/dataset/cifar100-classes/', [0, 1])

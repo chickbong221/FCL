@@ -1,7 +1,7 @@
-# Continual Federated Learning Benchmark
+# Federated Continual Learning Benchmark
 
 ## Overview
-Continual Federated Learning (CFL) Benchmark is a standardized evaluation framework for assessing continual learning methods in federated settings. It provides datasets, evaluation metrics, and baseline implementations to facilitate research in CFL.
+Federated Continual Learning (FCL) Benchmark is a standardized evaluation framework for assessing continual learning methods in federated settings. It provides datasets, evaluation metrics, and baseline implementations to facilitate research in FCL.
 
 ## Features
 - **Diverse Datasets**: Supports multiple datasets commonly used in CFL research.
@@ -23,7 +23,7 @@ source .env/bin/activate  # On Windows use: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Download data
+# Download and preprocess data
 python dataset/cifar100_npy.py
 ```
 
@@ -31,9 +31,11 @@ python dataset/cifar100_npy.py
 ### Running an Experiment
 ```sh
 python system/main.py --dataset IMAGENET1k --num_classes 1000 --wandb True 
-python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 0 -lr 1e-5 --flow_lr 1e-4 --optimizer adam
+python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 0 -lr 1e-4 --flow_lr 1e-4 --optimizer adam
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedDBE
+python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedALA
+python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedAS
 ```
 
 ## Benchmarked Algorithms
