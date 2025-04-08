@@ -40,7 +40,7 @@ class clientFCIL(Client):
         self.last_entropy = 0
 
         self.old_model = None
-        self.encode_model = LeNet2(num_classes=1000).to(self.device)
+        self.encode_model = LeNet2(num_classes=args.num_classes).to(self.device)
         self.encode_model.apply(weights_init)
 
         self.transform = transforms.Compose([#transforms.Resize(img_size),

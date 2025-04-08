@@ -142,6 +142,7 @@ class FedFCIL(Server):
 
                 for client in self.selected_clients:
                     if client.id in old_client_0:
+                        print(f"Client {client.id} is old client")
                         client.beforeTrain(task_id, 0)
                     else:
                         client.beforeTrain(task_id, 1)
@@ -271,7 +272,7 @@ class FedFCIL(Server):
 
                             grad_diff = 0
                             for gx, gy in zip(dummy_dy_dx, grad_truth_temp):
-                                print(gx.shape, gy.shape)
+                                # print(gx.shape, gy.shape)
                                 grad_diff += ((gx - gy) ** 2).sum()
                             grad_diff.backward()
                             return grad_diff.to(self.device)
