@@ -16,7 +16,8 @@ from flcore.servers.serverdbe import FedDBE
 from flcore.servers.serveras import FedAS
 from flcore.servers.serverweit import FedWeIT
 from flcore.servers.serverprecise import FedPrecise
-
+from flcore.servers.serverMFCL import FedMFCL
+from flcore.trainmodel.FedMFCL_model import resnet18
 from flcore.trainmodel.models import *
 
 from flcore.trainmodel.precise_models import PreciseModel
@@ -35,14 +36,14 @@ torch.manual_seed(0)
 
 def run(args):
 
-    if args.wandb:
-        wandb.login(key="b1d6eed8871c7668a889ae74a621b5dbd2f3b070")
-        wandb.init(
-            project="FCL",
-            entity="letuanhf-hanoi-university-of-science-and-technology",
-            config=args, 
-            name=f"{args.dataset}_{args.model}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}" 
-        )
+    # if args.wandb:
+    #     wandb.login(key="b1d6eed8871c7668a889ae74a621b5dbd2f3b070")
+    #     wandb.init(
+    #         project="FCL",
+    #         entity="letuanhf-hanoi-university-of-science-and-technology",
+    #         config=args, 
+    #         name=f"{args.dataset}_{args.model}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}" 
+    #     )
 
     time_list = []
     model_str = args.model
@@ -102,6 +103,10 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedAS(args, i)
+
+        elif args.algorithm == "FedMFCL":
+            args.model = resnet18(args.num_classes)
+            server = FedMFCL(args, i)
 
         else:
             raise NotImplementedError("Not supported model")
@@ -208,6 +213,29 @@ if __name__ == "__main__":
     parser.add_argument('--use_lastflow_x', action="store_true")
     parser.add_argument("--beta", type=float, default=1.0, help="Average moving parameter for pFedMe, or Second learning rate of Per-FedAvg") 
     parser.add_argument('--c_channel_size', type=int, default=64)
+
+    #FedMFCL
+    parser.add_argument('--syn_size', type=int, default=128, help='size of mini-batch')
+    parser.add_argument('--z_dim', type=int, default=1000)
+    parser.add_argument('--conv_dim', type=int, default=64)
+    parser.add_argument('--ie_loss', type=int, default=1)
+    parser.add_argument('--lr', type=float, default=0.1, help='Local Learning Rate')
+    parser.add_argument('--act_loss', type=int, default=0)
+    parser.add_argument('--bn_loss', type=int, default=1)
+    parser.add_argument('--noise', type=int, default=1)
+    parser.add_argument('--w_ie', type=float, default=1)
+    parser.add_argument('--w_kd', type=float, default=1e-1)
+    parser.add_argument('--w_ft', type=float, default=1)
+    parser.add_argument('--w_act', type=float, default=0.1)
+    parser.add_argument('--w_noise', type=float, default=1e-3)
+    parser.add_argument('--w_bn', type=float, default=5e1)
+    parser.add_argument('--lr_end', type=float, default=0.01)
+    parser.add_argument('--num_classes_per_task', type=int, default=2)
+    parser.add_argument('--img_size', type=int, default=32)
+    parser.add_argument('--generator_lr', type=float, default=0.001)
+    parser.add_argument('--server_ss', type=int, default=64, help='batch size for genrative training')
+    parser.add_argument('--pi', type=int, default=100, help='local epochs of each global round')
+    parser.add_argument('--generator_model', type=str, default='CIFAR_GEN', help='name of the generative model')
 
     args = parser.parse_args()
     args.log_dir = os.path.join(args.output_path, 'logs/{}-{}'.format(args.model, args.dataset))

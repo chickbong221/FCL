@@ -61,7 +61,7 @@ class Client(object):
             self.N_TASKS = 50
         else:
             raise NotImplementedError("Not supported dataset")
-        print("Anh Duong dep trai")
+        # print("Anh Duong dep trai")
         
         self.test_data_all_task = []
         for task in range(self.N_TASKS):
@@ -86,6 +86,10 @@ class Client(object):
         self.last_copy = None
         self.if_last_copy = False
         self.args = args
+
+        '''
+        Each clients has its own test_data, 
+        '''
 
     def next_task(self, train, test, label_info = None, if_label = True):
         
@@ -151,7 +155,7 @@ class Client(object):
     def test_metrics(self, task):
         testloader = self.load_test_data(task=task)
         # self.model = self.load_model('model')
-        # self.model.to(self.device)
+        self.model.to(self.device)
 
         self.model.eval()
 

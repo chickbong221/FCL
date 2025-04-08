@@ -233,6 +233,9 @@ class Server(object):
                 "Local/Averaged Train Loss": train_loss,
                 "Local/Averaged Test Accuracy": test_acc,
             }
+
+        print("Averaged Train Loss: {:.4f}".format(train_loss))
+        print("Averaged Test Accurancy: {:.4f}".format(test_acc))
         
         if self.args.wandb:
             wandb.log(log_keys, step=glob_iter)
@@ -270,6 +273,9 @@ class Server(object):
             log_key = "Local/Averaged Forgetting"
 
         forgetting = metric_average_forgetting(task, accuracy_matrix)
+
+        print("Accuracy matrix: {:.4f}".format(accuracy_matrix))
+        print("forgetting: {:.4f}".format(forgetting))
 
         if self.args.wandb:
             wandb.log({log_key: forgetting}, step=glob_iter)
