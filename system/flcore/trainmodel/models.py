@@ -659,3 +659,38 @@ class S_ConvNet(nn.Module):
         classes_p = self.softmax(logits)
 
         return classes_p, logits
+
+# ====================================================================================================================
+class LeNet2(nn.Module):
+    def __init__(self, channel=3, hideen=768, num_classes=10):
+        super(LeNet2, self).__init__()
+        act = nn.Sigmoid
+        self.body = nn.Sequential(
+            nn.Conv2d(channel, 12, kernel_size=5, padding=5 // 2, stride=2),
+            act(),
+            nn.Conv2d(12, 12, kernel_size=5, padding=5 // 2, stride=2),
+            act(),
+            nn.Conv2d(12, 12, kernel_size=5, padding=5 // 2, stride=1),
+            act(),
+        )
+        self.fc = nn.Sequential(
+            nn.Linear(hideen, num_classes)
+        )
+
+    def forward(self, x):
+        out = self.body(x)
+        out = out.view(out.size(0), -1)
+        out = self.fc(out)
+        return out
+
+def weights_init(m):
+    try:
+        if hasattr(m, "weight"):
+            m.weight.data.uniform_(-0.5, 0.5)
+    except Exception:
+        print('warning: failed in weights_init for %s.weight' % m._get_name())
+    try:
+        if hasattr(m, "bias"):
+            m.bias.data.uniform_(-0.5, 0.5)
+    except Exception:
+        print('warning: failed in weights_init for %s.bias' % m._get_name())

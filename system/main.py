@@ -20,7 +20,7 @@ from flcore.servers.serverprecise import FedPrecise
 from flcore.trainmodel.models import *
 
 from flcore.trainmodel.precise_models import PreciseModel
-from flcore.servers.serverstgm import FedSTGM
+# from flcore.servers.serverstgm import FedSTGM
 from flcore.servers.serverfcil import FedFCIL
 
 from flcore.trainmodel.bilstm import *
@@ -233,6 +233,9 @@ if __name__ == "__main__":
     parser.add_argument('-ss', "--step_size", type=int, default=30)
     parser.add_argument('-gam', "--gamma", type=float, default=0.5)
     parser.add_argument('-c', "--c_parameter", type=float, default=0.5)
+
+    #FCIL
+    parser.add_argument('-mem', "--memory_size", type=int, default=2000)
 
     args = parser.parse_args()
 

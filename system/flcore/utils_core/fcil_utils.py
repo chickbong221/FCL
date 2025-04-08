@@ -4,7 +4,6 @@ from torchvision import transforms
 import numpy as np
 from torch.nn import functional as F
 from PIL import Image
-import matplotlib.pyplot as plt
 from torch.autograd import Variable
 import torch.optim as optim
 from torch.utils.data import DataLoader

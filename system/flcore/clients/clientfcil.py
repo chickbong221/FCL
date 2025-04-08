@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 from flcore.clients.clientbase import Client
-from flcore.utils.fcil_utils import entropy, get_one_hot
+from flcore.utils_core.fcil_utils import entropy, get_one_hot
 from flcore.trainmodel.models import LeNet2, weights_init
 
 import torch.optim as optim
@@ -18,8 +18,8 @@ import random
 
 
 class clientFCIL(Client):
-    def __init__(self, args, id, train_data, test_data, train_samples, test_samples, **kwargs):
-        super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
+    def __init__(self, args, id, train_data, test_data, **kwargs):
+        super().__init__(args, id, train_data, test_data, **kwargs)
         self.exemplar_set = []
         self.class_mean_set = []
         self.learned_numclass = 0
@@ -146,7 +146,7 @@ class clientFCIL(Client):
     def update_new_set(self):
         self.model.eval()
         self.signal = False
-        self.signal = self.entropy_signal(self.train_loader)
+        self.signal = self.entropy_signal(self.load_train_data())
 
         if self.signal and (self.last_class != None):
             self.learned_numclass += len(self.last_class)

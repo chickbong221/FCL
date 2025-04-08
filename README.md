@@ -36,6 +36,7 @@ python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedDBE
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedALA
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedAS
+python system/main.py  --dataset CIFAR100 --num_classes 100 --algorithm FedFCIL
 ```
 
 ## Benchmarked Algorithms
