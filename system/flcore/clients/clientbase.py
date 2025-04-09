@@ -4,7 +4,7 @@ import torch.nn as nn
 import numpy as np
 import os
 from torch.utils.data import DataLoader
-from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+from utils.data_utils import Transform_dataset, read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
 class Client(object):
     """
@@ -18,7 +18,7 @@ class Client(object):
         self.algorithm = args.algorithm
         self.dataset = args.dataset
         self.device = args.device
-        self.id = id  # integer
+        self.id = id  
 
         self.num_classes = args.num_classes
         self.train_data = train_data
@@ -30,6 +30,16 @@ class Client(object):
         self.train_source = [image for image, _ in self.train_data]
         self.train_targets = [label for _, label in self.train_data]
 
+        # self.all_test_data = kwargs['all_test_data']
+        # self.all_test_label = kwargs['all_test_label']
+
+        if self.args.dataset == 'IMAGENET1k':
+            class_order = np.load('dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
+        elif self.args.dataset == 'CIFAR100':
+            class_order = np.load('dataset/class_order/class_order_cifar100.npy', allow_pickle=True)
+
+        self.class_order = class_order[id]
+
         # check BatchNorm
         self.has_BatchNorm = False
         for layer in self.model.children():
@@ -37,8 +47,6 @@ class Client(object):
                 self.has_BatchNorm = True
                 break
 
-        self.train_slow = kwargs['train_slow']
-        self.send_slow = kwargs['send_slow']
         self.train_time_cost = {'num_rounds': 0, 'total_cost': 0.0}
         self.send_time_cost = {'num_rounds': 0, 'total_cost': 0.0}
 
@@ -143,12 +151,35 @@ class Client(object):
         train_data = self.train_data
         return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
 
+    # def load_test_data(self, task, batch_size=None):
+    #     if batch_size == None:
+    #         batch_size = self.batch_size
+        
+    #     classes_per_task = 2
+    #     classes_current_task = self.class_order[task*classes_per_task:(task+1)*classes_per_task]
+        
+    #     x_test, y_test = [], []
+
+    #     for i in classes_current_task:
+    #         x_test.append(self.all_test_data[i]) 
+    #         y_test.append(self.all_test_label[i])
+
+    #     x_test = torch.tensor(np.concatenate(x_test))
+    #     y_test = torch.from_numpy(np.concatenate(y_test))
+
+    #     x_test = x_test.type(torch.FloatTensor)
+    #     y_test = torch.Tensor(y_test.type(torch.LongTensor))
+
+    #     test_data = Transform_dataset(x_test, y_test)
+        
+    #     return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
+        
     def load_test_data(self, task, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
         test_data = self.test_data_all_task[task]
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
-        
+
     def set_parameters(self, model):
         for new_param, old_param in zip(model.parameters(), self.model.parameters()):
             old_param.data = new_param.data.clone()

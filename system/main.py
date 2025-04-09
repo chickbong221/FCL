@@ -60,7 +60,7 @@ def run(args):
             if "CIFAR100" in args.dataset:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
             elif "IMAGENET1k" in args.dataset:
-                args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
+                args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=179776).to(args.device)
             else:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=10816).to(args.device)
 
@@ -117,6 +117,7 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedSTGM(args, i)
+
         else:
             raise NotImplementedError
 
@@ -151,8 +152,6 @@ if __name__ == "__main__":
     parser.add_argument('-ld', "--learning_rate_decay", type=bool, default=False)
     parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.99)
     parser.add_argument('-gr', "--global_rounds", type=int, default=2000)
-    parser.add_argument('-tc', "--top_cnt", type=int, default=100, 
-                        help="For auto_break")
     parser.add_argument('-ls', "--local_epochs", type=int, default=1, 
                         help="Multiple update steps in one local epoch.")
     parser.add_argument('-algo', "--algorithm", type=str, default="FedAvg")
@@ -169,17 +168,9 @@ if __name__ == "__main__":
     parser.add_argument('-eg', "--eval_gap", type=int, default=1,
                         help="Rounds gap for evaluation")
     parser.add_argument('-sfn', "--out_folder", type=str, default='out')
-    parser.add_argument('-fd', "--feature_dim", type=int, default=512)
-    parser.add_argument('-ml', "--max_len", type=int, default=200)
     # practical
     parser.add_argument('-cdr', "--client_drop_rate", type=float, default=0.0,
                         help="Rate for clients that train but drop out")
-    parser.add_argument('-tsr', "--train_slow_rate", type=float, default=0.0,
-                        help="The rate for slow clients when training locally")
-    parser.add_argument('-ssr', "--send_slow_rate", type=float, default=0.0,
-                        help="The rate for slow clients when sending global model")
-    parser.add_argument('-ts', "--time_select", type=bool, default=False,
-                        help="Whether to group and select clients at each round according to time cost")
     parser.add_argument('-tth', "--time_threthold", type=float, default=10000,
                         help="The threthold for droping slow clients")
     # FedALA
@@ -245,9 +236,5 @@ if __name__ == "__main__":
         print("\ncuda is not avaiable.\n")
         args.device = "cpu"
 
-    # print("=" * 50)
-    # for arg in vars(args):
-    #     print(arg, '=',getattr(args, arg))
-    # print("=" * 50)
     run(args)
 

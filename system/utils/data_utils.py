@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.utils.data as data
 
+
 # client data 1 task
 def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count_labels=False):
     
@@ -30,6 +31,7 @@ def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count
         return train_data, test_data, label_info
     
     return train_data, test_data
+
 
 def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_labels=False):
     
@@ -69,8 +71,6 @@ def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_l
     
     return train_data, test_data
 
-# client data all task so far
-# pass
 
 class Transform_dataset(data.Dataset):
     def __init__(self, X, Y, transform=None) -> None:
@@ -89,10 +89,16 @@ class Transform_dataset(data.Dataset):
     def __len__(self) -> int:
         return len(self.X)
     
-def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per_class = 100):
+def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per_class = 50):
     x_train, y_train, x_test, y_test = [], [], [], []
-    for idx, _class in enumerate(classes):
+    
+    for _class in classes:
         data_file = datadir + str(_class) + '.npy'
+        # print(f"Loading data from {data_file}")
+        # if os.path.getsize(data_file) == 0:
+        #     raise ValueError(f"File {data_file} is empty.")
+        # else:
+        #     print(os.path.getsize(data_file))
         new_x = np.load(data_file)
         # print(new_x[0].shape)
         x_train.append(new_x[:train_images_per_class])
@@ -105,6 +111,27 @@ def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per
     y_test = torch.from_numpy(np.concatenate(y_test))
     return x_train, y_train, x_test, y_test
 
+def load_test_data(datadir, dataset="IMAGENET1k", train_images_per_class = 600, test_images_per_class = 50):
+    x_test, y_test = [], []
+    
+    if dataset == "CIFAR100":
+        classes = list(range(100))
+    elif dataset == "IMAGENET1k":
+        classes = list(range(1000))
+    else:
+        raise NotImplementedError("Not supported dataset")
+    
+    for _class in classes:
+        print(f"Loading data from {datadir}{_class}.npy")
+        data_file = datadir + str(_class) + '.npy'
+        new_x = np.load(data_file)
+        x_test.append(new_x[train_images_per_class:])
+        y_test.append(np.array([_class] * test_images_per_class))
+
+    return x_test, y_test
+
 def get_unique_tasks(task_list):
     unique_tasks = {tuple(sorted(task)) for task in task_list}
     return [list(task) for task in unique_tasks]
+
+

@@ -7,7 +7,7 @@ import csv
 import copy
 import time
 import random
-from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+from utils.data_utils import load_test_data, read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 from flcore.metrics.average_forgetting import metric_average_forgetting
 
 class Server(object):
@@ -28,9 +28,7 @@ class Server(object):
         self.num_join_clients = int(self.num_clients * self.join_ratio)
         self.current_num_join_clients = self.num_join_clients
         self.algorithm = args.algorithm
-        self.time_select = args.time_select
         self.time_threthold = args.time_threthold
-        self.top_cnt = args.top_cnt
         self.offlog = args.offlog
         self.save_folder = f"{args.out_folder}/{args.dataset}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}"
         if self.offlog:    
@@ -50,18 +48,31 @@ class Server(object):
         self.times = times
         self.eval_gap = args.eval_gap
         self.client_drop_rate = args.client_drop_rate
-        self.train_slow_rate = args.train_slow_rate
-        self.send_slow_rate = args.send_slow_rate
 
         self.global_accuracy_matrix = []
         self.local_accuracy_matrix = []
 
+        # self.all_test_data, self.all_test_label = [], []
         if self.args.dataset == 'IMAGENET1k':
             self.N_TASKS = 500
         elif self.args.dataset == 'CIFAR100':
             self.N_TASKS = 50
-        else:
-            raise NotImplementedError("Not supported dataset")
+
+        # print("Anh Duong dep trai")
+        # if self.args.dataset == 'IMAGENET1k':
+        #     self.N_TASKS = 500
+        #     datadir = 'dataset/imagenet1k-classes/'
+        #     self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset)
+        
+        # elif self.args.dataset == 'CIFAR100':
+        #     self.N_TASKS = 50
+        #     datadir = 'dataset/cifar100-classes/'
+        #     self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset, train_images_per_class=500, test_images_per_class=100)
+        
+        # else:
+        #     raise NotImplementedError("Not supported dataset")
+
+        # print("Anh Duong dep trai qua")
 
         # FCL
         self.task_dict = {}
@@ -69,7 +80,7 @@ class Server(object):
 
     def set_clients(self, clientObj):
         total_clients = 10
-        for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
+        for i in range(self.num_clients):
             
             if self.args.dataset == 'IMAGENET1k':
                 train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
@@ -78,34 +89,24 @@ class Server(object):
             else:
                 raise NotImplementedError("Not supported dataset")
 
+            # client = clientObj(self.args, 
+            #             id=i,
+            #             train_data=train_data,
+            #             test_data=test_data,
+            #             all_test_data=self.all_test_data,
+            #             all_test_label=self.all_test_label,)
+            # self.clients.append(client)
+
             client = clientObj(self.args, 
                         id=i,
                         train_data=train_data,
-                        test_data=test_data,
-                        train_slow=train_slow,
-                        send_slow=send_slow)
+                        test_data=test_data,)
             self.clients.append(client)
 
             # update classes so far & current labels
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
             client.task_dict[0] = label_info['labels']
-
-    # random select slow clients
-    def select_slow_clients(self, slow_rate):
-        slow_clients = [False for i in range(self.num_clients)]
-        idx = [i for i in range(self.num_clients)]
-        idx_ = np.random.choice(idx, int(slow_rate * self.num_clients))
-        for i in idx_:
-            slow_clients[i] = True
-
-        return slow_clients
-
-    def set_slow_clients(self):
-        self.train_slow_clients = self.select_slow_clients(
-            self.train_slow_rate)
-        self.send_slow_clients = self.select_slow_clients(
-            self.send_slow_rate)
 
     def select_clients(self):
         if self.random_join_ratio:

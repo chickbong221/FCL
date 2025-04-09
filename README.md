@@ -25,18 +25,28 @@ pip install -r requirements.txt
 
 # Download and preprocess data
 python dataset/cifar100_npy.py
+python dataset/class_order_gen.py
 ```
+
+Explains how to download & process ImageNet-1K train/val dataset for using as a dataset
+Download ImageNet-1K train/val dataset
+python unpack.py # make clean file trees of ILSVRC2012_img_train.tar, ILSVRC2012_img_val.tar
+python preprocess.py # Preprocess and save train and val data of each class as 1 .npy file, ready for use
+Delete the zip file and file trees from unpack.py to free space
 
 ## Usage
 ### Running an Experiment
 ```sh
-python system/main.py --dataset IMAGENET1k --num_classes 1000 --wandb True 
+# ImageNet1k
+python system/main.py --dataset IMAGENET1k --num_classes 1000 --wandb True
+
+# Cifar100
 python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 0 -lr 1e-4 --flow_lr 1e-4 --optimizer adam
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedDBE
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedALA
 python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedAS
-python system/main.py  --dataset CIFAR100 --num_classes 100 --algorithm FedFCIL
+python system/main.py --dataset CIFAR100 --num_classes 100 -did 0 -gr 1000 -algo FedFCIL
 ```
 
 ## Benchmarked Algorithms

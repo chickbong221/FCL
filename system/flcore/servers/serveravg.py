@@ -11,7 +11,6 @@ class FedAvg(Server):
         super().__init__(args, times)
 
         # select slow clients
-        self.set_slow_clients()
         self.set_clients(clientAVG)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")

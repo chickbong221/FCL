@@ -17,6 +17,6 @@ def generate_permuted_array(rows, cols=100):
 num_rows = 100
 permuted_array = generate_permuted_array(num_rows)
 
-np.save("/media/tuannl1/heavy_weight/FCL/PFLlib/dataset/class_order_cifar100.npy", permuted_array)
+np.save("/root/projects/FCL/dataset/class_order/class_order_cifar100.npy", permuted_array)
 
 print(permuted_array)
