@@ -30,8 +30,8 @@ class Client(object):
         self.train_source = [image for image, _ in self.train_data]
         self.train_targets = [label for _, label in self.train_data]
 
-        # self.all_test_data = kwargs['all_test_data']
-        # self.all_test_label = kwargs['all_test_label']
+        self.all_test_data = kwargs['all_test_data']
+        self.all_test_label = kwargs['all_test_label']
 
         if self.args.dataset == 'IMAGENET1k':
             class_order = np.load('dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
@@ -66,25 +66,25 @@ class Client(object):
             self.learning_rate_decay = args.learning_rate_decay
 
         # continual federated learning
-        if self.args.dataset == 'IMAGENET1k':
-            self.N_TASKS = 500
-        elif self.args.dataset == 'CIFAR100':
-            self.N_TASKS = 50
-        else:
-            raise NotImplementedError("Not supported dataset")
-        print("Anh Duong dep trai")
+        # if self.args.dataset == 'IMAGENET1k':
+        #     self.N_TASKS = 500
+        # elif self.args.dataset == 'CIFAR100':
+        #     self.N_TASKS = 50
+        # else:
+        #     raise NotImplementedError("Not supported dataset")
+        # print("Anh Duong dep trai")
         
-        self.test_data_all_task = []
-        for task in range(self.N_TASKS):
+        # self.test_data_all_task = []
+        # for task in range(self.N_TASKS):
             
-            if self.args.dataset == 'IMAGENET1k':
-                _, test_data, _ = read_client_data_FCL_imagenet1k(self.id, task=task, classes_per_task=2, count_labels=True)
-            elif self.args.dataset == 'CIFAR100':
-                _, test_data, _ = read_client_data_FCL_cifar100(self.id, task=task, classes_per_task=2, count_labels=True)
-            else:
-                raise NotImplementedError("Not supported dataset")
+        #     if self.args.dataset == 'IMAGENET1k':
+        #         _, test_data, _ = read_client_data_FCL_imagenet1k(self.id, task=task, classes_per_task=2, count_labels=True)
+        #     elif self.args.dataset == 'CIFAR100':
+        #         _, test_data, _ = read_client_data_FCL_cifar100(self.id, task=task, classes_per_task=2, count_labels=True)
+        #     else:
+        #         raise NotImplementedError("Not supported dataset")
 
-            self.test_data_all_task.append(test_data)
+        #     self.test_data_all_task.append(test_data)
 
         self.classes_so_far = [] # all labels of a client so far 
         self.available_labels_current = [] # labels from all clients on T (current)
@@ -151,34 +151,38 @@ class Client(object):
         train_data = self.train_data
         return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
 
-    # def load_test_data(self, task, batch_size=None):
-    #     if batch_size == None:
-    #         batch_size = self.batch_size
-        
-    #     classes_per_task = 2
-    #     classes_current_task = self.class_order[task*classes_per_task:(task+1)*classes_per_task]
-        
-    #     x_test, y_test = [], []
-
-    #     for i in classes_current_task:
-    #         x_test.append(self.all_test_data[i]) 
-    #         y_test.append(self.all_test_label[i])
-
-    #     x_test = torch.tensor(np.concatenate(x_test))
-    #     y_test = torch.from_numpy(np.concatenate(y_test))
-
-    #     x_test = x_test.type(torch.FloatTensor)
-    #     y_test = torch.Tensor(y_test.type(torch.LongTensor))
-
-    #     test_data = Transform_dataset(x_test, y_test)
-        
-    #     return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
-        
     def load_test_data(self, task, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        test_data = self.test_data_all_task[task]
+        
+        classes_per_task = 2
+        classes_current_task = self.class_order[task*classes_per_task:(task+1)*classes_per_task]
+        
+        x_test_list = []
+        y_test_list = []
+
+        for class_id in classes_current_task:
+            start = class_id * 50
+            end = start + 50
+            x_class = self.all_test_data[start:end]
+            y_class = self.all_test_label[start:end]
+            # print(y_class)
+
+            x_test_list.append(x_class)
+            y_test_list.append(y_class)
+
+        x_test = torch.cat(x_test_list, dim=0)
+        y_test = torch.cat(y_test_list, dim=0)
+
+        test_data = Transform_dataset(x_test, y_test)
+        
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
+        
+    # def load_test_data(self, task, batch_size=None):
+    #     if batch_size == None:
+    #         batch_size = self.batch_size
+    #     test_data = self.test_data_all_task[task]
+    #     return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
 
     def set_parameters(self, model):
         for new_param, old_param in zip(model.parameters(), self.model.parameters()):

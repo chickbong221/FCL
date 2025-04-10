@@ -52,27 +52,27 @@ class Server(object):
         self.global_accuracy_matrix = []
         self.local_accuracy_matrix = []
 
-        # self.all_test_data, self.all_test_label = [], []
-        if self.args.dataset == 'IMAGENET1k':
-            self.N_TASKS = 500
-        elif self.args.dataset == 'CIFAR100':
-            self.N_TASKS = 50
-
-        # print("Anh Duong dep trai")
         # if self.args.dataset == 'IMAGENET1k':
         #     self.N_TASKS = 500
-        #     datadir = 'dataset/imagenet1k-classes/'
-        #     self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset)
-        
         # elif self.args.dataset == 'CIFAR100':
         #     self.N_TASKS = 50
-        #     datadir = 'dataset/cifar100-classes/'
-        #     self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset, train_images_per_class=500, test_images_per_class=100)
-        
-        # else:
-        #     raise NotImplementedError("Not supported dataset")
 
-        # print("Anh Duong dep trai qua")
+        print("Anh Duong dep trai")
+        self.all_test_data, self.all_test_label = [], []
+        if self.args.dataset == 'IMAGENET1k':
+            self.N_TASKS = 500
+            datadir = 'dataset/imagenet1k-classes/'
+            self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset)
+        
+        elif self.args.dataset == 'CIFAR100':
+            self.N_TASKS = 50
+            datadir = 'dataset/cifar100-classes/'
+            self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset, train_images_per_class=500, test_images_per_class=100)
+        
+        else:
+            raise NotImplementedError("Not supported dataset")
+
+        print("Anh Duong dep trai qua")
 
         # FCL
         self.task_dict = {}
@@ -89,19 +89,19 @@ class Server(object):
             else:
                 raise NotImplementedError("Not supported dataset")
 
-            # client = clientObj(self.args, 
-            #             id=i,
-            #             train_data=train_data,
-            #             test_data=test_data,
-            #             all_test_data=self.all_test_data,
-            #             all_test_label=self.all_test_label,)
-            # self.clients.append(client)
-
             client = clientObj(self.args, 
                         id=i,
                         train_data=train_data,
-                        test_data=test_data,)
+                        test_data=test_data,
+                        all_test_data=self.all_test_data,
+                        all_test_label=self.all_test_label,)
             self.clients.append(client)
+
+            # client = clientObj(self.args, 
+            #             id=i,
+            #             train_data=train_data,
+            #             test_data=test_data,)
+            # self.clients.append(client)
 
             # update classes so far & current labels
             client.classes_so_far.extend(label_info['labels'])

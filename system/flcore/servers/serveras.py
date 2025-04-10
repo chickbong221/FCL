@@ -12,8 +12,6 @@ class FedAS(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
-        # select slow clients
-        self.set_slow_clients()
         self.set_clients(clientAS)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")

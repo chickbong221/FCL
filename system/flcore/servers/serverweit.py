@@ -25,8 +25,6 @@ class FedWeIT(Server):
         self.trainh.init_state(None)
         self.global_weights = self.nets.init_global_weights()
 
-        # select slow clients
-        self.set_slow_clients()
         self.set_clients(clientWeIT)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")

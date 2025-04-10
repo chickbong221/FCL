@@ -11,8 +11,6 @@ class FedPrecise(Server):
         super().__init__(args, times)
         self.classifier_head_list = ['classifier.fc_classifier', 'classifier.fc2']
         
-        # select slow clients
-        self.set_slow_clients()
         self.set_clients(ClientPreciseFCL)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")

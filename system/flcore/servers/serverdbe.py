@@ -10,9 +10,6 @@ class FedDBE(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
-        # select slow clients
-        self.set_slow_clients()
-
         # initialization period
         self.set_clients(clientDBE)
         self.selected_clients = self.clients
