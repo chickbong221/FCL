@@ -100,15 +100,10 @@ def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per
     
     for _class in classes:
         data_file = datadir + str(_class) + '.npy'
-        # print(f"Loading data from {data_file}")
-        # if os.path.getsize(data_file) == 0:
-        #     raise ValueError(f"File {data_file} is empty.")
-        # else:
-        #     print(os.path.getsize(data_file))
-        new_x = np.load(data_file)
-        # print(new_x[0].shape)
-        x_train.append(new_x[:train_images_per_class])
-        x_test.append(new_x[train_images_per_class:])
+        data = np.load(data_file)
+        
+        x_train.append(data[:train_images_per_class])
+        x_test.append(data[train_images_per_class:])
         y_train.append(np.array([_class] * train_images_per_class))
         y_test.append(np.array([_class] * test_images_per_class))
     x_train = torch.tensor(np.concatenate(x_train))
@@ -116,6 +111,7 @@ def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per
     y_train = torch.from_numpy(np.concatenate(y_train))
     y_test = torch.from_numpy(np.concatenate(y_test))
     return x_train, y_train, x_test, y_test
+
 
 def load_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=50):
     if dataset == "CIFAR100":
@@ -141,20 +137,65 @@ def load_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, te
             x_test = np.concatenate((x_test, new_x), axis=0)
             y_test = np.concatenate((y_test, new_y), axis=0)
 
-        # Giải phóng RAM tạm
         del new_x, new_y
         gc.collect()
 
-    # Chuyển sang tensor sau khi đã concat xong
     x_test_tensor = torch.tensor(x_test, dtype=torch.float32)
     y_test_tensor = torch.tensor(y_test, dtype=torch.long)
 
-    # Xoá np array để giải phóng
     del x_test, y_test
     gc.collect()
 
     print(f"Loaded {len(x_test_tensor)} test images and {len(y_test_tensor)} test labels.")
     return x_test_tensor, y_test_tensor
+
+
+def load_full_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=100):
+    if dataset == "CIFAR100":
+        classes = list(range(100))
+    elif dataset == "IMAGENET1k":
+        classes = list(range(1000))
+    else:
+        raise NotImplementedError("Not supported dataset")
+
+    x_train = None
+    y_train = None
+    x_test = None
+    y_test = None
+
+    for _class in classes:
+        print(f"Loading data for class {_class}...")
+        data_file = datadir + str(_class) + '.npy'
+        data = np.load(data_file)  
+        
+        new_x_train = data[:train_images_per_class]
+        new_x_test = data[train_images_per_class:]  
+
+        new_y_train = np.full((train_images_per_class,), _class, dtype=np.int64)
+        new_y_test = np.full((test_images_per_class,), _class, dtype=np.int64)
+
+
+        if x_train is None:
+            x_train = new_x_train
+            x_test = new_x_test
+            y_train = new_y_train
+            y_test = new_y_test
+        else:
+            x_train = np.concatenate((x_train, new_x_train), axis=0)
+            x_test = np.concatenate((x_test, new_x_test), axis=0)
+            y_train = np.concatenate((y_train, new_y_train), axis=0)
+            y_test = np.concatenate((y_test, new_y_test), axis=0)
+
+        del new_x_train, new_y_train, new_x_test, new_y_test
+        gc.collect()
+
+    x_train_tensor = torch.tensor(x_train, dtype=torch.float32)
+    x_test_tensor = torch.tensor(x_test, dtype=torch.float32)
+    y_train_tensor = torch.tensor(y_train, dtype=torch.long)
+    y_test_tensor = torch.tensor(y_test, dtype=torch.long)
+
+    print(f"Loaded {len(x_test_tensor)} test images and {len(y_test_tensor)} test labels.")
+    return x_train_tensor, y_train_tensor, x_test_tensor, y_test_tensor
 
 def get_unique_tasks(task_list):
     unique_tasks = {tuple(sorted(task)) for task in task_list}

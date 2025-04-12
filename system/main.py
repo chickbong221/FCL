@@ -24,7 +24,7 @@ from flcore.trainmodel.precise_models import PreciseModel
 from flcore.servers.serverfcil import FedFCIL
 
 from flcore.trainmodel.bilstm import *
-from flcore.trainmodel.resnet import *
+# from flcore.trainmodel.resnet import *
 from flcore.trainmodel.alexnet import *
 from flcore.trainmodel.mobilenet_v2 import *
 from flcore.trainmodel.transformer import *
@@ -49,6 +49,7 @@ def run(args):
 
     time_list = []
     model_str = args.model
+    args.model_str = model_str
 
     for i in range(args.prev, args.times):
         print(f"\n============= Running time: {i}th =============")
@@ -60,6 +61,8 @@ def run(args):
             if "CIFAR100" in args.dataset:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
             elif "IMAGENET1k" in args.dataset:
+                args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
+            elif "IMAGENET1k224" in args.dataset:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=179776).to(args.device)
             else:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=10816).to(args.device)
@@ -68,10 +71,15 @@ def run(args):
             args.model = LeNet_big(in_features=3, num_classes=args.num_classes, dim=4096).to(args.device)
         elif model_str == "LeNet_normal":
             args.model = LeNet_normal(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
+        elif model_str == "ResNet50":
+            args.model = torchvision.models.resnet50(pretrained=False, num_classes=args.num_classes).to(args.device)
+        elif model_str == "ResNet50-pretrained":
+            weights = torchvision.models.ResNet50_Weights.IMAGENET1K_V1
+            args.model = torchvision.models.resnet50(weights=weights, num_classes=args.num_classes).to(args.device)
         elif model_str == "ResNet18":
             args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
-        elif model_str == "ResNet10":
-            args.model = resnet10(num_classes=args.num_classes).to(args.device)
+        elif model_str == "Swin_t":
+            args.model = torchvision.models.swin_t(weights=None, num_classes=args.num_classes).to(args.device)
         elif model_str == "PreciseModel":    
             args.model = PreciseModel(args).to(args.device)
         else:
@@ -79,9 +87,6 @@ def run(args):
 
         # select algorithm
         if args.algorithm == "FedAvg":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
             server = FedAvg(args, i)
 
         elif args.algorithm == "FedALA":

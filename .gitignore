@@ -1,6 +1,7 @@
 *__pycache__*
 dataset/cifar100-classes
 dataset/imagenet1k-classes
+dataset/imagenet1k224-classes
 wandb
 test.py
 output_fedweit

@@ -30,7 +30,7 @@ class Server(object):
         self.algorithm = args.algorithm
         self.time_threthold = args.time_threthold
         self.offlog = args.offlog
-        self.save_folder = f"{args.out_folder}/{args.dataset}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}"
+        self.save_folder = f"{args.out_folder}/{args.dataset}_{args.algorithm}_{args.model_str}_{args.optimizer}_lr{args.local_learning_rate}"
         if self.offlog:    
             if os.path.exists(self.save_folder):
                 shutil.rmtree(self.save_folder)
