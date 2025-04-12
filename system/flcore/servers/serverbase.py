@@ -7,7 +7,7 @@ import csv
 import copy
 import time
 import random
-from utils.data_utils import load_test_data, read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+from utils.data_utils import load_test_data, load_full_data, read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 from flcore.metrics.average_forgetting import metric_average_forgetting
 
 class Server(object):
@@ -30,7 +30,7 @@ class Server(object):
         self.algorithm = args.algorithm
         self.time_threthold = args.time_threthold
         self.offlog = args.offlog
-        self.save_folder = f"{args.out_folder}/{args.dataset}_{args.algorithm}_{args.model_str}_{args.optimizer}_lr{args.local_learning_rate}"
+        self.save_folder = f"{args.out_folder}/{args.dataset}_{args.algorithm}_{args.model_str}_{args.optimizer}_lr{args.local_learning_rate}_{args.note}" if args.note else f"{args.out_folder}/{args.dataset}_{args.algorithm}_{args.model_str}_{args.optimizer}_lr{args.local_learning_rate}"
         if self.offlog:    
             if os.path.exists(self.save_folder):
                 shutil.rmtree(self.save_folder)
@@ -58,17 +58,23 @@ class Server(object):
         #     self.N_TASKS = 50
 
         print("Anh Duong dep trai")
+        self.all_train_data, self.all_train_label = [], []
         self.all_test_data, self.all_test_label = [], []
+
         if self.args.dataset == 'IMAGENET1k':
             self.N_TASKS = 500
+            # datadir = 'dataset/imagenet1k224-classes/'
+            # self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset)
+
             datadir = 'dataset/imagenet1k-classes/'
-            self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset)
+            self.all_train_data, self.all_train_label, self.all_test_data, self.all_test_label = load_full_data(datadir, dataset=args.dataset)
         
         elif self.args.dataset == 'CIFAR100':
             self.N_TASKS = 50
             datadir = 'dataset/cifar100-classes/'
-            self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset, train_images_per_class=500, test_images_per_class=100)
-        
+            # self.all_test_data, self.all_test_label = load_test_data(datadir, dataset=args.dataset, train_images_per_class=500, test_images_per_class=100)
+            self.all_train_data, self.all_train_label, self.all_test_data, self.all_test_label = load_full_data(datadir, dataset=args.dataset, train_images_per_class=500, test_images_per_class=100)
+
         else:
             raise NotImplementedError("Not supported dataset")
 
@@ -94,7 +100,9 @@ class Server(object):
                         train_data=train_data,
                         test_data=test_data,
                         all_test_data=self.all_test_data,
-                        all_test_label=self.all_test_label,)
+                        all_test_label=self.all_test_label,
+                        all_train_data=self.all_train_data,
+                        all_train_label=self.all_train_label,)
             self.clients.append(client)
 
             # client = clientObj(self.args, 
@@ -225,12 +233,12 @@ class Server(object):
 
         return ids, num_samples, tot_correct
 
-    def train_metrics(self):
+    def train_metrics(self, task=None):
 
         num_samples = []
         losses = []
         for c in self.clients:
-            cl, ns = c.train_metrics()
+            cl, ns = c.train_metrics(task=task)
             num_samples.append(ns)
             losses.append(cl*1.0)
 
@@ -242,7 +250,7 @@ class Server(object):
     def eval(self, task, glob_iter, flag):
 
         stats = self.test_metrics(task, glob_iter, flag=flag)
-        stats_train = self.train_metrics()
+        stats_train = self.train_metrics(task)
 
         test_acc = sum(stats[2])*1.0 / sum(stats[1])
         train_loss = sum(stats_train[2])*1.0 / sum(stats_train[1])

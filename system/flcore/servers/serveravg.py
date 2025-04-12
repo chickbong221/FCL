@@ -82,7 +82,7 @@ class FedAvg(Server):
                     self.eval(task=task, glob_iter=glob_iter, flag="global")
 
                 for client in self.selected_clients:
-                    client.train()
+                    client.train(task=task)
 
                 # threads = [Thread(target=client.train)
                 #            for client in self.selected_clients]
@@ -96,7 +96,7 @@ class FedAvg(Server):
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
                 self.Budget.append(time.time() - s_t)
-                # print('-'*25, 'time cost', '-'*25, self.Budget[-1])
+                print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
             self.eval_task(task=task, glob_iter=glob_iter, flag="local")
             

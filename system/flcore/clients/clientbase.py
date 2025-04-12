@@ -4,7 +4,7 @@ import torch.nn as nn
 import numpy as np
 import os
 from torch.utils.data import DataLoader
-from utils.data_utils import Transform_dataset, read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+from utils.data_utils import *
 
 class Client(object):
     """
@@ -32,6 +32,8 @@ class Client(object):
 
         self.all_test_data = kwargs['all_test_data']
         self.all_test_label = kwargs['all_test_label']
+        self.all_train_data = kwargs['all_train_data']
+        self.all_train_label = kwargs['all_train_label']
 
         if self.args.dataset == 'IMAGENET1k':
             class_order = np.load('dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
@@ -145,10 +147,36 @@ class Client(object):
 
         return task_dict.get(label_key, -1)  # Returns -1 if labels are not in task_dict
 
-    def load_train_data(self, batch_size=None):
+    def load_train_data(self, task, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        train_data = self.train_data
+
+        classes_per_task = 2
+        classes_current_task = self.class_order[task*classes_per_task:(task+1)*classes_per_task]
+
+        x_train_list = []
+        y_train_list = []
+
+        for class_id in classes_current_task:
+
+            if self.args.dataset == 'IMAGENET1k':
+                start = class_id * 600
+                end = start + 600
+            elif self.args.dataset == 'CIFAR100':
+                start = class_id * 500
+                end = start + 500
+
+            x_class = self.all_train_data[start:end]
+            y_class = self.all_train_label[start:end]
+
+            x_train_list.append(x_class)
+            y_train_list.append(y_class)
+
+        x_train = torch.cat(x_train_list, dim=0)
+        y_train = torch.cat(y_train_list, dim=0)
+
+        train_data = Transform_dataset(x_train, y_train, imagenet_train_transform)
+
         return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
 
     def load_test_data(self, task, batch_size=None):
@@ -162,11 +190,10 @@ class Client(object):
         y_test_list = []
 
         for class_id in classes_current_task:
-            start = class_id * 50
-            end = start + 50
+            start = class_id * 100
+            end = start + 100
             x_class = self.all_test_data[start:end]
             y_class = self.all_test_label[start:end]
-            # print(y_class)
 
             x_test_list.append(x_class)
             y_test_list.append(y_class)
@@ -174,7 +201,7 @@ class Client(object):
         x_test = torch.cat(x_test_list, dim=0)
         y_test = torch.cat(y_test_list, dim=0)
 
-        test_data = Transform_dataset(x_test, y_test)
+        test_data = Transform_dataset(x_test, y_test, imagenet_test_transform)
         
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
         
@@ -221,8 +248,8 @@ class Client(object):
         
         return test_acc, test_num
 
-    def train_metrics(self):
-        trainloader = self.load_train_data()
+    def train_metrics(self, task):
+        trainloader = self.load_train_data(task=task)
         self.model.eval()
 
         train_num = 0
