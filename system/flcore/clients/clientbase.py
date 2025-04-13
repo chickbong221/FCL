@@ -176,8 +176,6 @@ class Client(object):
 
     def test_metrics(self, task):
         testloader = self.load_test_data(task=task)
-        # self.model = self.load_model('model')
-        # self.model.to(self.device)
 
         self.model.eval()
 
