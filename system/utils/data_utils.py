@@ -45,7 +45,6 @@ imagenet_test_transform = transforms.Compose([
 # client data 1 task
 def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count_labels=False):
     
-    # datadir = '/root/projects/FCL/dataset/imagenet1k224-classes/'
     datadir = '/root/projects/FCL/dataset/imagenet1k-classes/'
     class_order = np.load('/root/projects/FCL/dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
 
@@ -114,7 +113,7 @@ class Transform_dataset(data.Dataset):
     def __len__(self) -> int:
         return len(self.X)
     
-def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per_class = 50):
+def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per_class = 100):
     x_train, y_train, x_test, y_test = [], [], [], []
     
     for _class in classes:
@@ -132,7 +131,7 @@ def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per
     return x_train, y_train, x_test, y_test
 
 
-def load_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=100):
+def load_full_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=100, concat_every=500):
     if dataset == "CIFAR100":
         classes = list(range(100))
     elif dataset == "IMAGENET1k":
@@ -140,30 +139,40 @@ def load_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, te
     else:
         raise NotImplementedError("Not supported dataset")
 
-    x_test = None
-    y_test = None
+    x_test_all = None
+    y_test_all = None
 
-    for _class in classes:
-        print(f"Loading data for class {_class}...")
+    x_test_list, y_test_list = [], []
+
+    for i, _class in enumerate(classes):
+        print(f"Loading data full for class {_class}...")
         data_file = datadir + str(_class) + '.npy'
-        new_x = np.load(data_file)[train_images_per_class:]  # (50, ...)
-        new_y = np.full((test_images_per_class,), _class, dtype=np.int64)
+        data = np.load(data_file)  
 
-        if x_test is None:
-            x_test = new_x
-            y_test = new_y
-        else:
-            x_test = np.concatenate((x_test, new_x), axis=0)
-            y_test = np.concatenate((y_test, new_y), axis=0)
+        new_x_test = data[train_images_per_class:]  
+        new_y_test = np.full((test_images_per_class,), _class, dtype=np.int64)
 
-        del new_x, new_y
-        gc.collect()
+        x_test_list.append(new_x_test)
+        y_test_list.append(new_y_test)
 
-    x_test_tensor = torch.tensor(x_test, dtype=torch.float32)
-    y_test_tensor = torch.tensor(y_test, dtype=torch.long)
+        # Mỗi concat_every class thì concat để giảm bộ nhớ
+        if (i + 1) % concat_every == 0 or (i + 1) == len(classes):
 
-    del x_test, y_test
-    gc.collect()
+            if x_test_all is None:
+                x_test_all = np.concatenate(x_test_list, axis=0)
+                y_test_all = np.concatenate(y_test_list, axis=0)
+            else:
+                x_test_all = np.concatenate([x_test_all] + x_test_list, axis=0)
+                y_test_all = np.concatenate([y_test_all] + y_test_list, axis=0)
+
+            # Giải phóng bộ nhớ
+            x_test_list.clear()
+            y_test_list.clear()
+            gc.collect()
+
+    # Convert sang tensor
+    x_test_tensor = torch.tensor(x_test_all, dtype=torch.float32)
+    y_test_tensor = torch.tensor(y_test_all, dtype=torch.long)
 
     print(f"Loaded {len(x_test_tensor)} test images and {len(y_test_tensor)} test labels.")
     return x_test_tensor, y_test_tensor
