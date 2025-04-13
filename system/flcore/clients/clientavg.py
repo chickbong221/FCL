@@ -8,7 +8,7 @@ class clientAVG(Client):
         super().__init__(args, id, train_data, test_data, **kwargs)
 
     def train(self, task=None):
-        trainloader = self.load_train_data(task=task)
+        trainloader = self.load_train_data()
         self.model.train()
         
         start_time = time.time()

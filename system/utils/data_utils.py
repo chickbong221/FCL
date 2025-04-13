@@ -29,9 +29,9 @@ imagenet_train_transform = transforms.Compose([
     transforms.ToPILImage(),
     transforms.RandomCrop((img_size, img_size), padding=4),
     transforms.RandomHorizontalFlip(p=0.5),
-    transforms.ColorJitter(
-        brightness=0.24705882352941178),
-    # transforms.RandomAffine(degrees=10, translate=(0.1, 0.1)),  # Optional
+    # transforms.ColorJitter(
+    #     brightness=0.24705882352941178),
+    transforms.RandomAffine(degrees=10, translate=(0.1, 0.1)),  
     transforms.ToTensor(),
     transforms.Normalize(imagenet_mean, imagenet_std)])
 
@@ -132,7 +132,7 @@ def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per
     return x_train, y_train, x_test, y_test
 
 
-def load_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=50):
+def load_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=100):
     if dataset == "CIFAR100":
         classes = list(range(100))
     elif dataset == "IMAGENET1k":
