@@ -43,14 +43,14 @@ class FedAvg(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
                     elif self.args.dataset == 'CIFAR100':
-                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
                     else:
                         raise NotImplementedError("Not supported dataset")
 
                     # update dataset
-                    self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
+                    self.clients[i].next_task(train_data, label_info) # assign dataloader for new data
                     # print(self.clients[i].task_dict)
 
                 # update labels info.

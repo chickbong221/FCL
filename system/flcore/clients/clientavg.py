@@ -4,8 +4,8 @@ from flcore.clients.clientbase import Client
 
 
 class clientAVG(Client):
-    def __init__(self, args, id, train_data, test_data, **kwargs):
-        super().__init__(args, id, train_data, test_data, **kwargs)
+    def __init__(self, args, id, train_data, **kwargs):
+        super().__init__(args, id, train_data, **kwargs)
 
     def train(self, task=None):
         trainloader = self.load_train_data()

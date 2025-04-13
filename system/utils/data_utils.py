@@ -42,7 +42,7 @@ imagenet_test_transform = transforms.Compose([
     transforms.Normalize(imagenet_mean, imagenet_std)])
 
 
-# client data 1 task
+# client train data 1 task
 def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count_labels=False):
     
     datadir = '/root/projects/FCL/dataset/imagenet1k-classes/'
@@ -50,24 +50,23 @@ def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count
 
     class_order = class_order[index]
 
-    x_train, y_train, x_test, y_test = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task])
-    x_train, x_test = x_train.type(torch.FloatTensor), x_test.type(torch.FloatTensor)
-    y_train, y_test = torch.Tensor(y_train.type(torch.long)), torch.Tensor(y_test.type(torch.long))
+    x_train, y_train = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task])
+    x_train = x_train.type(torch.FloatTensor)
+    y_train = torch.Tensor(y_train.type(torch.long))
+
     train_data = Transform_dataset(x_train, y_train)
-    test_data = Transform_dataset(x_test, y_test)
 
     if count_labels:
         label_info = {}
         unique_y, counts=torch.unique(y_train, return_counts=True)
-        # print("unique_y: " + str(unique_y))
         unique_y=unique_y.detach().numpy()
         counts=counts.detach().numpy()
         label_info['labels']=unique_y
         label_info['counts']=counts
 
-        return train_data, test_data, label_info
+        return train_data, label_info
     
-    return train_data, test_data
+    return train_data
 
 
 def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_labels=False):
@@ -76,12 +75,11 @@ def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_l
     class_order = np.load('dataset/class_order/class_order_cifar100.npy', allow_pickle=True)
     class_order = class_order[index]
 
-    x_train, y_train, x_test, y_test = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train_images_per_class=500, test_images_per_class=100)
-    x_train, x_test = x_train.type(torch.FloatTensor), x_test.type(torch.FloatTensor)
-    y_train, y_test = torch.Tensor(y_train.type(torch.long)), torch.Tensor(y_test.type(torch.long))
+    x_train, y_train = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train_images_per_class=500)
+    x_train = x_train.type(torch.FloatTensor)
+    y_train = torch.Tensor(y_train.type(torch.long))
 
     train_data = Transform_dataset(x_train, y_train)
-    test_data = Transform_dataset(x_test, y_test)
 
     if count_labels:
         label_info = {}
@@ -91,9 +89,9 @@ def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_l
         label_info['labels']=unique_y
         label_info['counts']=counts
 
-        return train_data, test_data, label_info
+        return train_data, label_info
     
-    return train_data, test_data
+    return train_data
 
 
 class Transform_dataset(data.Dataset):
@@ -113,22 +111,18 @@ class Transform_dataset(data.Dataset):
     def __len__(self) -> int:
         return len(self.X)
     
-def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per_class = 100):
-    x_train, y_train, x_test, y_test = [], [], [], []
+def load_data(datadir, classes=[], train_images_per_class = 600):
+    x_train, y_train = [], []
     
     for _class in classes:
         data_file = datadir + str(_class) + '.npy'
         data = np.load(data_file)
         
         x_train.append(data[:train_images_per_class])
-        x_test.append(data[train_images_per_class:])
         y_train.append(np.array([_class] * train_images_per_class))
-        y_test.append(np.array([_class] * test_images_per_class))
     x_train = torch.tensor(np.concatenate(x_train))
-    x_test = torch.tensor(np.concatenate(x_test))
     y_train = torch.from_numpy(np.concatenate(y_train))
-    y_test = torch.from_numpy(np.concatenate(y_test))
-    return x_train, y_train, x_test, y_test
+    return x_train, y_train
 
 
 def load_full_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=100, concat_every=500):

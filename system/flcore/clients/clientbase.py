@@ -2,7 +2,6 @@ import copy
 import torch
 import torch.nn as nn
 import numpy as np
-import os
 from torch.utils.data import DataLoader
 from utils.data_utils import *
 
@@ -11,7 +10,7 @@ class Client(object):
     Base class for clients in federated learning.
     """
 
-    def __init__(self, args, id, train_data, test_data, **kwargs):
+    def __init__(self, args, id, train_data, **kwargs):
         torch.manual_seed(0)
         self.model = copy.deepcopy(args.model)
         self.args = args
@@ -22,7 +21,6 @@ class Client(object):
 
         self.num_classes = args.num_classes
         self.train_data = train_data
-        self.test_data = test_data
         self.batch_size = args.batch_size
         self.learning_rate = args.local_learning_rate
         self.local_epochs = args.local_epochs
@@ -65,27 +63,7 @@ class Client(object):
             )
             self.learning_rate_decay = args.learning_rate_decay
 
-        # continual federated learning
-        # if self.args.dataset == 'IMAGENET1k':
-        #     self.N_TASKS = 500
-        # elif self.args.dataset == 'CIFAR100':
-        #     self.N_TASKS = 50
-        # else:
-        #     raise NotImplementedError("Not supported dataset")
-        # print("Anh Duong dep trai")
-        
-        # self.test_data_all_task = []
-        # for task in range(self.N_TASKS):
-            
-        #     if self.args.dataset == 'IMAGENET1k':
-        #         _, test_data, _ = read_client_data_FCL_imagenet1k(self.id, task=task, classes_per_task=2, count_labels=True)
-        #     elif self.args.dataset == 'CIFAR100':
-        #         _, test_data, _ = read_client_data_FCL_cifar100(self.id, task=task, classes_per_task=2, count_labels=True)
-        #     else:
-        #         raise NotImplementedError("Not supported dataset")
-
-        #     self.test_data_all_task.append(test_data)
-
+        self.train_data_sofar = [self.train_data] # all data of a client so far
         self.classes_so_far = [] # all labels of a client so far 
         self.available_labels_current = [] # labels from all clients on T (current)
         self.current_labels = [] # current labels for itself
@@ -98,7 +76,7 @@ class Client(object):
         self.if_last_copy = False
         self.args = args
 
-    def next_task(self, train, test, label_info = None, if_label = True):
+    def next_task(self, train, label_info = None, if_label = True):
         
         if self.args.algorithm != "PreciseFCL" and self.learning_rate_decay:
             # update last model:
@@ -116,8 +94,8 @@ class Client(object):
         
         # update dataset: 
         self.train_data = train
-        self.test_data = test
 
+        self.train_data_sofar.append(train)
         self.train_targets = [label for _, label in self.train_data]
         
         # update classes_past_task
@@ -151,6 +129,12 @@ class Client(object):
         train_data = self.train_data
         return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
 
+    def load_train_data_sofar_specific(self, task, batch_size=None):
+        if batch_size == None:
+            batch_size = self.batch_size
+        train_data = self.train_data_sofar[task]
+        return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
+
     def load_test_data(self, task, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
@@ -176,12 +160,6 @@ class Client(object):
         test_data = Transform_dataset(x_test, y_test, imagenet_test_transform)
         
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)  
-
-    # def load_test_data(self, task, batch_size=None):
-    #     if batch_size == None:
-    #         batch_size = self.batch_size
-    #     test_data = self.test_data_all_task[task]
-    #     return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)
 
     def set_parameters(self, model):
         for new_param, old_param in zip(model.parameters(), self.model.parameters()):
