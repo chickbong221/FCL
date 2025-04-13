@@ -17,6 +17,8 @@ cifar100_train_transform = transforms.Compose([
                             transforms.ToTensor(),
                             transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
 cifar100_test_transform = transforms.Compose([
+                            transforms.ToPILImage(),
+                            transforms.ToTensor(),
                             transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
 
 # Mean và std của ImageNet1k gốc
@@ -34,6 +36,9 @@ imagenet_train_transform = transforms.Compose([
     transforms.Normalize(imagenet_mean, imagenet_std)])
 
 imagenet_test_transform = transforms.Compose([
+    transforms.ToPILImage(),
+    transforms.Resize((img_size, img_size)),  
+    transforms.ToTensor(),
     transforms.Normalize(imagenet_mean, imagenet_std)])
 
 
