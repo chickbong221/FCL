@@ -46,7 +46,7 @@ imagenet_test_transform = transforms.Compose([
 def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count_labels=False, train=True):
     
     datadir = './dataset/imagenet1k-classes/'
-    class_order = np.load('./FCL/dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
+    class_order = np.load('./dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
 
     class_order = class_order[index]
 
