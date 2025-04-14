@@ -2,9 +2,9 @@ import time
 import torch
 from flcore.clients.clientstgm import clientSTGM
 from flcore.servers.serverbase import Server
-from threading import Thread
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
-
+from torch.optim.lr_scheduler import StepLR
+import numpy as np
 
 class FedSTGM(Server):
     def __init__(self, args, times):
@@ -17,6 +17,13 @@ class FedSTGM(Server):
 
         # self.load_model()
         self.Budget = []
+
+        self.stgm_learning_rate = args.stgm_learning_rate
+        self.stgm_step_size = args.stgm_step_size
+        self.stgm_c = args.stgm_c
+        self.stgm_rounds = args.stgm_rounds
+        self.stgm_momentum = args.stgm_momentum
+        self.stgm_gamma = args.stgm_gamma
 
     def train(self):
 
@@ -95,7 +102,7 @@ class FedSTGM(Server):
                 self.receive_grads()
 
                 """
-                Add aggregate STGM
+                Spatio Gradient Matching
                 """
                 grad_ez = sum(p.numel() for p in self.global_model.parameters())
                 grads = torch.Tensor(grad_ez, self.num_clients)
@@ -123,26 +130,16 @@ class FedSTGM(Server):
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
 
-                if self.auto_break and self.check_done(acc_lss=[self.rs_test_acc], top_cnt=self.top_cnt):
-                    break
-
             print("\nBest accuracy.")
             print(max(self.rs_test_acc))
             print("\nAverage time cost per round.")
             print(sum(self.Budget[1:]) / len(self.Budget[1:]))
 
-            if self.num_new_clients > 0:
-                self.eval_new_clients = True
-                self.set_new_clients(clientSTGM)
-                print(f"\n-------------Fine tuning round-------------")
-                print("\nEvaluate new clients")
-                self.evaluate(glob_iter=glob_iter)
+            if i % self.eval_gap == 0:
+                self.eval(task=task, glob_iter=glob_iter, flag="local")
 
-                if i % self.eval_gap == 0:
-                    self.eval(task=task, glob_iter=glob_iter, flag="local")
-
-                self.Budget.append(time.time() - s_t)
-                print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
+            self.Budget.append(time.time() - s_t)
+            print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
 
             self.eval_task(task=task, glob_iter=glob_iter, flag="local")
 
@@ -166,24 +163,24 @@ class FedSTGM(Server):
         #         w = torch.zeros(num_tasks, 1, requires_grad=True).to(self.device)
 
         if num_tasks == 50:
-            w_opt = torch.optim.SGD([w], lr=self.grad_stgm_learning_rate * 2, momentum=self.momentum)
+            w_opt = torch.optim.SGD([w], lr=self.stgm_learning_rate * 2, momentum=self.stgm_momentum)
         else:
-            w_opt = torch.optim.SGD([w], lr=self.grad_stgm_learning_rate, momentum=self.momentum)
+            w_opt = torch.optim.SGD([w], lr=self.stgm_learning_rate, momentum=self.stgm_momentum)
 
-        scheduler = StepLR(w_opt, step_size=self.step_size, gamma=self.gamma)
+        scheduler = StepLR(w_opt, step_size=self.stgm_step_size, gamma=self.stgm_gamma)
 
-        c = (gg + 1e-4).sqrt() * self.grad_stgm_c
+        c = (gg + 1e-4).sqrt() * self.stgm_c
 
         w_best = None
         obj_best = np.inf
-        for i in range(self.grad_stgm_rounds + 1):
+        for i in range(self.stgm_rounds + 1):
             w_opt.zero_grad()
             ww = torch.softmax(w, dim=0)
             obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
             if obj.item() < obj_best:
                 obj_best = obj.item()
                 w_best = w.clone()
-            if i < self.grad_stgm_rounds:
+            if i < self.stgm_rounds:
                 obj.backward()
                 w_opt.step()
                 scheduler.step()
@@ -195,7 +192,7 @@ class FedSTGM(Server):
 
         lmbda = c.view(-1) / (gw_norm + 1e-4)
         g = ((1 / num_tasks + ww * lmbda).view(
-            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.grad_stgm_c ** 2)
+            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.stgm_c ** 2)
         return g
 
     def overwrite_grad2(self, m, newgrad):
