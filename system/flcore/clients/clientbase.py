@@ -129,7 +129,6 @@ class Client(object):
 
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)  
 
-
     def set_parameters(self, model):
         for new_param, old_param in zip(model.parameters(), self.model.parameters()):
             old_param.data = new_param.data.clone()
