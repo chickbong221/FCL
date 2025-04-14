@@ -83,14 +83,9 @@ class Client(object):
         
         # update dataset: 
         self.train_data = train
-
-        # self.train_data_sofar.append(train)
         self.train_targets = [label for _, label in self.train_data]
         
-        # update classes_past_task
         self.classes_past_task = copy.deepcopy(self.classes_so_far)
-        
-        # update class recorder:
         self.current_task += 1
 
         # update classes_so_far
