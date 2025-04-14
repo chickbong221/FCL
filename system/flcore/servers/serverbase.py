@@ -52,32 +52,16 @@ class Server(object):
         self.global_accuracy_matrix = []
         self.local_accuracy_matrix = []
 
-        print("Anh Duong dep trai")
-        self.all_train_data, self.all_train_label = [], []
-        self.all_test_data, self.all_test_label = [], []
-
         if self.args.dataset == 'IMAGENET1k':
             self.N_TASKS = 500
-            datadir = 'dataset/imagenet1k-classes/'
-
-            self.all_test_data, self.all_test_label = load_full_test_data(datadir, dataset=args.dataset)
-        
         elif self.args.dataset == 'CIFAR100':
             self.N_TASKS = 50
-            datadir = 'dataset/cifar100-classes/'
-            self.all_test_data, self.all_test_label = load_full_test_data(datadir, dataset=args.dataset, train_images_per_class=500, test_images_per_class=100)
-
-        else:
-            raise NotImplementedError("Not supported dataset")
-
-        print("Anh Duong dep trai qua")
 
         # FCL
         self.task_dict = {}
         self.current_task = 0
 
     def set_clients(self, clientObj):
-        total_clients = 10
         for i in range(self.num_clients):
             
             if self.args.dataset == 'IMAGENET1k':
@@ -87,11 +71,7 @@ class Server(object):
             else:
                 raise NotImplementedError("Not supported dataset")
 
-            client = clientObj(self.args, 
-                        id=i,
-                        train_data=train_data,
-                        all_test_data=self.all_test_data,
-                        all_test_label=self.all_test_label,)
+            client = clientObj(self.args, id=i, train_data=train_data)
             self.clients.append(client)
 
             # update classes so far & current labels
@@ -216,12 +196,12 @@ class Server(object):
 
         return ids, num_samples, tot_correct
 
-    def train_metrics(self):
+    def train_metrics(self, task=None):
 
         num_samples = []
         losses = []
         for c in self.clients:
-            cl, ns = c.train_metrics()
+            cl, ns = c.train_metrics(task=task)
             num_samples.append(ns)
             losses.append(cl*1.0)
 
@@ -233,7 +213,7 @@ class Server(object):
     def eval(self, task, glob_iter, flag):
 
         stats = self.test_metrics(task, glob_iter, flag=flag)
-        stats_train = self.train_metrics()
+        stats_train = self.train_metrics(task=task)
 
         test_acc = sum(stats[2])*1.0 / sum(stats[1])
         train_loss = sum(stats_train[2])*1.0 / sum(stats_train[1])

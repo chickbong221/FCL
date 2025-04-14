@@ -28,16 +28,6 @@ class Client(object):
         self.train_source = [image for image, _ in self.train_data]
         self.train_targets = [label for _, label in self.train_data]
 
-        self.all_test_data = kwargs['all_test_data']
-        self.all_test_label = kwargs['all_test_label']
-
-        if self.args.dataset == 'IMAGENET1k':
-            class_order = np.load('dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
-        elif self.args.dataset == 'CIFAR100':
-            class_order = np.load('dataset/class_order/class_order_cifar100.npy', allow_pickle=True)
-
-        self.class_order = class_order[id]
-
         # check BatchNorm
         self.has_BatchNorm = False
         for layer in self.model.children():
@@ -63,7 +53,6 @@ class Client(object):
             )
             self.learning_rate_decay = args.learning_rate_decay
 
-        self.train_data_sofar = [self.train_data] # all data of a client so far
         self.classes_so_far = [] # all labels of a client so far 
         self.available_labels_current = [] # labels from all clients on T (current)
         self.current_labels = [] # current labels for itself
@@ -95,7 +84,7 @@ class Client(object):
         # update dataset: 
         self.train_data = train
 
-        self.train_data_sofar.append(train)
+        # self.train_data_sofar.append(train)
         self.train_targets = [label for _, label in self.train_data]
         
         # update classes_past_task
@@ -123,43 +112,28 @@ class Client(object):
 
         return task_dict.get(label_key, -1)  # Returns -1 if labels are not in task_dict
 
-    def load_train_data(self, batch_size=None):
+    def load_train_data(self, task, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        train_data = self.train_data
-        return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
-
-    def load_train_data_sofar_specific(self, task, batch_size=None):
-        if batch_size == None:
-            batch_size = self.batch_size
-        train_data = self.train_data_sofar[task]
+        
+        if self.args.dataset == 'IMAGENET1k':
+            train_data = read_client_data_FCL_imagenet1k(self.id, task=task, classes_per_task=2, count_labels=False, train=True)
+        elif self.args.dataset == 'CIFAR100':
+            train_data = read_client_data_FCL_cifar100(self.id, task=task, classes_per_task=2, count_labels=False, train=True)
+        
         return DataLoader(train_data, batch_size, drop_last=True, shuffle=True)
 
     def load_test_data(self, task, batch_size=None):
         if batch_size == None:
             batch_size = self.batch_size
-        
-        classes_per_task = 2
-        classes_current_task = self.class_order[task*classes_per_task:(task+1)*classes_per_task]
-        
-        x_test_list = []
-        y_test_list = []
 
-        for class_id in classes_current_task:
-            start = class_id * 100
-            end = start + 100
-            x_class = self.all_test_data[start:end]
-            y_class = self.all_test_label[start:end]
+        if self.args.dataset == 'IMAGENET1k':
+            test_data = read_client_data_FCL_imagenet1k(self.id, task=task, classes_per_task=2, count_labels=False, train=False)
+        elif self.args.dataset == 'CIFAR100':
+            test_data = read_client_data_FCL_cifar100(self.id, task=task, classes_per_task=2, count_labels=False, train=False)
 
-            x_test_list.append(x_class)
-            y_test_list.append(y_class)
-
-        x_test = torch.cat(x_test_list, dim=0)
-        y_test = torch.cat(y_test_list, dim=0)
-
-        test_data = Transform_dataset(x_test, y_test, imagenet_test_transform)
-        
         return DataLoader(test_data, batch_size, drop_last=False, shuffle=True)  
+
 
     def set_parameters(self, model):
         for new_param, old_param in zip(model.parameters(), self.model.parameters()):
@@ -196,8 +170,8 @@ class Client(object):
         
         return test_acc, test_num
 
-    def train_metrics(self):
-        trainloader = self.load_train_data()
+    def train_metrics(self, task):
+        trainloader = self.load_train_data(task=task)
         self.model.eval()
 
         train_num = 0

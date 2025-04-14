@@ -43,55 +43,59 @@ imagenet_test_transform = transforms.Compose([
 
 
 # client train data 1 task
-def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count_labels=False):
+def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count_labels=False, train=True):
     
     datadir = '/root/projects/FCL/dataset/imagenet1k-classes/'
     class_order = np.load('/root/projects/FCL/dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
 
     class_order = class_order[index]
 
-    x_train, y_train = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task])
-    x_train = x_train.type(torch.FloatTensor)
-    y_train = torch.Tensor(y_train.type(torch.long))
-
-    train_data = Transform_dataset(x_train, y_train)
+    if train:
+        x, y = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train=True)
+    else:
+        x, y = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train=False)
+    x = x.type(torch.FloatTensor)
+    y = torch.Tensor(y.type(torch.long))
+    data = Transform_dataset(x, y)
 
     if count_labels:
         label_info = {}
-        unique_y, counts=torch.unique(y_train, return_counts=True)
+        unique_y, counts=torch.unique(y, return_counts=True)
         unique_y=unique_y.detach().numpy()
         counts=counts.detach().numpy()
         label_info['labels']=unique_y
         label_info['counts']=counts
 
-        return train_data, label_info
+        return data, label_info
     
-    return train_data
+    return data
 
 
-def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_labels=False):
+def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_labels=False, train=True):
     
-    datadir = 'dataset/cifar100-classes/'
-    class_order = np.load('dataset/class_order/class_order_cifar100.npy', allow_pickle=True)
+    datadir = '/root/projects/FCL/dataset/cifar100-classes/'
+    class_order = np.load('/root/projects/FCL/dataset/class_order/class_order_cifar100.npy', allow_pickle=True)
     class_order = class_order[index]
 
-    x_train, y_train = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train_images_per_class=500)
-    x_train = x_train.type(torch.FloatTensor)
-    y_train = torch.Tensor(y_train.type(torch.long))
-
-    train_data = Transform_dataset(x_train, y_train)
+    if train:
+        x, y = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train_images_per_class=500, test_images_per_class=100, train=True)
+    else:
+        x, y = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train_images_per_class=500, test_images_per_class=100, train=False)
+    x = x.type(torch.FloatTensor)
+    y = torch.Tensor(y.type(torch.long))
+    data = Transform_dataset(x, y)
 
     if count_labels:
         label_info = {}
-        unique_y, counts=torch.unique(y_train, return_counts=True)
+        unique_y, counts=torch.unique(y, return_counts=True)
         unique_y=unique_y.detach().numpy()
         counts=counts.detach().numpy()
         label_info['labels']=unique_y
         label_info['counts']=counts
 
-        return train_data, label_info
+        return data, label_info
     
-    return train_data
+    return data
 
 
 class Transform_dataset(data.Dataset):
@@ -111,18 +115,22 @@ class Transform_dataset(data.Dataset):
     def __len__(self) -> int:
         return len(self.X)
     
-def load_data(datadir, classes=[], train_images_per_class = 600):
-    x_train, y_train = [], []
-    
+def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per_class = 100, train=True):
+    x, y = [], []
+
     for _class in classes:
         data_file = datadir + str(_class) + '.npy'
         data = np.load(data_file)
         
-        x_train.append(data[:train_images_per_class])
-        y_train.append(np.array([_class] * train_images_per_class))
-    x_train = torch.tensor(np.concatenate(x_train))
-    y_train = torch.from_numpy(np.concatenate(y_train))
-    return x_train, y_train
+        if train:
+            x.append(data[:train_images_per_class])
+            y.append(np.array([_class] * train_images_per_class))
+        else:
+            x.append(data[train_images_per_class:])
+            y.append(np.array([_class] * test_images_per_class))
+    x = torch.tensor(np.concatenate(x))
+    y = torch.from_numpy(np.concatenate(y))
+    return x, y
 
 
 def load_full_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=100, concat_every=500):
