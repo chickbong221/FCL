@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="99ce310d-b914-4464-8807-136f6ae09a0b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/system/utils/data_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/utils/data_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/flcore/clients/clientstgm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/clients/clientstgm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serverstgm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serverstgm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,14 +36,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "PFLlib-based",
-    "last_opened_file_path": "/home/skydvn/Documents/git/ContinualLearning/FCL"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;PFLlib-based&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/skydvn/Documents/git/ContinualLearning/FCL&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

@@ -20,7 +20,7 @@ from flcore.servers.serverprecise import FedPrecise
 from flcore.trainmodel.models import *
 
 from flcore.trainmodel.precise_models import PreciseModel
-# from flcore.servers.serverstgm import FedSTGM
+from flcore.servers.serverstgm import FedSTGM
 from flcore.servers.serverfcil import FedFCIL
 
 from flcore.trainmodel.bilstm import *

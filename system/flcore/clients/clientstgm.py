@@ -1,28 +1,14 @@
-import copy
-import torch
 import numpy as np
 import time
 from flcore.clients.clientbase import Client
-from collections import OrderedDict
 
 
 class clientSTGM(Client):
-    def __init__(self, args, id, train_data, test_data, train_samples, test_samples, **kwargs):
-        super().__init__(args, id, train_data, test_data, train_samples, test_samples, **kwargs)
-        """ 
-        - Replay memory:
-            + Set maximum memory.
-            + Set in/out function for memory.
-        """
-        self.memory_num = args.memory_num
-        self.G = OrderedDict()
-        self.buffer = OrderedDict()
-        self.new_buffer = OrderedDict()
+    def __init__(self, args, id, train_data, **kwargs):
+        super().__init__(args, id, train_data, **kwargs)
 
-
-    def train(self):
-        trainloader = self.load_train_data()
-        # self.model.to(self.device)
+    def train(self, task=None):
+        trainloader = self.load_train_data(task=task)
         self.model.train()
 
         start_time = time.time()
@@ -36,19 +22,11 @@ class clientSTGM(Client):
                 else:
                     x = x.to(self.device)
                 y = y.to(self.device)
-
                 output = self.model(x)
                 loss = self.loss(output, y)
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
-
-            """
-            - STGM on client-side
-                + Load prototype
-                + Inference -> Loss -> Gradients 
-                + GM on client-side
-            """
 
         # self.model.cpu()
 
