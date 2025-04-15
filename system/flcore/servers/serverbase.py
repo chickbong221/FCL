@@ -230,7 +230,11 @@ class Server(object):
                 "Local/Averaged Train Loss": train_loss,
                 "Local/Averaged Test Accuracy": test_acc,
             }
-        
+
+        if self.args.log:
+            print("\nAveraged Test Accuracy.")
+            print(test_acc)
+
         if self.args.wandb:
             wandb.log(log_keys, step=glob_iter)
 

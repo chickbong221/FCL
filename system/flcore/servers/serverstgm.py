@@ -26,8 +26,8 @@ class FedSTGM(Server):
         self.stgm_gamma = args.stgm_gamma
 
     def train(self):
-
-        for task in range(self.N_TASKS):
+        for task in range(2500):
+        # for task in range(self.N_TASKS):
 
             print(f"\n================ Current Task: {task} =================")
             if task == 0:
@@ -130,22 +130,14 @@ class FedSTGM(Server):
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
 
-            print("\nBest accuracy.")
-            print(max(self.rs_test_acc))
-            print("\nAverage time cost per round.")
-            print(sum(self.Budget[1:]) / len(self.Budget[1:]))
+                if i % self.eval_gap == 0:
+                    self.eval(task=task, glob_iter=glob_iter, flag="local")
 
-            if i % self.eval_gap == 0:
-                self.eval(task=task, glob_iter=glob_iter, flag="local")
-
-            self.Budget.append(time.time() - s_t)
-            print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
-
-            self.eval_task(task=task, glob_iter=glob_iter, flag="local")
-
-            # need eval before data update
-            self.send_models()
-            self.eval_task(task=task, glob_iter=glob_iter, flag="global")
+            # # self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+            #
+            # # need eval before data update
+            # self.send_models()
+            # # self.eval_task(task=task, glob_iter=glob_iter, flag="global")
 
 
     def aggregate_stgm(self, grad_vec, num_tasks):

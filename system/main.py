@@ -140,6 +140,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     # general
+    parser.add_argument("--log", type=bool, default=False)
     parser.add_argument("--offlog", type=bool, default=False)
     parser.add_argument("--wandb", type=bool, default=False)
     parser.add_argument("--optimizer", type=str, default="sgd")
@@ -156,8 +157,8 @@ if __name__ == "__main__":
                         help="Local learning rate")
     parser.add_argument('-ld', "--learning_rate_decay", type=bool, default=False)
     parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.99)
-    parser.add_argument('-gr', "--global_rounds", type=int, default=2000)
-    parser.add_argument('-ls', "--local_epochs", type=int, default=1, 
+    parser.add_argument('-gr', "--global_rounds", type=int, default=100)
+    parser.add_argument('-ls', "--local_epochs", type=int, default=1,
                         help="Multiple update steps in one local epoch.")
     parser.add_argument('-algo', "--algorithm", type=str, default="FedAvg")
     parser.add_argument('-jr', "--join_ratio", type=float, default=1.0,
@@ -224,12 +225,12 @@ if __name__ == "__main__":
     args.state_dir = os.path.join(args.output_path, 'states/{}-{}'.format(args.model, args.dataset))
     
     # FedSTGM
-    parser.add_argument('-car', "--stgm_rounds", type=int, default=100)
-    parser.add_argument('-calr', "--stgm_learning_rate", type=float, default=25)
-    parser.add_argument('-mmt', "--stgm_momentum", type=float, default=0.5)
-    parser.add_argument('-ss', "--stgm_step_size", type=int, default=30)
-    parser.add_argument('-gam', "--stgm_gamma", type=float, default=0.5)
-    parser.add_argument('-c', "--stgm_c", type=float, default=0.5)
+    parser.add_argument('-sgmr', "--stgm_rounds", type=int, default=100)
+    parser.add_argument('-sgmlr', "--stgm_learning_rate", type=float, default=25)
+    parser.add_argument('-sgmm', "--stgm_momentum", type=float, default=0.5)
+    parser.add_argument('-sgmss', "--stgm_step_size", type=int, default=30)
+    parser.add_argument('-sgmg', "--stgm_gamma", type=float, default=0.5)
+    parser.add_argument('-sgmc', "--stgm_c", type=float, default=0.2)
 
     #FCIL
     parser.add_argument('-mem', "--memory_size", type=int, default=2000)
