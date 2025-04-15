@@ -232,6 +232,11 @@ if __name__ == "__main__":
     parser.add_argument('-sgmg', "--stgm_gamma", type=float, default=0.5)
     parser.add_argument('-sgmc', "--stgm_c", type=float, default=0.2)
 
+    # Flag of STGM blocks for ablation studies
+    parser.add_argument("--coreset", type=bool, default=True)
+    parser.add_argument("--tgm", type=bool, default=True)
+    parser.add_argument("--sgm", type=bool, default=True)
+
     #FCIL
     parser.add_argument('-mem', "--memory_size", type=int, default=2000)
 
