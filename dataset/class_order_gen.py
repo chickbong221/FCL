@@ -1,22 +1,30 @@
 import numpy as np
 
-def generate_permuted_array(rows, cols=100):
-    array = np.zeros((rows, cols), dtype=int)
-    permutations = set()
+def generate_unique_permutations_flat(client_num=100, classes=1000, duplicate=20, seed=None):
+    if seed is not None:
+        np.random.seed(seed)
     
-    for i in range(rows):
+    array = np.zeros((client_num, duplicate * classes), dtype=int)
+    used_permutations = set()
+
+    for i in range(client_num):
         while True:
-            perm = tuple(np.random.permutation(cols))
-            if perm not in permutations:  # Đảm bảo mỗi hàng là duy nhất
-                permutations.add(perm)
-                array[i] = perm
+            perm = tuple(np.random.permutation(classes))
+            if perm not in used_permutations:
+                used_permutations.add(perm)
                 break
+        
+        # Lặp lại permutation 10 lần cho client i
+        repeated_perm = np.tile(perm, duplicate)
+        array[i] = repeated_perm
     
     return array
 
-num_rows = 100
-permuted_array = generate_permuted_array(num_rows)
+num_clients = 20
+num_classes = 1000
 
-np.save("/root/projects/FCL/dataset/class_order/class_order_cifar100.npy", permuted_array)
+permuted_array = generate_unique_permutations_flat(client_num=num_clients, classes=num_classes)
 
-print(permuted_array)
+np.save("/root/projects/FCL/dataset/class_order/class_order_imagenet1k.npy", permuted_array)
+
+print(permuted_array.shape)  # (100, 10000)

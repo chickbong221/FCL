@@ -7,8 +7,9 @@ import time
 import warnings
 import numpy as np
 import torchvision
-import logging
+import json
 import wandb
+from argparse import Namespace
 
 from flcore.servers.serveravg import FedAvg
 from flcore.servers.serverala import FedALA
@@ -28,9 +29,6 @@ from flcore.trainmodel.bilstm import *
 from flcore.trainmodel.alexnet import *
 from flcore.trainmodel.mobilenet_v2 import *
 from flcore.trainmodel.transformer import *
-
-logger = logging.getLogger()
-logger.setLevel(logging.ERROR)
 
 warnings.simplefilter("ignore")
 torch.manual_seed(0)
@@ -139,108 +137,17 @@ if __name__ == "__main__":
     total_start = time.time()
 
     parser = argparse.ArgumentParser()
-    # general
-    parser.add_argument("--log", type=bool, default=False)
-    parser.add_argument("--offlog", type=bool, default=False)
-    parser.add_argument("--wandb", type=bool, default=False)
-    parser.add_argument("--optimizer", type=str, default="sgd")
-    parser.add_argument("--datadir", type=str, default="dataset")
-    parser.add_argument('-dev', "--device", type=str, default="cuda",
-                        choices=["cpu", "cuda"])
-    parser.add_argument('-did', "--device_id", type=str, default="0")
-    parser.add_argument('-data', "--dataset", type=str, default="CIFAR100", choices=['EMNIST-Letters', 'EMNIST-Letters-malicious', 
-                                                                            'EMNIST-Letters-shuffle', 'CIFAR100', 'MNIST-SVHN-FASHION', 'IMAGENET1k'])
-    parser.add_argument('-ncl', "--num_classes", type=int, default=100)
-    parser.add_argument('-m', "--model", type=str, default="CNN")
-    parser.add_argument('-lbs', "--batch_size", type=int, default=64)
-    parser.add_argument('-lr', "--local_learning_rate", type=float, default=0.005,
-                        help="Local learning rate")
-    parser.add_argument('-ld', "--learning_rate_decay", type=bool, default=False)
-    parser.add_argument('-ldg', "--learning_rate_decay_gamma", type=float, default=0.99)
-    parser.add_argument('-gr', "--global_rounds", type=int, default=100)
-    parser.add_argument('-ls', "--local_epochs", type=int, default=1,
-                        help="Multiple update steps in one local epoch.")
-    parser.add_argument('-algo', "--algorithm", type=str, default="FedAvg")
-    parser.add_argument('-jr', "--join_ratio", type=float, default=1.0,
-                        help="Ratio of clients per round")
-    parser.add_argument('-rjr', "--random_join_ratio", type=bool, default=False,
-                        help="Random ratio of clients per round")
-    parser.add_argument('-nc', "--num_clients", type=int, default=10,
-                        help="Total number of clients")
-    parser.add_argument('-pv', "--prev", type=int, default=0,
-                        help="Previous Running times")
-    parser.add_argument('-t', "--times", type=int, default=1,
-                        help="Running times")
-    parser.add_argument('-eg', "--eval_gap", type=int, default=1,
-                        help="Rounds gap for evaluation")
-    parser.add_argument('-sfn', "--out_folder", type=str, default='out')
-    parser.add_argument("--note", type=str, default=None)
-    # practical
-    parser.add_argument('-cdr', "--client_drop_rate", type=float, default=0.0,
-                        help="Rate for clients that train but drop out")
-    parser.add_argument('-tth', "--time_threthold", type=float, default=10000,
-                        help="The threthold for droping slow clients")
-    # FedALA
-    parser.add_argument('-et', "--eta", type=float, default=1.0)
-    parser.add_argument('-s', "--rand_percent", type=int, default=80)
-    parser.add_argument('-p', "--layer_idx", type=int, default=2,
-                        help="More fine-grained than its original paper.")
-    # FedDBE
-    parser.add_argument('-mo', "--momentum", type=float, default=0.1)
-    parser.add_argument('-klw', "--kl_weight", type=float, default=0.0)
-
-    #FedWeIT
-    parser.add_argument('--output_path', type=str, default='output_fedweit/', help="Path to save outputs")
-    parser.add_argument('--sparse_comm', type=bool, default=True, help="Enable sparse communication")
-    parser.add_argument('--client_sparsity', type=float, default=0.3, help="Client-side sparsity level")
-    parser.add_argument('--server_sparsity', type=float, default=0.3, help="Server-side sparsity level")
-    parser.add_argument('--base_network', type=str, default='lenet', choices=['lenet'], help="Base network architecture")
-    parser.add_argument('--lr_patience', type=int, default=3, help="Patience for learning rate scheduling")
-    parser.add_argument('--lr_factor', type=int, default=3, help="Factor for learning rate reduction")
-    parser.add_argument('--lr_min', type=float, default=1e-10, help="Minimum learning rate")
-    parser.add_argument('--wd', type=float, default=1e-4, help="Weight decay")
-    parser.add_argument('--lambda_l1', type=float, default=1e-3, help="L1 regularization coefficient")
-    parser.add_argument('--lambda_l2', type=float, default=100.0, help="L2 regularization coefficient")
-    parser.add_argument('--lambda_mask', type=float, default=0.0, help="Mask regularization coefficient")
-    parser.add_argument('--num_tasks', type=int, default=500, help="num tasks")
-
-    # PreciseFCL
-    parser.add_argument("--k_loss_flow", type=float, default=0.1)
-    parser.add_argument("--k_kd_global_cls", type=float, default=0)
-    parser.add_argument("--k_kd_last_cls", type=float, default=0.2)
-    parser.add_argument("--k_kd_feature", type=float, default=0.5)
-    parser.add_argument("--k_kd_output", type=float, default=0.1)
-    parser.add_argument("--k_flow_lastflow", type=float, default=0.4)
-    parser.add_argument("--flow_epoch", type=int, default=5)
-    parser.add_argument("--flow_explore_theta", type=float, default=0.2)
-    parser.add_argument("--classifier_global_mode", type=str, default='all', help='[head, extractor, none, all]')
-    parser.add_argument('--flow_lr', type=float, default=1e-4)  
-    parser.add_argument('--fedprox_k', type=float, default=0) 
-    parser.add_argument('--use_lastflow_x', action="store_true")
-    parser.add_argument("--beta", type=float, default=1.0, help="Average moving parameter for pFedMe, or Second learning rate of Per-FedAvg") 
-    parser.add_argument('--c_channel_size', type=int, default=64)
+    parser.add_argument('--cfp', type=str, default="./hparams/FedAvg.json", help='Configuration path for training')
+    parser.add_argument('--note', type=str, default=None, help='Optional note to add to save name')
 
     args = parser.parse_args()
-    args.log_dir = os.path.join(args.output_path, 'logs/{}-{}'.format(args.model, args.dataset))
-    args.state_dir = os.path.join(args.output_path, 'states/{}-{}'.format(args.model, args.dataset))
-    
-    # FedSTGM
-    parser.add_argument('-sgmr', "--stgm_rounds", type=int, default=100)
-    parser.add_argument('-sgmlr', "--stgm_learning_rate", type=float, default=25)
-    parser.add_argument('-sgmm', "--stgm_momentum", type=float, default=0.5)
-    parser.add_argument('-sgmss', "--stgm_step_size", type=int, default=30)
-    parser.add_argument('-sgmg', "--stgm_gamma", type=float, default=0.5)
-    parser.add_argument('-sgmc', "--stgm_c", type=float, default=0.2)
 
-    # Flag of STGM blocks for ablation studies
-    parser.add_argument("--coreset", type=bool, default=True)
-    parser.add_argument("--tgm", type=bool, default=True)
-    parser.add_argument("--sgm", type=bool, default=True)
+    with open(args.cfp, 'r') as f:
+        cfdct = json.load(f)
+    if args.note is not None:
+        cfdct['note'] = args.note
 
-    #FCIL
-    parser.add_argument('-mem', "--memory_size", type=int, default=2000)
-
-    args = parser.parse_args()
+    args = Namespace(**cfdct)
 
     os.environ["CUDA_VISIBLE_DEVICES"] = args.device_id
 

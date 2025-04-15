@@ -12,6 +12,9 @@ class FedWeIT(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
+        args.log_dir = os.path.join(args.output_path, 'logs/{}-{}'.format(args.model, args.dataset))
+        args.state_dir = os.path.join(args.output_path, 'states/{}-{}'.format(args.model, args.dataset))
+
         # self.load_model()
         self.Budget = []
         self.client_adapts = []

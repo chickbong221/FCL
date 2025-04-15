@@ -26,7 +26,7 @@ class FedSTGM(Server):
         self.stgm_gamma = args.stgm_gamma
 
     def train(self):
-        for task in range(2500):
+        for task in range(self.args.num_tasks):
         # for task in range(self.N_TASKS):
 
             print(f"\n================ Current Task: {task} =================")
