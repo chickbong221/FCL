@@ -5,6 +5,8 @@ from flcore.servers.serverbase import Server
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 from torch.optim.lr_scheduler import StepLR
 import numpy as np
+from collections import OrderedDict
+
 
 class FedSTGM(Server):
     def __init__(self, args, times):
