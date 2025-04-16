@@ -3,9 +3,11 @@ import torch
 from flcore.clients.clientstgm import clientSTGM
 from flcore.servers.serverbase import Server
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+from utils.model_utils import ParamDict
+from torch.nn.utils import vector_to_parameters, parameters_to_vector
+
 from torch.optim.lr_scheduler import StepLR
 import numpy as np
-from collections import OrderedDict
 
 
 class FedSTGM(Server):
@@ -26,6 +28,8 @@ class FedSTGM(Server):
         self.stgm_rounds = args.stgm_rounds
         self.stgm_momentum = args.stgm_momentum
         self.stgm_gamma = args.stgm_gamma
+
+        self.stgm_meta_lr = args.stgm_meta_lr
 
     def train(self):
         for task in range(self.args.num_tasks):
@@ -101,11 +105,14 @@ class FedSTGM(Server):
                 # [t.join() for t in threads]
 
                 self.receive_models()
-                self.receive_grads()
+                # self.receive_grads()
 
                 """
                 Spatio Gradient Matching
                 """
+                """
+                Version 1
+                
                 grad_ez = sum(p.numel() for p in self.global_model.parameters())
                 grads = torch.Tensor(grad_ez, self.num_clients)
 
@@ -114,10 +121,25 @@ class FedSTGM(Server):
 
                 g = self.aggregate_stgm(grads, self.num_clients)
 
+
                 # model_origin = copy.deepcopy(self.global_model)
                 self.overwrite_grad2(self.global_model, g)
                 for param in self.global_model.parameters():
                     param.data += param.grad
+                """
+
+                """
+                Version 2
+                
+                - flatten_meta_weights += g * lr_meta
+                - vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
+                - meta_weights = ParamDict(meta_weights.state_dict())
+                """
+                self.global_model = self.stgm_high(
+                    meta_weights=self.global_model,
+                    inner_weights=self.uploaded_models,
+                    lr_meta= self.stgm_meta_lr
+                )
 
                 # angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.grads]
                 # self.angle_value = statistics.mean(angle)
@@ -141,8 +163,37 @@ class FedSTGM(Server):
             # self.send_models()
             # # self.eval_task(task=task, glob_iter=glob_iter, flag="global")
 
+    def stgm_high(self, meta_weights, inner_weights, lr_meta):
+        """
+        Input:
+        - meta_weights: class X(nn.Module)
+        - inner_weights: list[X(nn.Module), X(nn.Module), ..., X(nn.Module)]
+        - lr_meta: scalar value
 
-    def aggregate_stgm(self, grad_vec, num_tasks):
+        Output:
+        - meta_weights: class X(nn.Module)
+
+        """
+        all_domain_grads = []
+        flatten_meta_weights = torch.cat([param.view(-1) for param in meta_weights.parameters()])
+        for i_domain in range(self.num_domains):
+            domain_grad_diffs = [torch.flatten(inner_param - meta_param) for inner_param, meta_param in
+                                 zip(inner_weights[i_domain].parameters(), meta_weights.parameters())]
+            domain_grad_vector = torch.cat(domain_grad_diffs)
+            all_domain_grads.append(domain_grad_vector)
+
+        all_domains_grad_tensor = torch.stack(all_domain_grads)
+        # print(all_domains_grad_tensor)
+        g = self.stgm_low(all_domains_grad_tensor, self.num_domains)
+
+        flatten_meta_weights += g * lr_meta
+
+        vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
+        meta_weights = ParamDict(meta_weights.state_dict())
+
+        return meta_weights
+
+    def stgm_low(self, grad_vec, num_tasks):
 
         grads = grad_vec.to(self.device)
 

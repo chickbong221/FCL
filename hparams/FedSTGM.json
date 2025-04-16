@@ -36,6 +36,8 @@
     "stgm_gamma": 0.5,
     "stgm_c": 0.2,
 
+    "stgm_meta_lr": 0.1,
+
     "coreset": true,
     "tgm": true,
     "sgm": true
