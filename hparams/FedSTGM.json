@@ -1,7 +1,4 @@
 {
-    "log": false,
-    "offlog": false,
-    "wandb": true,
     "optimizer": "sgd",
     "datadir": "dataset",
     "device": "cuda",

@@ -10,6 +10,7 @@ import torchvision
 import json
 import wandb
 from argparse import Namespace
+from types import SimpleNamespace
 
 from flcore.servers.serveravg import FedAvg
 from flcore.servers.serverala import FedALA
@@ -139,6 +140,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfp', type=str, default="./hparams/FedAvg.json", help='Configuration path for training')
     parser.add_argument('--note', type=str, default=None, help='Optional note to add to save name')
+    parser.add_argument('--wandb', type=bool, default=False, help='Log on wandb')
+    parser.add_argument('--offlog', type=bool, default=False, help='Save wandb logger')
+    parser.add_argument('--log', type=bool, default=False, help='Print logger')
 
     args = parser.parse_args()
 
@@ -146,6 +150,10 @@ if __name__ == "__main__":
         cfdct = json.load(f)
     if args.note is not None:
         cfdct['note'] = args.note
+
+    cfdct['wandb'] = args.wandb
+    cfdct['offlog'] = args.offlog
+    cfdct['log'] = args.log
 
     args = Namespace(**cfdct)
 
