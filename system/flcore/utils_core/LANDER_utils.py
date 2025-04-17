@@ -6,6 +6,52 @@ import torch.nn as nn
 import numpy as np
 import math
 import torch.nn.init as init
+from torchvision import transforms
+
+def get_norm_and_transform(dataset):
+    if dataset == "CIFAR100":
+        data_normalize = dict(mean=(0.5071, 0.4867, 0.4408), std=(0.2675, 0.2565, 0.2761))
+        train_transform = transforms.Compose([
+                transforms.RandomCrop(32, padding=4),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize(**dict(data_normalize)),
+            ])
+    elif dataset == "IMAGENET1k":
+        data_normalize = dict(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        train_transform = transforms.Compose([
+            transforms.RandomCrop(224, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.ColorJitter(brightness=63 / 255),
+            transforms.ToTensor(),
+            transforms.Normalize(**dict(data_normalize)),
+        ])
+    normalizer = Normalizer(**dict(data_normalize))
+    return train_transform, normalizer
+
+class Normalizer(object):
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, x, reverse=False):
+        return normalize(x, self.mean, self.std, reverse=reverse)
+    
+def normalize(tensor, mean, std, reverse=False):
+    if reverse:
+        _mean = [-m / s for m, s in zip(mean, std)]
+        _std = [1 / s for s in std]
+    else:
+        _mean = mean
+        _std = std
+
+    _mean = torch.as_tensor(_mean, dtype=tensor.dtype, device=tensor.device)
+    _std = torch.as_tensor(_std, dtype=tensor.dtype, device=tensor.device)
+    tensor = (tensor - _mean[None, :, None, None]) / (_std[None, :, None, None])
+    return tensor
+
+
+
 
 def weight_init(m):
     '''

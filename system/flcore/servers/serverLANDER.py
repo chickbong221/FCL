@@ -2,7 +2,7 @@ import torch
 from flcore.clients.clientLANDER import clientLANDER
 from flcore.servers.serverbase import Server
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
-from utils_core.LANDER_utils import NLGenerator, NLGenerator_IN, UnlabeledImageDataset, save_image_batch, kldiv, custom_cross_entropy, weight_init
+from utils_core.LANDER_utils import NLGenerator, NLGenerator_IN, UnlabeledImageDataset, save_image_batch, kldiv, custom_cross_entropy, weight_init, get_norm_and_transform
 import time, os
 import copy
 import numpy as np
@@ -15,6 +15,7 @@ from torchvision import transforms
 from tqdm import tqdm
 from torch.nn import functional as F
 
+bn_mmt = 0.9
 T = 20.0
 student_train_step = 50
 
@@ -288,6 +289,7 @@ class LANDER(Server):
         self.set_slow_clients()
         self.set_clients(clientLANDER)
         self.old_network = self.global_model.copy().freeze()
+        self.transform, self.normalizer = get_norm_and_transform(self.args.dataset)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
@@ -308,6 +310,16 @@ class LANDER(Server):
             
         student = copy.deepcopy(self.global_model)
         student.apply(weight_init)
+        tmp_dir = os.path.join(self.save_dir, "task_{}".format(self.current_task))
+        if not os.path.exists(tmp_dir):
+            os.makedirs(tmp_dir)
+
+        synthesizer = NAYER(copy.deepcopy(self.global_model), student, generator, num_classes=self.clients[0].available_labels,
+                            img_size=img_shape, save_dir=tmp_dir, transform=self.transform, normalizer=self.normalizer,
+                            synthesis_batch_size=self.args['synthesis_batch_size'], iterations=self.args['g_steps'],
+                            warmup=self.args['warmup'], lr_g=self.args['lr_g'], adv=self.args['adv'], bn=self.args['bn'],
+                            oh=self.args['oh'], ltc=self.ltc, r=self.r, device=self.args["gpu"], bn_mmt=bn_mmt,
+                            args=self.args, label_emb=self.label_emb)
             
 
     def train(self):
