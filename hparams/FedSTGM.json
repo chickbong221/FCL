@@ -11,7 +11,7 @@
     "learning_rate_decay": false,
     "learning_rate_decay_gamma": 0.99,
     "global_rounds": 100,
-    "local_epochs": 3,
+    "local_epochs": 1,
     "algorithm": "FedSTGM",
     "join_ratio": 1.0,
     "random_join_ratio": false,
