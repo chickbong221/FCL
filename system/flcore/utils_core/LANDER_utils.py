@@ -4,6 +4,131 @@ import pickle
 import os
 import torch.nn as nn
 import numpy as np
+import math
+import torch.nn.init as init
+
+def weight_init(m):
+    '''
+    Usage:
+        model = Model()
+        model.apply(weight_init)
+    '''
+    if isinstance(m, nn.Conv1d):
+        init.normal_(m.weight.data)
+        if m.bias is not None:
+            init.normal_(m.bias.data)
+    elif isinstance(m, nn.Conv2d):
+        init.xavier_normal_(m.weight.data)
+        if m.bias is not None:
+            init.normal_(m.bias.data)
+    elif isinstance(m, nn.Conv3d):
+        init.xavier_normal_(m.weight.data)
+        if m.bias is not None:
+            init.normal_(m.bias.data)
+    elif isinstance(m, nn.ConvTranspose1d):
+        init.normal_(m.weight.data)
+        if m.bias is not None:
+            init.normal_(m.bias.data)
+    elif isinstance(m, nn.ConvTranspose2d):
+        init.xavier_normal_(m.weight.data)
+        if m.bias is not None:
+            init.normal_(m.bias.data)
+    elif isinstance(m, nn.ConvTranspose3d):
+        init.xavier_normal_(m.weight.data)
+        if m.bias is not None:
+            init.normal_(m.bias.data)
+    elif isinstance(m, nn.BatchNorm1d):
+        init.normal_(m.weight.data, mean=1, std=0.02)
+        init.constant_(m.bias.data, 0)
+    elif isinstance(m, nn.BatchNorm2d):
+        init.normal_(m.weight.data, mean=1, std=0.02)
+        init.constant_(m.bias.data, 0)
+    elif isinstance(m, nn.BatchNorm3d):
+        init.normal_(m.weight.data, mean=1, std=0.02)
+        init.constant_(m.bias.data, 0)
+    elif isinstance(m, nn.Linear):
+        init.xavier_normal_(m.weight.data)
+        init.normal_(m.bias.data)
+    elif isinstance(m, nn.LSTM):
+        for param in m.parameters():
+            if len(param.shape) >= 2:
+                init.orthogonal_(param.data)
+            else:
+                init.normal_(param.data)
+    elif isinstance(m, nn.LSTMCell):
+        for param in m.parameters():
+            if len(param.shape) >= 2:
+                init.orthogonal_(param.data)
+            else:
+                init.normal_(param.data)
+    elif isinstance(m, nn.GRU):
+        for param in m.parameters():
+            if len(param.shape) >= 2:
+                init.orthogonal_(param.data)
+            else:
+                init.normal_(param.data)
+    elif isinstance(m, nn.GRUCell):
+        for param in m.parameters():
+            if len(param.shape) >= 2:
+                init.orthogonal_(param.data)
+            else:
+                init.normal_(param.data)
+
+
+def pack_images(images, col=None, channel_last=False, padding=1):
+    # N, C, H, W
+    if isinstance(images, (list, tuple)):
+        images = np.stack(images, 0)
+    if channel_last:
+        images = images.transpose(0, 3, 1, 2)  # make it channel first
+    assert len(images.shape) == 4
+    assert isinstance(images, np.ndarray)
+
+    N, C, H, W = images.shape
+    if col is None:
+        col = int(math.ceil(math.sqrt(N)))
+    row = int(math.ceil(N / col))
+
+    pack = np.zeros((C, H * row + padding * (row - 1), W * col + padding * (col - 1)), dtype=images.dtype)
+    for idx, img in enumerate(images):
+        h = (idx // col) * (H + padding)
+        w = (idx % col) * (W + padding)
+        pack[:, h:h + H, w:w + W] = img
+    return pack
+
+def kldiv(logits, targets, T=1.0, reduction='batchmean'):
+    q = F.log_softmax(logits / T, dim=1)
+    p = F.softmax(targets / T, dim=1)
+    return F.kl_div(q, p, reduction=reduction) * (T * T)
+
+def custom_cross_entropy(preds, target):
+    return torch.mean(torch.sum(-target * preds.log_softmax(dim=-1), dim=-1))
+
+
+def save_image_batch(imgs, output, col=None, size=None, pack=True):
+    if isinstance(imgs, torch.Tensor):
+        imgs = (imgs.detach().clamp(0, 1).cpu().numpy() * 255).astype('uint8')
+    base_dir = os.path.dirname(output)
+    if base_dir != '':
+        os.makedirs(base_dir, exist_ok=True)
+    if pack:
+        imgs = pack_images(imgs, col=col).transpose(1, 2, 0).squeeze()
+        imgs = Image.fromarray(imgs)
+        if size is not None:
+            if isinstance(size, (list, tuple)):
+                imgs = imgs.resize(size)
+            else:
+                w, h = imgs.size
+                max_side = max(h, w)
+                scale = float(size) / float(max_side)
+                _w, _h = int(w * scale), int(h * scale)
+                imgs = imgs.resize([_w, _h])
+        imgs.save(output)
+    else:
+        output_filename = output.strip('.png')
+        for idx, img in enumerate(imgs):
+            img = Image.fromarray(img.transpose(1, 2, 0))
+            img.save(output_filename + '-%d.png' % (idx))
 
 
 def _collect_all_images(nums, root, postfix=['png', 'jpg', 'jpeg', 'JPEG']):
