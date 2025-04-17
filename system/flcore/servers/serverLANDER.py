@@ -37,8 +37,6 @@ class LANDER(Server):
         student = copy.deepcopy(self.global_model)
         student.apply(weight_init)
             
-            
-        pass
 
     def train(self):
 
