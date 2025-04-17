@@ -1,5 +1,6 @@
 import time
 import torch
+import copy
 from flcore.clients.clientstgm import clientSTGM
 from flcore.servers.serverbase import Server
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
@@ -30,6 +31,8 @@ class FedSTGM(Server):
         self.stgm_gamma = args.stgm_gamma
 
         self.stgm_meta_lr = args.stgm_meta_lr
+        self.grad_balance = args.grad_balance
+
 
     def train(self):
         for task in range(self.args.num_tasks):
@@ -115,19 +118,20 @@ class FedSTGM(Server):
                 Version 1
                 """
                 
-                grad_ez = sum(p.numel() for p in self.global_model.parameters())
-                grads = torch.Tensor(grad_ez, self.num_clients)
-
-                for index, model in enumerate(self.grads):
-                    grad2vec2(model, grads, index)
-
-                g = self.aggregate_stgm(grads, self.num_clients)
-
-
-                # model_origin = copy.deepcopy(self.global_model)
-                self.overwrite_grad2(self.global_model, g)
-                for param in self.global_model.parameters():
-                    param.data += param.grad
+                # grad_ez = sum(p.numel() for p in self.global_model.parameters())
+                # grads = torch.Tensor(grad_ez, self.num_clients)
+                # print(f"size of grads: {grads.size()}")
+                #
+                # for index, model in enumerate(self.grads):
+                #     grad2vec2(model, grads, index)
+                #
+                # g = self.aggregate_stgm(grads, self.num_clients)
+                #
+                #
+                # # model_origin = copy.deepcopy(self.global_model)
+                # self.overwrite_grad2(self.global_model, g)
+                # for param in self.global_model.parameters():
+                #     param.data += param.grad
 
 
                 """
@@ -137,15 +141,16 @@ class FedSTGM(Server):
                 - vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
                 - meta_weights = ParamDict(meta_weights.state_dict())
                 """
-                # self.global_model = self.stgm_high(
-                #     meta_weights=self.global_model,
-                #     inner_weights=self.uploaded_models,
-                #     lr_meta= self.stgm_meta_lr
-                # )
+                meta_weights = self.stgm_high(
+                    meta_weights=self.global_model,
+                    inner_weights=self.uploaded_models,
+                    lr_meta= self.stgm_meta_lr
+                )
+                self.global_model.load_state_dict(copy.deepcopy(meta_weights))
 
                 # angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.grads]
                 # self.angle_value = statistics.mean(angle)
-                #
+
                 # angle_value = []
                 # for i in self.grads:
                 #     for j in self.grads:
@@ -178,7 +183,7 @@ class FedSTGM(Server):
         """
         all_domain_grads = []
         flatten_meta_weights = torch.cat([param.view(-1) for param in meta_weights.parameters()])
-        for i_domain in range(self.num_domains):
+        for i_domain in range(self.num_clients):
             domain_grad_diffs = [torch.flatten(inner_param - meta_param) for inner_param, meta_param in
                                  zip(inner_weights[i_domain].parameters(), meta_weights.parameters())]
             domain_grad_vector = torch.cat(domain_grad_diffs)
@@ -205,9 +210,10 @@ class FedSTGM(Server):
         else:
             all_domains_grad_tensor = torch.stack(all_domain_grads).cpu()
 
-        all_domains_grad_tensor = torch.stack(all_domain_grads)
+        all_domains_grad_tensor = torch.stack(all_domain_grads).t()
+
         # print(all_domains_grad_tensor)
-        g = self.stgm_low(all_domains_grad_tensor, self.num_domains)
+        g = self.stgm_low(all_domains_grad_tensor, self.num_clients)
 
         flatten_meta_weights += g * lr_meta
 
@@ -249,7 +255,7 @@ class FedSTGM(Server):
                 obj_best = obj.item()
                 w_best = w.clone()
             if i < self.stgm_rounds:
-                obj.backward()
+                obj.backward(retain_graph=True)
                 w_opt.step()
                 scheduler.step()
 
@@ -268,53 +274,7 @@ class FedSTGM(Server):
         grads = grad_vec.to(self.device)
 
         GG = grads.t().mm(grads)
-        # to(device)
-        scale = (torch.diag(GG) + 1e-4).sqrt().mean()
-        GG = GG / scale.pow(2)
-        Gg = GG.mean(1, keepdims=True)
-        gg = Gg.mean(0, keepdims=True)
-
-        w = torch.zeros(num_tasks, 1, requires_grad=True, device=self.device)
-        #         w = torch.zeros(num_tasks, 1, requires_grad=True).to(self.device)
-
-        if num_tasks == 50:
-            w_opt = torch.optim.SGD([w], lr=self.stgm_learning_rate * 2, momentum=self.stgm_momentum)
-        else:
-            w_opt = torch.optim.SGD([w], lr=self.stgm_learning_rate, momentum=self.stgm_momentum)
-
-        scheduler = StepLR(w_opt, step_size=self.stgm_step_size, gamma=self.stgm_momentum)
-
-        c = (gg + 1e-4).sqrt() * self.stgm_c
-
-        w_best = None
-        obj_best = np.inf
-        for i in range(self.stgm_rounds + 1):
-            w_opt.zero_grad()
-            ww = torch.softmax(w, dim=0)
-            obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
-            if obj.item() < obj_best:
-                obj_best = obj.item()
-                w_best = w.clone()
-            if i < self.stgm_rounds:
-                obj.backward()
-                w_opt.step()
-                scheduler.step()
-
-                # Check this scheduler. step()
-
-        ww = torch.softmax(w_best, dim=0)
-        gw_norm = (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
-
-        lmbda = c.view(-1) / (gw_norm + 1e-4)
-        g = ((1 / num_tasks + ww * lmbda).view(
-            -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.stgm_c ** 2)
-        return g
-
-    def aggregate_stgm(self, grad_vec, num_tasks):
-
-        grads = grad_vec.to(self.device)
-
-        GG = grads.t().mm(grads)
+        print(f"size GG: {GG.size()}")
         # to(device)
         scale = (torch.diag(GG) + 1e-4).sqrt().mean()
         GG = GG / scale.pow(2)

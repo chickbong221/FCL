@@ -10,7 +10,7 @@
     "local_learning_rate": 0.005,
     "learning_rate_decay": false,
     "learning_rate_decay_gamma": 0.99,
-    "global_rounds": 1000,
+    "global_rounds": 100,
     "local_epochs": 1,
     "algorithm": "FedSTGM",
     "join_ratio": 1.0,
@@ -27,7 +27,7 @@
     "time_threthold": 10000,
 
     "stgm_rounds": 25,
-    "stgm_learning_rate": 15,
+    "stgm_learning_rate": 25,
     "stgm_momentum": 0.5,
     "stgm_step_size": 30,
     "stgm_gamma": 0.5,
