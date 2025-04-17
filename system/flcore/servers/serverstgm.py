@@ -182,6 +182,27 @@ class FedSTGM(Server):
             domain_grad_vector = torch.cat(domain_grad_diffs)
             all_domain_grads.append(domain_grad_vector)
 
+        """
+        - Grads normalization.
+        """
+        if self.grad_balance:
+            # Apply balancing
+            # Step 1: Compute norms for each gradient vector
+            domain_grad_norms = [torch.norm(grad) for grad in all_domain_grads]
+
+            # Step 2: Determine scaling factors to balance the norms
+            # Example: Scale all norms to a target value (e.g., the average norm)
+            target_norm = torch.mean(torch.tensor(domain_grad_norms))
+            scaling_factors = [target_norm / norm if norm > 0 else 1.0 for norm in domain_grad_norms]
+
+            # Step 3: Scale gradient vectors
+            balanced_retain_grads = [grad * scale for grad, scale in zip(domain_grad_norms, scaling_factors)]
+
+            # Step 4: Stack the balanced gradients into a tensor
+            all_domains_grad_tensor = torch.stack(balanced_retain_grads).cpu()
+        else:
+            all_domains_grad_tensor = torch.stack(all_domain_grads).cpu()
+
         all_domains_grad_tensor = torch.stack(all_domain_grads)
         # print(all_domains_grad_tensor)
         g = self.stgm_low(all_domains_grad_tensor, self.num_domains)
