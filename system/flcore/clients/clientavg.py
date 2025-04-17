@@ -26,6 +26,9 @@ class clientAVG(Client):
                 else:
                     x = x.to(self.device)
                 y = y.to(self.device)
+                # print("label max", y.max())
+                # print("label min", y.min())
+                # print("len", len(y))
                 if self.train_slow:
                     time.sleep(0.1 * np.abs(np.random.rand()))
                 output = self.model(x)

@@ -10,6 +10,7 @@ import torchvision
 import logging
 import wandb
 
+
 from flcore.servers.serveravg import FedAvg
 from flcore.servers.serverala import FedALA
 from flcore.servers.serverdbe import FedDBE
@@ -17,7 +18,9 @@ from flcore.servers.serveras import FedAS
 from flcore.servers.serverweit import FedWeIT
 from flcore.servers.serverprecise import FedPrecise
 from flcore.servers.serverMFCL import FedMFCL
-from flcore.trainmodel.FedMFCL_model import resnet18
+from flcore.servers.serverLANDER import LANDER
+from flcore.trainmodel.FedMFCL_model import ResNet18
+from flcore.trainmodel.LANDER_model import IncrementalNet
 from flcore.trainmodel.models import *
 
 from flcore.trainmodel.precise_models import PreciseModel
@@ -26,6 +29,7 @@ from flcore.trainmodel.resnet import *
 from flcore.trainmodel.alexnet import *
 from flcore.trainmodel.mobilenet_v2 import *
 from flcore.trainmodel.transformer import *
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
@@ -105,8 +109,12 @@ def run(args):
             server = FedAS(args, i)
 
         elif args.algorithm == "FedMFCL":
-            args.model = resnet18(args.num_classes)
+            args.model = ResNet18(args.num_classes, cifar=True)
             server = FedMFCL(args, i)
+
+        elif args.algorithm == "LANDER":
+            args.model = IncrementalNet(args, False)
+            server = LANDER(args, i)
 
         else:
             raise NotImplementedError("Not supported model")
@@ -236,6 +244,14 @@ if __name__ == "__main__":
     parser.add_argument('--server_ss', type=int, default=64, help='batch size for genrative training')
     parser.add_argument('--pi', type=int, default=100, help='local epochs of each global round')
     parser.add_argument('--generator_model', type=str, default='CIFAR_GEN', help='name of the generative model')
+
+    #LANDER
+    parser.add_argument('--weight_decay', default=5e-4, type=float, help='weight decay for optimizer')
+    parser.add_argument('--pre', type=float, default=0.4, help='alpha_pre for distilling from previous task')
+    parser.add_argument('--cur', type=float, default=0.2, help='alpha_cur for current task training')
+    parser.add_argument('--syn_bs', default=1, type=int, help='number of old synthetic data in training, 1 for similar to local_bs')
+    parser.add_argument('--nz', default=256, type=int, help='output size of noisy nayer')
+    parser.add_argument('--synthesis_batch_size', default=256, type=int, help='synthetic data batch size')
 
     args = parser.parse_args()
     args.log_dir = os.path.join(args.output_path, 'logs/{}-{}'.format(args.model, args.dataset))

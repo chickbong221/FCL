@@ -273,8 +273,11 @@ class Server(object):
             log_key = "Local/Averaged Forgetting"
 
         forgetting = metric_average_forgetting(task, accuracy_matrix)
-
-        print("Accuracy matrix: {:.4f}".format(accuracy_matrix))
+        
+        print("Accuracy matrix:", accuracy_matrix, "Type:", type(accuracy_matrix))
+        # formatted_accuracies = ", ".join("{:.4f}".format(acc) for acc in accuracy_matrix)
+        # print("Accuracy matrix: [{}]".format(formatted_accuracies))
+        # print("Accuracy matrix: {:.4f}".format(accuracy_matrix))
         print("forgetting: {:.4f}".format(forgetting))
 
         if self.args.wandb:

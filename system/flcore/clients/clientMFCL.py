@@ -30,6 +30,15 @@ class clientMFCL(Client):
                 for i, (x, y) in enumerate(self.trainloader):
                     x, y = x.to('cuda'), y.to('cuda')
                     logits = model(x)
+                    print("Shape of x:", x.shape)
+                    print("Shape of y:", y.shape)
+                    print("Shape of logits:", logits.shape)
+                    # print("Value of y:", y)
+                    print("Max of y:", y.max().item())
+                    print("Min of y:", y.min().item())
+                    # print("Value of logits:", logits)
+                    print("Max of logits:", logits.max().item())
+                    print("Min of logits:", logits.min().item())
                     loss = F.cross_entropy(logits, y)
                     opt.zero_grad()
                     loss.backward()
@@ -39,10 +48,10 @@ class clientMFCL(Client):
 
     def train_cl(self, model, teacher, opt):
         self.dw_k = torch.ones((self.valid_dim + 1), dtype=torch.float32)
+
         previous_teacher, previous_linear = deepcopy(teacher[0]), deepcopy(teacher[1])
         for epoch in range(self.args.local_epochs):
             for i, (x, y) in enumerate(self.trainloader):
-                x, y = x.to('cuda'), y.to('cuda')
                 idx1 = torch.where(y >= self.last_valid_dim)[0]
                 x_replay, y_replay, y_replay_hat = self.sample(previous_teacher, self.args.syn_size)
                 y_hat = previous_teacher.generate_scores(x, allowed_predictions=np.arange(self.last_valid_dim))
@@ -50,11 +59,13 @@ class clientMFCL(Client):
                 x_com, y_com = combine_data(((x, y), (x_replay, y_replay)))
                 logits_pen = model.feature(x_com)
                 logits = model.fc(logits_pen)
+
                 mappings = torch.ones(self.valid_dim, dtype=torch.float32, device='cuda') 
                 dw_cls = mappings[y_com.long()]
                 loss_class = self.criterion(logits[idx1, self.last_valid_dim:self.valid_dim], (y_com[idx1] - self.last_valid_dim), dw_cls[idx1])
                 with torch.no_grad():
                     feat_class = model.feature(x_com).detach()
+
                 loss_class += self.criterion(model.fc(feat_class), y_com, dw_cls) * self.args.w_ft
                 loss_kd = self.kd(x_com, previous_linear, logits_pen, previous_teacher)
                 total_loss = loss_class + loss_kd

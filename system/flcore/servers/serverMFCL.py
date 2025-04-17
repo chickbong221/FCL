@@ -12,7 +12,7 @@ from copy import deepcopy
 
 
 
-class FedAvg(Server):
+class FedMFCL(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
@@ -63,7 +63,7 @@ class FedAvg(Server):
         
         teacher, generator = None, None
         gamma = np.log(self.args.lr_end / self.args.lr)
-        task_size, classes_learned = 2 
+        task_size, classes_learned = 2, 2
 
         if self.args.dataset == 'IMAGENET1k':
             generator = GeneratorBig(zdim=self.args.z_dim, in_channel=3, img_sz=32, convdim=self.args.conv_dim)
@@ -137,7 +137,7 @@ class FedAvg(Server):
                 s_t = time.time()
 
                 self.selected_clients = self.select_clients()
-                self.global_model = FedMFCL_Network(feature_extractor=self.args.model,num_classes=classes_learned)
+                self.global_model = FedMFCL_Network(feature_extractor=self.args.model,num_classes=100)
                 self.send_models()
 
                 if i%self.eval_gap == 0:
@@ -170,10 +170,11 @@ class FedAvg(Server):
                 teacher = train_gen(deepcopy(self.global_model), classes_learned, generator, self.args)
                 for client in self.clients:
                     client.last_valid_dim = classes_learned
-                    client.valid_dim = classes_learned + task_size
+                    # client.valid_dim = classes_learned + task_size
+                    client.valid_dim = 100
                 self.global_model = original_global  
                 classes_learned += task_size
-                self.global_model.Incremental_learning(classes_learned)
+                # self.global_model.Incremental_learning(classes_learned)
 
 """
 update FedMFCL_utils

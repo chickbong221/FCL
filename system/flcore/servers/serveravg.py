@@ -35,10 +35,18 @@ class FedAvg(Server):
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
 
-                for u in self.clients:
+                print("task 0")
+                for i, u in enumerate(self.clients):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
+                    print("client", i)
+                    print("available_label", [int(x) for x in u.available_labels])
+                    print(len(u.available_labels))
+                    print("available_label_current", [int(x) for x in u.available_labels_current])
+                    print(len(u.available_labels_current))
+                    print("available_label_past", u.available_labels_past)
+                    print(len(u.available_labels_past))
 
                 """
                 update for task 0
@@ -70,14 +78,22 @@ class FedAvg(Server):
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
 
-                for u in self.clients:
+                print("current task", self.current_task)
+
+                for i, u in enumerate(self.clients):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
-
-                    # print(available_labels)
+                    print("client", i)
+                    print("available_label", [int(x) for x in u.available_labels])
+                    print(len(u.available_labels))
+                    print("available_label_current", [int(x) for x in u.available_labels_current])
+                    print(len(u.available_labels_current))
+                    print("available_label_past", [int(x) for x in u.available_labels_past])
+                    print(len(u.available_labels_past))
 
             # ============ train ==============
+
 
             for i in range(self.global_rounds):
 
@@ -106,7 +122,6 @@ class FedAvg(Server):
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
                 self.Budget.append(time.time() - s_t)
-                # print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
             self.eval_task(task=task, glob_iter=glob_iter, flag="local")
             
