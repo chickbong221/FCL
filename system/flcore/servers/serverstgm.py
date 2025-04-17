@@ -165,7 +165,7 @@ class FedSTGM(Server):
             # self.send_models()
             # # self.eval_task(task=task, glob_iter=glob_iter, flag="global")
 
-    def stgm_high(self, meta_weights, inner_weights, lr_meta):
+    def stgm_high_layer(self, meta_weights, inner_weights, lr_meta):
         """
         Input:
         - meta_weights: class X(nn.Module)
@@ -223,7 +223,7 @@ class FedSTGM(Server):
     def stgm_low(self, grad_vec, num_tasks):
 
         grads = grad_vec.to(self.device)
-
+        print(f"grad_vec:{grads.size()}")
         GG = grads.t().mm(grads)
         # to(device)
         scale = (torch.diag(GG) + 1e-4).sqrt().mean()
@@ -267,20 +267,59 @@ class FedSTGM(Server):
             -1, 1).to(grads.device) * grads.t()).sum(0) / (1 + self.stgm_c ** 2)
         return g
 
-    def overwrite_grad2(self, m, newgrad):
-        newgrad = newgrad * self.num_clients
-        for param in m.parameters():
-            # Get the number of elements in the current parameter
-            num_elements = param.numel()
+    def stgm_high(self, meta_weights, inner_weights, lr_meta):
+        """
+        Input:
+        - meta_weights: class X(nn.Module)
+        - inner_weights: list[X(nn.Module), X(nn.Module), ..., X(nn.Module)]
+        - lr_meta: scalar value
 
-            # Extract a slice of new_params with the same number of elements
-            param_slice = newgrad[:num_elements]
+        Output:
+        - meta_weights: class X(nn.Module)
 
-            # Reshape the slice to match the shape of the current parameter
-            param.grad = param_slice.view(param.data.size())
+        """
+        num_grads = len(inner_weights)
 
-            # Move to the next slice in new_params
-            newgrad = newgrad[num_elements:]
+        all_domain_grads = []
+        flatten_meta_weights = torch.cat([param.view(-1) for param in meta_weights.parameters()])
+        for i_domain in range(num_grads):
+            domain_grad_diffs = [torch.flatten(inner_param - meta_param) for inner_param, meta_param in
+                                 zip(inner_weights[i_domain].parameters(), meta_weights.parameters())]
+            domain_grad_vector = torch.cat(domain_grad_diffs)
+            all_domain_grads.append(domain_grad_vector)
+
+        """
+        - Grads normalization.
+        """
+        if self.grad_balance:
+            # Apply balancing
+            # Step 1: Compute norms for each gradient vector
+            domain_grad_norms = [torch.norm(grad) for grad in all_domain_grads]
+
+            # Step 2: Determine scaling factors to balance the norms
+            # Example: Scale all norms to a target value (e.g., the average norm)
+            target_norm = torch.mean(torch.tensor(domain_grad_norms))
+            scaling_factors = [target_norm / norm if norm > 0 else 1.0 for norm in domain_grad_norms]
+
+            # Step 3: Scale gradient vectors
+            balanced_retain_grads = [grad * scale for grad, scale in zip(domain_grad_norms, scaling_factors)]
+
+            # Step 4: Stack the balanced gradients into a tensor
+            all_domains_grad_tensor = torch.stack(balanced_retain_grads).cpu()
+        else:
+            all_domains_grad_tensor = torch.stack(all_domain_grads).cpu()
+
+        all_domains_grad_tensor = torch.stack(all_domain_grads)
+        print(all_domains_grad_tensor.size())
+        # print(all_domains_grad_tensor)
+        g = self.stgm_low(all_domains_grad_tensor, num_grads)
+
+        flatten_meta_weights += g * lr_meta
+
+        vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
+        meta_weights = ParamDict(meta_weights.state_dict())
+
+        return meta_weights
 
 def grad2vec2(m, grads, task):
     grads[:, task].fill_(0.0)
@@ -289,56 +328,3 @@ def grad2vec2(m, grads, task):
     grads[:, task].copy_(all_params)
 
 
-# def stgm_high(self, meta_weights, inner_weights, lr_meta):
-#     """
-#     Input:
-#     - meta_weights: class X(nn.Module)
-#     - inner_weights: list[X(nn.Module), X(nn.Module), ..., X(nn.Module)]
-#     - lr_meta: scalar value
-#
-#     Output:
-#     - meta_weights: class X(nn.Module)
-#
-#     """
-#     num_grads = len(inner_weights)
-#
-#     all_domain_grads = []
-#     flatten_meta_weights = torch.cat([param.view(-1) for param in meta_weights.parameters()])
-#     for i_domain in range(num_grads):
-#         domain_grad_diffs = [torch.flatten(inner_param - meta_param) for inner_param, meta_param in
-#                              zip(inner_weights[i_domain].parameters(), meta_weights.parameters())]
-#         domain_grad_vector = torch.cat(domain_grad_diffs)
-#         all_domain_grads.append(domain_grad_vector)
-#
-#     """
-#     - Grads normalization.
-#     """
-#     if self.grad_balance:
-#         # Apply balancing
-#         # Step 1: Compute norms for each gradient vector
-#         domain_grad_norms = [torch.norm(grad) for grad in all_domain_grads]
-#
-#         # Step 2: Determine scaling factors to balance the norms
-#         # Example: Scale all norms to a target value (e.g., the average norm)
-#         target_norm = torch.mean(torch.tensor(domain_grad_norms))
-#         scaling_factors = [target_norm / norm if norm > 0 else 1.0 for norm in domain_grad_norms]
-#
-#         # Step 3: Scale gradient vectors
-#         balanced_retain_grads = [grad * scale for grad, scale in zip(domain_grad_norms, scaling_factors)]
-#
-#         # Step 4: Stack the balanced gradients into a tensor
-#         all_domains_grad_tensor = torch.stack(balanced_retain_grads).cpu()
-#     else:
-#         all_domains_grad_tensor = torch.stack(all_domain_grads).cpu()
-#
-#     all_domains_grad_tensor = torch.stack(all_domain_grads)
-#     print(all_domains_grad_tensor.size())
-#     # print(all_domains_grad_tensor)
-#     g = self.stgm_low(all_domains_grad_tensor, num_grads)
-#
-#     flatten_meta_weights += g * lr_meta
-#
-#     vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
-#     meta_weights = ParamDict(meta_weights.state_dict())
-#
-#     return meta_weights

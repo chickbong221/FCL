@@ -1,7 +1,7 @@
 {
     "optimizer": "sgd",
     "datadir": "dataset",
-    "device": "cpu",
+    "device": "cuda",
     "device_id": "0",
     "dataset": "IMAGENET1k",
     "num_classes": 1000,
