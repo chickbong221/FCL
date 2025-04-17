@@ -6,32 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="99ce310d-b914-4464-8807-136f6ae09a0b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hparams/FedSTGM.json" beforeDir="false" afterPath="$PROJECT_DIR$/hparams/FedSTGM.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_0/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_0/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_1/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_1/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_2/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_2/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_3/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_3/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_4/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_4/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_5/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_5/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_6/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_6/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_7/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_7/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_8/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_8/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_9/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Global/Client_9/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_0/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_0/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_1/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_1/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_2/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_2/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_3/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_3/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_4/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_4/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_5/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_5/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_6/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_6/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_7/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_7/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_8/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_8/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_9/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Client_Local/Client_9/test_accuracy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Global/FedAvg_accuracy_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Global/metrics.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Global/metrics.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Local/FedAvg_accuracy_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Local/metrics.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedAvg_CNN_sgd_lr0.005/Local/metrics.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serverstgm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serverstgm.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +21,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="debug" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
