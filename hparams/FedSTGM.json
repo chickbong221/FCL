@@ -31,11 +31,11 @@
     "stgm_momentum": 0.5,
     "stgm_step_size": 30,
     "stgm_gamma": 0.5,
-    "stgm_c": 0.5,
+    "stgm_c": 0.25,
 
-    "stgm_meta_lr": 0.5,
+    "stgm_meta_lr": 0.25,
 
-    "grad_balance": true,
+    "grad_balance": false,
 
     "coreset": true,
     "tgm": true,
