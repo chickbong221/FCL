@@ -6,12 +6,12 @@
     "dataset": "IMAGENET1k",
     "num_classes": 1000,
     "model": "CNN",
-    "batch_size": 32,
+    "batch_size": 64,
     "local_learning_rate": 0.005,
     "learning_rate_decay": false,
     "learning_rate_decay_gamma": 0.99,
     "global_rounds": 100,
-    "local_epochs": 1,
+    "local_epochs": 3,
     "algorithm": "FedSTGM",
     "join_ratio": 1.0,
     "random_join_ratio": false,
@@ -26,7 +26,7 @@
     "client_drop_rate": 0.0,
     "time_threthold": 10000,
 
-    "stgm_rounds": 25,
+    "stgm_rounds": 100,
     "stgm_learning_rate": 25,
     "stgm_momentum": 0.5,
     "stgm_step_size": 30,
@@ -35,7 +35,7 @@
 
     "stgm_meta_lr": 0.5,
 
-    "grad_balance": false,
+    "grad_balance": true,
 
     "coreset": true,
     "tgm": true,
