@@ -210,7 +210,7 @@ class FedSTGM(Server):
         else:
             all_domains_grad_tensor = torch.stack(all_domain_grads).t()
 
-        # all_domains_grad_tensor = torch.stack(all_domain_grads).t()
+        all_domains_grad_tensor = torch.stack(all_domain_grads).t()
 
         # print(all_domains_grad_tensor)
         g = self.stgm_low(all_domains_grad_tensor, self.num_clients)
