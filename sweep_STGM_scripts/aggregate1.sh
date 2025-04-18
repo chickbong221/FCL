@@ -1,0 +1,12 @@
+python system/main.py --cfp ./hparams/sweep_STGM/grad_balance/grad_balance_False.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/grad_balance/grad_balance_True.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_epochs/local_epochs_1.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_epochs/local_epochs_10.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_epochs/local_epochs_3.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_epochs/local_epochs_6.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_epochs/local_epochs_8.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_learning_rate/local_learning_rate_0.001.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_learning_rate/local_learning_rate_0.01325.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_learning_rate/local_learning_rate_0.0255.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_learning_rate/local_learning_rate_0.03775.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_learning_rate/local_learning_rate_0.05.json --wandb True
