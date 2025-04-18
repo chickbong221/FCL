@@ -34,18 +34,18 @@ class clientSTGM(Client):
                 loss.backward()
                 self.optimizer.step()
         """ ======== Approximate Last Task ========  """
-        for task in range(self.N_tasks):
-            for epoch in range(max_local_epochs):
-                for i, (x,y) in enumerate(self.buffer[task]):
-                    pass
+        # for task in range(self.N_tasks):
+        #     for epoch in range(max_local_epochs):
+        #         for i, (x,y) in enumerate(self.buffer[task]):
+        #             pass
 
         """ ===== Temporal Gradient Matching ======  """
-        meta_weights = self.tgm_high(
-            meta_weights=self.model,
-            inner_weights=inner_models,
-            lr_meta=self.stgm_meta_lr
-        )
-        self.model.load_state_dict(copy.deepcopy(meta_weights))
+        # meta_weights = self.tgm_high(
+        #     meta_weights=self.model,
+        #     inner_weights=inner_models,
+        #     lr_meta=self.stgm_meta_lr
+        # )
+        # self.model.load_state_dict(copy.deepcopy(meta_weights))
 
         # self.model.cpu()
 
