@@ -206,11 +206,11 @@ class FedSTGM(Server):
             balanced_retain_grads = [grad * scale for grad, scale in zip(domain_grad_norms, scaling_factors)]
 
             # Step 4: Stack the balanced gradients into a tensor
-            all_domains_grad_tensor = torch.stack(balanced_retain_grads).cpu()
+            all_domains_grad_tensor = torch.stack(balanced_retain_grads).t()
         else:
-            all_domains_grad_tensor = torch.stack(all_domain_grads).cpu()
+            all_domains_grad_tensor = torch.stack(all_domain_grads).t()
 
-        all_domains_grad_tensor = torch.stack(all_domain_grads).t()
+        # all_domains_grad_tensor = torch.stack(all_domain_grads).t()
 
         # print(all_domains_grad_tensor)
         g = self.stgm_low(all_domains_grad_tensor, self.num_clients)

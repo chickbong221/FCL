@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="99ce310d-b914-4464-8807-136f6ae09a0b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hparams/FedSTGM.json" beforeDir="false" afterPath="$PROJECT_DIR$/hparams/FedSTGM.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_0/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_0/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_1/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_1/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_2/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_2/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_3/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_3/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_4/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_4/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_5/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_5/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_6/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_6/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_7/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_7/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_8/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_8/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_9/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Global/Client_9/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_0/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_0/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_1/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_1/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_2/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_2/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_3/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_3/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_4/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_4/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_5/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_5/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_6/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_6/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_7/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_7/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_8/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_8/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_9/test_accuracy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Client_Local/Client_9/test_accuracy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Global/metrics.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Global/metrics.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Local/metrics.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/IMAGENET1k_FedSTGM_CNN_sgd_lr0.005/Local/metrics.csv" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="debug" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2sYbzpUEIgTSogq1qSkFNKhmmU6" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;PFLlib-based&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/skydvn/Documents/git/ContinualLearning/FCL&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-4f4e415b4190-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.26053.29" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="99ce310d-b914-4464-8807-136f6ae09a0b" name="Changes" comment="" />
+      <created>1738635720971</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1738635720971</updated>
+    </task>
+    <servers />
+  </component>
+</project>
