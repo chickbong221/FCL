@@ -44,7 +44,7 @@ base_config = {
     "sgm": True
 }
 
-# Sweep params
+# New sweep parameters
 sweep_params = {
     "stgm_rounds": [25, 100],
     "stgm_learning_rate": [5, 50],
@@ -54,44 +54,49 @@ sweep_params = {
     "stgm_c": [float(np.round(x, 2)) for x in np.linspace(0.1, 1.0, 4)],
     "stgm_meta_lr": [0.5, 1.0],
     "grad_balance": [False, True],
-    "local_epochs": [1, 3, 5, 10],
-    "local_learning_rate": [0.001, 0.005, 0.05],
+    "local_epochs": [3, 10],
+    "local_learning_rate": [0.01, 0.05],
 }
 
-# Create all grid combinations
+# Create all combinations
 param_names = list(sweep_params.keys())
 param_values = list(sweep_params.values())
 all_combinations = list(product(*param_values))  # 3072 configs
 
-# Split into 3 computers, each with 5 parts (15 folders)
+# Divide into 14 nearly equal parts
 num_total = len(all_combinations)
-num_computers = 3
-num_parts_per_computer = 5
-num_parts = num_computers * num_parts_per_computer
-configs_per_part = num_total // num_parts + (num_total % num_parts > 0)
+num_parts = 14
+part_indices = np.array_split(np.arange(num_total), num_parts)
 
-# Root output folder
+# Output root folder
 root_folder = "../sweep_STGM_grid_split"
 os.makedirs(root_folder, exist_ok=True)
 
-for part_idx in range(num_parts):
-    comp_id = part_idx // num_parts_per_computer + 1  # 1-based
-    sub_id = part_idx % num_parts_per_computer        # part0, part1, ..., part4
-    folder = os.path.join(root_folder, f"computer{comp_id}", f"part{sub_id}")
-    os.makedirs(folder, exist_ok=True)
+for part_idx, indices in enumerate(part_indices):
+    if part_idx < 8:
+        comp_id = 1 if part_idx < 4 else 2
+        sub_id = part_idx % 4
+        folder = os.path.join(root_folder, f"computer{comp_id}", f"part{sub_id}")
+        os.makedirs(folder, exist_ok=True)
+        gpu_id = "0"
+        job_folder = folder
+    else:
+        gpu_num = (part_idx - 8) % 2  # gpu0 or gpu1
+        job_id = (part_idx - 8) // 2  # job0 to job2
+        gpu_folder = os.path.join(root_folder, "computer3", f"gpu{gpu_num}")
+        job_folder = os.path.join(gpu_folder, f"job{job_id}")
+        os.makedirs(job_folder, exist_ok=True)
+        gpu_id = str(gpu_num)
 
-    # Get configs for this part
-    start = part_idx * configs_per_part
-    end = min(start + configs_per_part, num_total)
-
-    for i, combo in enumerate(all_combinations[start:end]):
+    for config_idx in indices:
         config = deepcopy(base_config)
+        config["device_id"] = gpu_id
         note_parts = []
-        for name, value in zip(param_names, combo):
+        for name, value in zip(param_names, all_combinations[config_idx]):
             config[name] = value
             note_parts.append(f"{name}={value}")
         config["note"] = ", ".join(note_parts)
 
-        filename = os.path.join(folder, f"config_{start + i:04d}.json")
+        filename = os.path.join(job_folder, f"config_{config_idx:04d}.json")
         with open(filename, "w") as f:
             json.dump(config, f, indent=4)
