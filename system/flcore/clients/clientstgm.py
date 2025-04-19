@@ -15,14 +15,14 @@ class clientSTGM(Client):
     def __init__(self, args, id, train_data, **kwargs):
         super().__init__(args, id, train_data, **kwargs)
 
-        self.tgm_learning_rate = args.tgm_learning_rate
-        self.tgm_step_size = args.tgm_step_size
-        self.tgm_c = args.tgm_c
-        self.tgm_rounds = args.tgm_rounds
-        self.tgm_momentum = args.tgm_momentum
-        self.tgm_gamma = args.tgm_gamma
+        # self.tgm_learning_rate = args.tgm_learning_rate
+        # self.tgm_step_size = args.tgm_step_size
+        # self.tgm_c = args.tgm_c
+        # self.tgm_rounds = args.tgm_rounds
+        # self.tgm_momentum = args.tgm_momentum
+        # self.tgm_gamma = args.tgm_gamma
 
-        self.tgm_meta_lr = args.tgm_meta_lr
+        # self.tgm_meta_lr = args.tgm_meta_lr
         self.grad_balance = args.grad_balance
 
     def train(self, task=None):
