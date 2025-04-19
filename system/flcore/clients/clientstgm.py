@@ -45,7 +45,7 @@ class clientSTGM(Client):
 
             """ ===== Temporal Gradient Matching ======  """
             meta_weights = self.tgm_high(
-                meta_weights=self.model,
+                meta_weights=old_model,
                 inner_weights=inner_models,
                 lr_meta=self.stgm_meta_lr
             )
