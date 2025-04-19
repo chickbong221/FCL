@@ -107,17 +107,15 @@ class FedSTGM(Server):
                 # [t.start() for t in threads]
                 # [t.join() for t in threads]
 
+                """
+                Spatio Gradient Matching
+                """
                 self.receive_models()
                 if self.args.sgm:
-                    self.receive_grads()
-                    """
-                    Spatio Gradient Matching
-                    """
-
                     """
                     Version 1
                     """
-
+                    # self.receive_grads()
                     # grad_ez = sum(p.numel() for p in self.global_model.parameters())
                     # grads = torch.Tensor(grad_ez, self.num_clients)
                     # print(f"size of grads: {grads.size()}")
@@ -159,7 +157,7 @@ class FedSTGM(Server):
                     # self.grads_angle_value = statistics.mean(angle_value)
                 else:
                     self.aggregate_parameters()
-                
+
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
 
