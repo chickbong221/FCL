@@ -38,6 +38,6 @@
     "grad_balance": false,
 
     "coreset": true,
-    "tgm": true,
+    "tgm": false,
     "sgm": true
 }

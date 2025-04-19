@@ -35,7 +35,7 @@ class clientSTGM(Client):
                 loss.backward()
                 self.optimizer.step()
 
-        if not self.args.tgm:
+        if self.args.tgm:
             """ ======== Approximate Last Task ========  """
             for task in self.task_dict:
                 trainloader = self.load_train_data(task=task)
