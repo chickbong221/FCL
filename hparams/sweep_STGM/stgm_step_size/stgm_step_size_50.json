@@ -21,7 +21,7 @@
     "eval_gap": 1,
     "out_folder": "out",
     "note": "stgm_step_size=50",
-    "num_tasks": 2500,
+    "num_tasks": 500,
     "client_drop_rate": 0.0,
     "time_threthold": 10000,
     "stgm_rounds": 100,

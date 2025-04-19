@@ -1,0 +1,10 @@
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_step_size/stgm_step_size_40.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_step_size/stgm_step_size_50.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_momentum/stgm_momentum_0.78.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_momentum/stgm_momentum_1.0.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_38.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_5.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_50.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_16.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_27.json --wandb True
+python system/main.py --cfp ./hparams/sweep_STGM/local_learning_rate/local_learning_rate_0.03775.json --wandb True

@@ -7,9 +7,3 @@ python system/main.py --cfp ./hparams/sweep_STGM/stgm_gamma/stgm_gamma_0.1.json 
 python system/main.py --cfp ./hparams/sweep_STGM/stgm_gamma/stgm_gamma_0.32.json --wandb True
 python system/main.py --cfp ./hparams/sweep_STGM/stgm_gamma/stgm_gamma_0.55.json --wandb True
 python system/main.py --cfp ./hparams/sweep_STGM/stgm_gamma/stgm_gamma_0.78.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_gamma/stgm_gamma_1.0.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_16.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_27.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_38.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_5.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_learning_rate/stgm_learning_rate_50.json --wandb True
