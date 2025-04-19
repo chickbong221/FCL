@@ -33,6 +33,7 @@ Download ImageNet-1K train/val dataset
 python unpack.py # make clean file trees of ILSVRC2012_img_train.tar, ILSVRC2012_img_val.tar
 python preprocess.py # Preprocess and save train and val data of each class as 1 .npy file, ready for use
 Delete the zip file and file trees from unpack.py to free space
+gdown 1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z
 
 ## Usage
 ### Running an Experiment
