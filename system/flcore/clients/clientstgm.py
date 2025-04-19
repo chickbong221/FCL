@@ -15,6 +15,7 @@ class clientSTGM(Client):
     def train(self, task=None):
         trainloader = self.load_train_data(task=task)
         self.model.train()
+        old_model = copy.deepcopy(self.model)
 
         start_time = time.time()
 
@@ -33,21 +34,24 @@ class clientSTGM(Client):
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
-        """ ======== Approximate Last Task ========  """
-        # for task in range(self.N_tasks):
-        #     for epoch in range(max_local_epochs):
-        #         for i, (x,y) in enumerate(self.buffer[task]):
-        #             pass
 
-        """ ===== Temporal Gradient Matching ======  """
-        # meta_weights = self.tgm_high(
-        #     meta_weights=self.model,
-        #     inner_weights=inner_models,
-        #     lr_meta=self.stgm_meta_lr
-        # )
-        # self.model.load_state_dict(copy.deepcopy(meta_weights))
+        if not self.args.tgm:
+            """ ======== Approximate Last Task ========  """
+            for task in self.task_dict:
+                trainloader = self.load_train_data(task=task)
+                for epoch in range(max_local_epochs):
+                    for i, (x, y) in enumerate(trainloader):
+                        pass
 
-        # self.model.cpu()
+            """ ===== Temporal Gradient Matching ======  """
+            meta_weights = self.tgm_high(
+                meta_weights=self.model,
+                inner_weights=inner_models,
+                lr_meta=self.stgm_meta_lr
+            )
+            self.model.load_state_dict(copy.deepcopy(meta_weights))
+        else:
+            pass
 
         if self.learning_rate_decay:
             self.learning_rate_scheduler.step()
