@@ -47,7 +47,7 @@ class Client(object):
                 self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
             else:
                 raise ValueError(f"Unsupported optimizer: {args.optimizer}.")
-            self.learning_rate_scheduler = torch.optim.lr_scheduler.Exponenttask_dictialLR(
+            self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
                 optimizer=self.optimizer, 
                 gamma=args.learning_rate_decay_gamma
             )

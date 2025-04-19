@@ -44,35 +44,38 @@ class clientSTGM(Client):
 
             """ ======== Approximate Last Task ========  """
             for task_id, task in enumerate(self.task_dict):
-                trainloader = self.load_train_data(task=task)
+                if task_id != self.current_task:
+                    trainloader = self.load_train_data(task=task)
 
-                """ === Assign Optimizers to Tasks === """
-                model = copy.deepcopy(self.model)  # or self.model_class() if you have a class
-                inner_models.append(model)
+                    """ === Assign Optimizers to Tasks === """
+                    model = copy.deepcopy(self.model)  # or self.model_class() if you have a class
+                    inner_models.append(model)
 
-                # Create an optimizer for the model
-                if self.args.optimizer == "sgd":
-                    optimizer = torch.optim.SGD(model.parameters(), lr=self.optimizer.param_groups[0]['lr'])
-                elif self.args.optimizer == "adam":
-                    optimizer = torch.optim.Adam(model.parameters(), lr=self.optimizer.param_groups[0]['lr'])
+                    # Create an optimizer for the model
+                    if self.args.optimizer == "sgd":
+                        optimizer = torch.optim.SGD(model.parameters(), lr=self.optimizer.param_groups[0]['lr'])
+                    elif self.args.optimizer == "adam":
+                        optimizer = torch.optim.Adam(model.parameters(), lr=self.optimizer.param_groups[0]['lr'])
+                    else:
+                        raise ValueError(f"Unsupported optimizer: {self.args.optimizer}.")
+
+                    """ === Pseudo Training === """
+                    for epoch in range(max_local_epochs):
+                        for i, (x, y) in enumerate(trainloader):
+                            if type(x) == type([]):
+                                x[0] = x[0].to(self.device)
+                            else:
+                                x = x.to(self.device)
+                            y = y.to(self.device)
+                            output = model(x)
+                            loss = self.loss(output, y)
+                            optimizer.zero_grad()
+                            loss.backward()
+                            optimizer.step()
+                    """ === Append to inner_models List === """
+                    inner_models.append(model)
                 else:
-                    raise ValueError(f"Unsupported optimizer: {self.args.optimizer}.")
-
-                """ === Pseudo Training === """
-                for epoch in range(max_local_epochs):
-                    for i, (x, y) in enumerate(trainloader):
-                        if type(x) == type([]):
-                            x[0] = x[0].to(self.device)
-                        else:
-                            x = x.to(self.device)
-                        y = y.to(self.device)
-                        output = model(x)
-                        loss = self.loss(output, y)
-                        optimizer.zero_grad()
-                        loss.backward()
-                        optimizer.step()
-                """ === Append to inner_models List === """
-                inner_models.append(model)
+                    pass
 
             """ ===== Temporal Gradient Matching ======  """
             meta_weights = self.tgm_high(
