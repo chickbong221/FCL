@@ -11,7 +11,7 @@
     "learning_rate_decay": false,
     "learning_rate_decay_gamma": 0.99,
     "global_rounds": 100,
-    "local_epochs": 1,
+    "local_epochs": 5,
     "algorithm": "FedSTGM",
     "join_ratio": 1.0,
     "random_join_ratio": false,
@@ -37,9 +37,9 @@
 
     "grad_balance": false,
 
-    "tgm_rounds": 100,
+    "tgm_rounds": 25,
     "tgm_learning_rate": 25,
-    "tgm_momentum": 0.5,
+    "tgm_momentum": 0.1,
     "tgm_step_size": 30,
     "tgm_gamma": 0.5,
     "tgm_c": 0.25,
@@ -48,5 +48,5 @@
 
     "coreset": false,
     "tgm": true,
-    "sgm": false
+    "sgm": true
 }
