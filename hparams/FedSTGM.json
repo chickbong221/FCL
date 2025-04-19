@@ -37,6 +37,15 @@
 
     "grad_balance": false,
 
+    "tgm_rounds": 100,
+    "tgm_learning_rate": 25,
+    "tgm_momentum": 0.5,
+    "tgm_step_size": 30,
+    "tgm_gamma": 0.5,
+    "tgm_c": 0.25,
+
+    "tgm_meta_lr": 0.5,
+
     "coreset": false,
     "tgm": false,
     "sgm": true

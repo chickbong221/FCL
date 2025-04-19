@@ -16,11 +16,11 @@ class clientSTGM(Client):
         trainloader = self.load_train_data(task=task)
         self.model.train()
         old_model = copy.deepcopy(self.model)
+        old_optimizer = self.optimizer()
 
         start_time = time.time()
 
         max_local_epochs = self.local_epochs
-        inner_models = []
         """ ============ Current Task ============  """
         for epoch in range(max_local_epochs):
             for i, (x, y) in enumerate(trainloader):
@@ -35,19 +35,50 @@ class clientSTGM(Client):
                 loss.backward()
                 self.optimizer.step()
 
+
         if self.args.tgm:
+            inner_models = []
+            inner_optimizers = []
+            inner_schedulers = []
+            inner_models.append(self.model)
+
             """ ======== Approximate Last Task ========  """
-            for task in self.task_dict:
+            for task_id, task in enumerate(self.task_dict):
                 trainloader = self.load_train_data(task=task)
+
+                """ === Assign Optimizers to Tasks === """
+                model = copy.deepcopy(self.model)  # or self.model_class() if you have a class
+                inner_models.append(model)
+
+                # Create an optimizer for the model
+                if self.args.optimizer == "sgd":
+                    optimizer = torch.optim.SGD(model.parameters(), lr=self.optimizer.param_groups[0]['lr'])
+                elif self.args.optimizer == "adam":
+                    optimizer = torch.optim.Adam(model.parameters(), lr=self.optimizer.param_groups[0]['lr'])
+                else:
+                    raise ValueError(f"Unsupported optimizer: {self.args.optimizer}.")
+
+                """ === Pseudo Training === """
                 for epoch in range(max_local_epochs):
                     for i, (x, y) in enumerate(trainloader):
-                        pass
+                        if type(x) == type([]):
+                            x[0] = x[0].to(self.device)
+                        else:
+                            x = x.to(self.device)
+                        y = y.to(self.device)
+                        output = model(x)
+                        loss = self.loss(output, y)
+                        optimizer.zero_grad()
+                        loss.backward()
+                        optimizer.step()
+                """ === Append to inner_models List === """
+                inner_models.append(model)
 
             """ ===== Temporal Gradient Matching ======  """
             meta_weights = self.tgm_high(
                 meta_weights=old_model,
                 inner_weights=inner_models,
-                lr_meta=self.stgm_meta_lr
+                lr_meta=self.tgm_meta_lr
             )
             self.model.load_state_dict(copy.deepcopy(meta_weights))
         else:
