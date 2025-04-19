@@ -108,56 +108,58 @@ class FedSTGM(Server):
                 # [t.join() for t in threads]
 
                 self.receive_models()
-                self.receive_grads()
+                if self.args.sgm:
+                    self.receive_grads()
+                    """
+                    Spatio Gradient Matching
+                    """
 
-                """
-                Spatio Gradient Matching
-                """
+                    """
+                    Version 1
+                    """
 
-                """
-                Version 1
-                """
+                    # grad_ez = sum(p.numel() for p in self.global_model.parameters())
+                    # grads = torch.Tensor(grad_ez, self.num_clients)
+                    # print(f"size of grads: {grads.size()}")
+                    #
+                    # for index, model in enumerate(self.grads):
+                    #     grad2vec2(model, grads, index)
+                    #
+                    # g = self.aggregate_stgm(grads, self.num_clients)
+                    #
+                    #
+                    # # model_origin = copy.deepcopy(self.global_model)
+                    # self.overwrite_grad2(self.global_model, g)
+                    # for param in self.global_model.parameters():
+                    #     param.data += param.grad
+
+
+                    """
+                    Version 2
+                    
+                    - flatten_meta_weights += g * lr_meta
+                    - vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
+                    - meta_weights = ParamDict(meta_weights.state_dict())
+                    """
+                    meta_weights = self.stgm_high(
+                        meta_weights=self.global_model,
+                        inner_weights=self.uploaded_models,
+                        lr_meta= self.stgm_meta_lr
+                    )
+                    self.global_model.load_state_dict(copy.deepcopy(meta_weights))
+
+                    # angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.grads]
+                    # self.angle_value = statistics.mean(angle)
+
+                    # angle_value = []
+                    # for i in self.grads:
+                    #     for j in self.grads:
+                    #         angle_value = [self.cosine_similarity(i, j)]
+                    #
+                    # self.grads_angle_value = statistics.mean(angle_value)
+                else:
+                    self.aggregate_parameters()
                 
-                # grad_ez = sum(p.numel() for p in self.global_model.parameters())
-                # grads = torch.Tensor(grad_ez, self.num_clients)
-                # print(f"size of grads: {grads.size()}")
-                #
-                # for index, model in enumerate(self.grads):
-                #     grad2vec2(model, grads, index)
-                #
-                # g = self.aggregate_stgm(grads, self.num_clients)
-                #
-                #
-                # # model_origin = copy.deepcopy(self.global_model)
-                # self.overwrite_grad2(self.global_model, g)
-                # for param in self.global_model.parameters():
-                #     param.data += param.grad
-
-
-                """
-                Version 2
-                
-                - flatten_meta_weights += g * lr_meta
-                - vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
-                - meta_weights = ParamDict(meta_weights.state_dict())
-                """
-                meta_weights = self.stgm_high(
-                    meta_weights=self.global_model,
-                    inner_weights=self.uploaded_models,
-                    lr_meta= self.stgm_meta_lr
-                )
-                self.global_model.load_state_dict(copy.deepcopy(meta_weights))
-
-                # angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.grads]
-                # self.angle_value = statistics.mean(angle)
-
-                # angle_value = []
-                # for i in self.grads:
-                #     for j in self.grads:
-                #         angle_value = [self.cosine_similarity(i, j)]
-                #
-                # self.grads_angle_value = statistics.mean(angle_value)
-
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
 
