@@ -23,6 +23,7 @@ for computer in sorted(os.listdir(sweep_dir)):
 
         for json_file in sorted(os.listdir(part_path)):
             if json_file.endswith(".json"):
+                # Chuyển đường dẫn thành relative từ thư mục chạy script
                 json_path = os.path.join("hparams", "sweep_STGM_grid_split", computer, part, json_file)
                 command = f"python system/main.py --cfp ./{json_path} --wandb True"
                 script_lines.append(command)

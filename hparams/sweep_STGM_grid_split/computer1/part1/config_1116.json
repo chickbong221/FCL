@@ -32,7 +32,7 @@
     "stgm_c": 1.0,
     "stgm_meta_lr": 0.5,
     "grad_balance": true,
-    "coreset": true,
-    "tgm": true,
+    "coreset": false,
+    "tgm": false,
     "sgm": true
 }

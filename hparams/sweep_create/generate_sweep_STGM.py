@@ -39,8 +39,8 @@ base_config = {
     "stgm_c": 0.25,
     "stgm_meta_lr": 0.5,
     "grad_balance": False,
-    "coreset": True,
-    "tgm": True,
+    "coreset": False,
+    "tgm": False,
     "sgm": True
 }
 
@@ -63,9 +63,11 @@ param_names = list(sweep_params.keys())
 param_values = list(sweep_params.values())
 all_combinations = list(product(*param_values))  # 3072 configs
 
-# Split into 3 computers, each with 4 parts (12 folders)
+# Split into 3 computers, each with 5 parts (15 folders)
 num_total = len(all_combinations)
-num_parts = 12
+num_computers = 3
+num_parts_per_computer = 5
+num_parts = num_computers * num_parts_per_computer
 configs_per_part = num_total // num_parts + (num_total % num_parts > 0)
 
 # Root output folder
@@ -73,8 +75,8 @@ root_folder = "../sweep_STGM_grid_split"
 os.makedirs(root_folder, exist_ok=True)
 
 for part_idx in range(num_parts):
-    comp_id = part_idx // 4 + 1
-    sub_id = part_idx % 4
+    comp_id = part_idx // num_parts_per_computer + 1  # 1-based
+    sub_id = part_idx % num_parts_per_computer        # part0, part1, ..., part4
     folder = os.path.join(root_folder, f"computer{comp_id}", f"part{sub_id}")
     os.makedirs(folder, exist_ok=True)
 

@@ -49,6 +49,11 @@ python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -alg
 python system/main.py --dataset CIFAR100 --num_classes 100 -did 0 -gr 1000 -algo FedFCIL
 ```
 
+Sweep
+```sh
+bash scripts/sweep_STGM_scripts/computer1_part3.sh
+```
+
 ## Benchmarked Algorithms
 - **FedAvg** (Federated Averaging)
 - **PreciseFCL** 
