@@ -1,9 +1,0 @@
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_meta_lr/stgm_meta_lr_0.1.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_meta_lr/stgm_meta_lr_0.32.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_meta_lr/stgm_meta_lr_0.55.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_meta_lr/stgm_meta_lr_0.78.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_meta_lr/stgm_meta_lr_1.0.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_momentum/stgm_momentum_0.1.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_momentum/stgm_momentum_0.32.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/stgm_momentum/stgm_momentum_0.55.json --wandb True
-python system/main.py --cfp ./hparams/sweep_STGM/local_learning_rate/local_learning_rate_0.05.json --wandb True
