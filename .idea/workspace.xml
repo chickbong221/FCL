@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="99ce310d-b914-4464-8807-136f6ae09a0b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hparams/FedSTGM.json" beforeDir="false" afterPath="$PROJECT_DIR$/hparams/FedSTGM.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serverbase.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serverbase.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/system/flcore/servers/serverstgm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serverstgm.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,7 +52,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-4f4e415b4190-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.26053.29" />
+        <option value="bundled-python-sdk-348a24fa61fa-5312c7369657-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.23774.444" />
       </set>
     </attachedChunks>
   </component>

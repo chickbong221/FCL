@@ -159,8 +159,9 @@ class FedSTGM(Server):
                 angle_value = []
                 for grad_i in self.grads:
                     for grad_j in self.grads:
-                        angle_value = [self.cosine_similarity(grad_i, grad_j)]
+                        angle_value.append(self.cosine_similarity(grad_i, grad_j))
                 self.grads_angle_value = statistics.mean(angle_value)
+                print(f"grad angle: {self.grads_angle_value}")
 
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
