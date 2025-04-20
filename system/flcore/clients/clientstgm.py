@@ -2,27 +2,29 @@ import numpy as np
 import time
 import copy
 import torch
+import torch.nn as nn
 import copy
 from torch.optim.lr_scheduler import StepLR
 from utils.model_utils import ParamDict
 from torch.nn.utils import vector_to_parameters, parameters_to_vector
 from flcore.clients.clientbase import Client
 
-from flcore.trainmodel.models import FedAvgCNN
+from flcore.trainmodel.models import *
 
 
 class clientSTGM(Client):
     def __init__(self, args, id, train_data, **kwargs):
         super().__init__(args, id, train_data, **kwargs)
 
-        # self.tgm_learning_rate = args.tgm_learning_rate
-        # self.tgm_step_size = args.tgm_step_size
-        # self.tgm_c = args.tgm_c
-        # self.tgm_rounds = args.tgm_rounds
-        # self.tgm_momentum = args.tgm_momentum
-        # self.tgm_gamma = args.tgm_gamma
+        self.tgm_learning_rate = args.tgm_learning_rate
+        self.tgm_step_size = args.tgm_step_size
+        self.tgm_c = args.tgm_c
+        self.tgm_rounds = args.tgm_rounds
+        self.tgm_momentum = args.tgm_momentum
+        self.tgm_gamma = args.tgm_gamma
 
-        # self.tgm_meta_lr = args.tgm_meta_lr
+        self.tgm_meta_lr = args.tgm_meta_lr
+
         self.grad_balance = args.grad_balance
 
     def train(self, task=None):
@@ -50,7 +52,7 @@ class clientSTGM(Client):
                 self.optimizer.step()
 
 
-        if self.args.tgm and (self.current_task > 5):
+        if self.args.tgm and (self.current_task >= 5):
             # inner_models = [copy.deepcopy(self.model)]
 
             """ ======== Approximate Last Task ========  """
@@ -91,19 +93,22 @@ class clientSTGM(Client):
             #         pass
 
             for task_id, task in enumerate(self.task_dict):
-                trainloader = self.load_train_data(task=task)
-                for epoch in range(max_local_epochs):
-                    for i, (x, y) in enumerate(trainloader):
-                        if type(x) == type([]):
-                            x[0] = x[0].to(self.device)
-                        else:
-                            x = x.to(self.device)
-                        y = y.to(self.device)
-                        output = self.network_inner[task_id](x)
-                        loss = self.loss(output, y)
-                        self.optimizer_inner[task_id].zero_grad()
-                        loss.backward()
-                        self.optimizer_inner[task_id].step()
+                if task_id == self.current_task:
+                    pass
+                else:
+                    trainloader = self.load_train_data(task=task)
+                    for epoch in range(max_local_epochs):
+                        for i, (x, y) in enumerate(trainloader):
+                            if type(x) == type([]):
+                                x[0] = x[0].to(self.device)
+                            else:
+                                x = x.to(self.device)
+                            y = y.to(self.device)
+                            output = self.network_inner[task_id](x)
+                            loss = self.loss(output, y)
+                            self.optimizer_inner[task_id].zero_grad()
+                            loss.backward()
+                            self.optimizer_inner[task_id].step()
 
             self.network_inner.append(self.model)
 
@@ -227,8 +232,14 @@ class clientSTGM(Client):
         self.network_inner = []
         self.optimizer_inner = []
         for task_id in range(n_task):
-            self.network_inner.append(FedAvgCNN(in_features=3, num_classes=self.num_classes, dim=1600).to(self.device))
-            self.network_inner[task_id](copy.deepcopy(self.model.state_dict()))
+            temp_model = FedAvgCNN(in_features=3, num_classes=self.num_classes, dim=1600).to(self.device)
+            temp_head = copy.deepcopy(temp_model.fc)
+            temp_model.fc = nn.Identity()
+            temp_model = BaseHeadSplit(temp_model, temp_head)
+
+            temp_model.load_state_dict(copy.deepcopy(self.model.state_dict()))
+            self.network_inner.append(temp_model)
+
             if self.args.optimizer == "sgd":
                 self.optimizer_inner.append(
                     torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
@@ -242,3 +253,6 @@ class clientSTGM(Client):
 
             if self.optimizer_inner_state is not None:
                 self.optimizer_inner[task_id].load_state_dict(self.optimizer_inner_state)
+
+        def count_parameters(model):
+            return sum(p.numel() for p in model.parameters() if p.requires_grad)
