@@ -52,7 +52,7 @@ class clientSTGM(Client):
                 self.optimizer.step()
 
 
-        if self.args.tgm and (self.current_task >= 5):
+        if self.args.tgm and (self.current_task >= 0):
             # inner_models = [copy.deepcopy(self.model)]
 
             """ ======== Approximate Last Task ========  """

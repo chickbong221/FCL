@@ -98,7 +98,7 @@ class FedAvg(Server):
                 self.Budget.append(time.time() - s_t)
                 print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
-            if self.args.debug:
+            if not self.args.debug:
                 self.eval_task(task=task, glob_iter=glob_iter, flag="local")
 
                 # need eval before data update

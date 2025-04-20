@@ -10,6 +10,8 @@ from torch.nn.utils import vector_to_parameters, parameters_to_vector
 from torch.optim.lr_scheduler import StepLR
 import numpy as np
 
+import statistics
+
 
 class FedSTGM(Server):
     def __init__(self, args, times):
@@ -32,7 +34,6 @@ class FedSTGM(Server):
 
         self.stgm_meta_lr = args.stgm_meta_lr
         self.grad_balance = args.grad_balance
-
 
     def train(self):
         for task in range(self.args.num_tasks):
@@ -111,9 +112,11 @@ class FedSTGM(Server):
                 Spatio Gradient Matching
                 """
                 self.receive_models()
+                self.receive_grads()
                 if self.args.sgm:
                     """
                     Version 1
+
                     """
                     # self.receive_grads()
                     # grad_ez = sum(p.numel() for p in self.global_model.parameters())
@@ -139,6 +142,7 @@ class FedSTGM(Server):
                     - vector_to_parameters(flatten_meta_weights, meta_weights.parameters())
                     - meta_weights = ParamDict(meta_weights.state_dict())
                     """
+                    model_origin = copy.deepcopy(self.global_model)
                     meta_weights = self.stgm_high(
                         meta_weights=self.global_model,
                         inner_weights=self.uploaded_models,
@@ -146,25 +150,24 @@ class FedSTGM(Server):
                     )
                     self.global_model.load_state_dict(copy.deepcopy(meta_weights))
 
-                    # angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.grads]
-                    # self.angle_value = statistics.mean(angle)
+                    angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
+                    self.angle_value = statistics.mean(angle)
 
-                    # angle_value = []
-                    # for i in self.grads:
-                    #     for j in self.grads:
-                    #         angle_value = [self.cosine_similarity(i, j)]
-                    #
-                    # self.grads_angle_value = statistics.mean(angle_value)
+                    angle_value = []
+                    for i in self.grads:
+                        for j in self.grads:
+                            angle_value = [self.cosine_similarity(i, j)]
+
+                    self.grads_angle_value = statistics.mean(angle_value)
                 else:
                     self.aggregate_parameters()
 
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
-
                 if i % self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
-            if self.args.debug:
+            if not self.args.debug:
                 self.eval_task(task=task, glob_iter=glob_iter, flag="local")
 
                 # need eval before data update

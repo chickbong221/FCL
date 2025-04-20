@@ -155,6 +155,7 @@ if __name__ == "__main__":
     cfdct['wandb'] = args.wandb
     cfdct['offlog'] = args.offlog
     cfdct['log'] = args.log
+    cfdct['debug'] = args.debug
 
     args = Namespace(**cfdct)
 
