@@ -215,20 +215,17 @@ class Server(object):
 
     # evaluate selected clients
     def eval(self, task, glob_iter, flag):
-        print("1")
         stats = self.test_metrics(task, glob_iter, flag=flag)
         stats_train = self.train_metrics(task=task)
-        print("2")
         test_acc = sum(stats[2])*1.0 / sum(stats[1])
         train_loss = sum(stats_train[2])*1.0 / sum(stats_train[1])
-        print("3")
         if flag == "global":
             subdir = os.path.join(self.save_folder, "Global")
             log_keys = {
                 "Global/Averaged Train Loss": train_loss,
                 "Global/Averaged Test Accuracy": test_acc,
-                # "Global/Averaged Angle": self.angle_value,
-                # "Global/Averaged Grads Angle": self.grads_angle_value,
+                "Global/Averaged Angle": self.angle_value,
+                "Global/Averaged Grads Angle": self.grads_angle_value,
             }
         elif flag == "local":
             subdir = os.path.join(self.save_folder, "Local")

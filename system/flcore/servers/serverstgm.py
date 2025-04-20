@@ -150,17 +150,17 @@ class FedSTGM(Server):
                     )
                     self.global_model.load_state_dict(copy.deepcopy(meta_weights))
 
-                    angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
-                    self.angle_value = statistics.mean(angle)
-
-                    angle_value = []
-                    for i in self.grads:
-                        for j in self.grads:
-                            angle_value = [self.cosine_similarity(i, j)]
-
-                    self.grads_angle_value = statistics.mean(angle_value)
                 else:
+                    model_origin = copy.deepcopy(self.global_model)
                     self.aggregate_parameters()
+
+                angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
+                self.angle_value = statistics.mean(angle)
+                angle_value = []
+                for grad_i in self.grads:
+                    for grad_j in self.grads:
+                        angle_value = [self.cosine_similarity(grad_i, grad_j)]
+                self.grads_angle_value = statistics.mean(angle_value)
 
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
