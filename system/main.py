@@ -143,6 +143,7 @@ if __name__ == "__main__":
     parser.add_argument('--wandb', type=bool, default=False, help='Log on wandb')
     parser.add_argument('--offlog', type=bool, default=False, help='Save wandb logger')
     parser.add_argument('--log', type=bool, default=False, help='Print logger')
+    parser.add_argument('--debug', type=bool, default=False, help='When use Debug, turn off forgetting')
 
     args = parser.parse_args()
 

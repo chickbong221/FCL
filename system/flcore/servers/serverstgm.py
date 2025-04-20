@@ -164,11 +164,12 @@ class FedSTGM(Server):
                 if i % self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
-            # # self.eval_task(task=task, glob_iter=glob_iter, flag="local")
-            #
-            # # need eval before data update
-            # self.send_models()
-            # # self.eval_task(task=task, glob_iter=glob_iter, flag="global")
+            if self.args.debug:
+                self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+
+                # need eval before data update
+                self.send_models()
+                self.eval_task(task=task, glob_iter=glob_iter, flag="global")
 
     def stgm_high(self, meta_weights, inner_weights, lr_meta):
         """
