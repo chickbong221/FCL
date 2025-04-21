@@ -1,9 +1,16 @@
 import time
 import torch
+import copy
 from flcore.clients.clientavg import clientAVG
 from flcore.servers.serverbase import Server
-from threading import Thread
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+from utils.model_utils import ParamDict
+from torch.nn.utils import vector_to_parameters, parameters_to_vector
+
+from torch.optim.lr_scheduler import StepLR
+import numpy as np
+
+import statistics
 
 
 class FedAvg(Server):
@@ -90,7 +97,18 @@ class FedAvg(Server):
                 # [t.join() for t in threads]
 
                 self.receive_models()
+                self.receive_grads()
+                model_origin = copy.deepcopy(self.global_model)
                 self.aggregate_parameters()
+
+                angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
+                self.angle_value = statistics.mean(angle)
+                angle_value = []
+                for grad_i in self.grads:
+                    for grad_j in self.grads:
+                        angle_value.append(self.cosine_similarity(grad_i, grad_j))
+                self.grads_angle_value = statistics.mean(angle_value)
+                print(f"grad angle: {self.grads_angle_value}")
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")

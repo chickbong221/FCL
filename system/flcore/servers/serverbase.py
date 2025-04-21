@@ -307,7 +307,7 @@ class Server(object):
         params2 = torch.cat([p.data.view(-1) for p in model2.parameters()])
 
         grad1 = params1 - prev_param
-        grad2 = params2
+        grad2 = params2 - prev_param
 
         cos_sim = torch.dot(grad1, grad2) / (torch.norm(grad1) * torch.norm(grad2))
         return cos_sim.item()
