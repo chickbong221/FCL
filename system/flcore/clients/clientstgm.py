@@ -96,7 +96,14 @@ class clientSTGM(Client):
                 if task_id == self.current_task:
                     pass
                 else:
-                    trainloader = self.load_train_data(task=task)
+                    if self.args.coreset:
+                        """ Load CoreSet """
+                        trainloader = self.load_train_data(task=task)
+                        """ Train CoreSet """
+
+                        """ Train ProtoNet """
+                    else:
+                        trainloader = self.load_train_data(task=task)
                     for epoch in range(max_local_epochs):
                         for i, (x, y) in enumerate(trainloader):
                             if type(x) == type([]):

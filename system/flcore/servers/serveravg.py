@@ -102,13 +102,16 @@ class FedAvg(Server):
                 self.aggregate_parameters()
 
                 angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
+                distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
                 self.angle_value = statistics.mean(angle)
+                self.distance_value = statistics.mean(distance)
                 angle_value = []
                 for grad_i in self.grads:
                     for grad_j in self.grads:
                         angle_value.append(self.cosine_similarity(grad_i, grad_j))
                 self.grads_angle_value = statistics.mean(angle_value)
                 print(f"grad angle: {self.grads_angle_value}")
+
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")

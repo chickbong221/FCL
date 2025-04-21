@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 import torch
+import torch.nn.functional as F
 import wandb
 import numpy as np
 import csv
@@ -64,6 +65,7 @@ class Server(object):
 
         self.angle_value = 0
         self.grads_angle_value = 0
+        self.distance_value = 0
 
     def set_clients(self, clientObj):
         for i in range(self.num_clients):
@@ -226,6 +228,7 @@ class Server(object):
                 "Global/Averaged Test Accuracy": test_acc,
                 "Global/Averaged Angle": self.angle_value,
                 "Global/Averaged Grads Angle": self.grads_angle_value,
+                "Global/Averaged Distance": self.distance_value,
             }
         elif flag == "local":
             subdir = os.path.join(self.save_folder, "Local")
@@ -317,3 +320,10 @@ class Server(object):
         params2 = torch.cat([p.data.view(-1) for p in model2.parameters()])
         cos_sim = torch.dot(params1, params2) / (torch.norm(params1) * torch.norm(params2))
         return cos_sim.item()
+
+    def distance(self, model1, model2):
+        params1 = torch.cat([p.data.view(-1) for p in model1.parameters()])
+        params2 = torch.cat([p.data.view(-1) for p in model2.parameters()])
+
+        mse = F.mse_loss(params1, params2)
+        return mse.item()

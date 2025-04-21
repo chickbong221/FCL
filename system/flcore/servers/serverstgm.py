@@ -153,9 +153,10 @@ class FedSTGM(Server):
                 else:
                     model_origin = copy.deepcopy(self.global_model)
                     self.aggregate_parameters()
-
                 angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
+                distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
                 self.angle_value = statistics.mean(angle)
+                self.distance_value = statistics.mean(distance)
                 angle_value = []
                 for grad_i in self.grads:
                     for grad_j in self.grads:
