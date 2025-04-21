@@ -66,6 +66,7 @@ class Server(object):
         self.angle_value = 0
         self.grads_angle_value = 0
         self.distance_value = 0
+        self.norm_value = 0
 
     def set_clients(self, clientObj):
         for i in range(self.num_clients):
@@ -229,6 +230,7 @@ class Server(object):
                 "Global/Averaged Angle": self.angle_value,
                 "Global/Averaged Grads Angle": self.grads_angle_value,
                 "Global/Averaged Distance": self.distance_value,
+                "Global/Averaged GradNorm": self.norm_value,
             }
         elif flag == "local":
             subdir = os.path.join(self.save_folder, "Local")
