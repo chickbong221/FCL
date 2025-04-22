@@ -17,8 +17,8 @@ def split_client_task(dataset, y_list, client_num, task_num, class_each_task, cl
     assert task_num*class_each_task<=len(set(y_list))
 
     if dataset=='EMNIST-letters-shuffle' and (not client_y_list):
-         random.shuffle(y_set)
-         y_set = y_set[:task_num*class_each_task]
+        random.shuffle(y_set)  
+        y_set = y_set[:task_num*class_each_task]
 
     if not client_y_list:
         client_y_list = []
@@ -133,7 +133,7 @@ if __name__=='__main__':
     parser.add_argument("--dataset", type=str, default="CIFAR100")
     parser.add_argument("--datadir", type=str, default="datasets")
     parser.add_argument("--data_split_file", type=str, default="datasets/data_split/CIFAR100_split.pkl")
-    parser.add_argument("--client_num", type=int, default=8)
+    parser.add_argument("--client_num", type=int, default=10)
     parser.add_argument("--task_num", type=int, default=50)
     parser.add_argument("--class_each_task", type=int, default=2)
     parser.add_argument("--class_split", type=int, default=2)

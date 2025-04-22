@@ -5,7 +5,6 @@ import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
-from tqdm import trange
 import random
 import numpy as np
 
@@ -17,56 +16,100 @@ METRICS = ['glob_acc', 'per_acc', 'glob_loss', 'per_loss', 'user_train_time', 's
 
 
 
-def read_user_data_PreciseFCL(index, data, dataset='', count_labels=False, task = 0):
-    '''
-    INPUT:
-        data: data[train/test][user_id][task_id]
+# def read_user_data_PreciseFCL(index, data, dataset='', count_labels=False, task = 0):
+#     '''
+#     INPUT:
+#         data: data[train/test][user_id][task_id]
     
-    OUTPUT:
-    str: name of user[i]
-    list of tuple: train data
-    list of tuple: test data
-    '''
+#     OUTPUT:
+#     str: name of user[i]
+#     list of tuple: train data
+#     list of tuple: test data
+#     '''
     
-    #data contains: clients, groups, train_data, test_data, proxy_data(optional)
-    #logger.info('attention: reversed!')
-    #task = 4-task
+#     #data contains: clients, groups, train_data, test_data, proxy_data(optional)
+#     #logger.info('attention: reversed!')
+#     #task = 4-task
     
-    id = data['client_names'][index]
-    train_data = data['train_data'][id]
-    test_data = data['test_data'][id]
+#     id = data['client_names'][index]
+#     train_data = data['train_data'][id]
+#     test_data = data['test_data'][id]
     
-    X_train, y_train = train_data['x'][task], torch.Tensor(train_data['y'][task]).type(torch.long)
-    X_test, y_test = test_data['x'][task], torch.Tensor(test_data['y'][task]).type(torch.long)
+#     X_train, y_train = train_data['x'][task], torch.Tensor(train_data['y'][task]).type(torch.long)
+#     X_test, y_test = test_data['x'][task], torch.Tensor(test_data['y'][task]).type(torch.long)
 
-    if 'EMNIST' in dataset or dataset=='MNIST-SVHN-FASHION':
-        train_data = [(x, y) for x, y in zip(X_train, y_train)] # a list of tuple
-        test_data = [(x, y) for x, y in zip(X_test, y_test)]
-    elif dataset=='CIFAR100':
-        img_size = 32
-        train_transform = transforms.Compose([transforms.RandomCrop((img_size, img_size), padding=4),
-                                    transforms.RandomHorizontalFlip(p=0.5),
-                                    transforms.ColorJitter(brightness=0.24705882352941178),
-                                    transforms.ToTensor(),
-                                    transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
-        test_transform = transforms.Compose([transforms.Resize(img_size), 
-                                             transforms.ToTensor(), 
-                                             transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
+#     if 'EMNIST' in dataset or dataset=='MNIST-SVHN-FASHION':
+#         train_data = [(x, y) for x, y in zip(X_train, y_train)] # a list of tuple
+#         test_data = [(x, y) for x, y in zip(X_test, y_test)]
+#     elif dataset=='CIFAR100':
+#         img_size = 32
+#         train_transform = transforms.Compose([transforms.RandomCrop((img_size, img_size), padding=4),
+#                                     transforms.RandomHorizontalFlip(p=0.5),
+#                                     transforms.ColorJitter(brightness=0.24705882352941178),
+#                                     transforms.ToTensor(),
+#                                     transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
+#         test_transform = transforms.Compose([transforms.Resize(img_size), 
+#                                              transforms.ToTensor(), 
+#                                              transforms.Normalize((0.5071, 0.4867, 0.4408), (0.2675, 0.2565, 0.2761))])
 
-        train_data = Transform_dataset(X_train, y_train, train_transform)
-        test_data = Transform_dataset(X_test, y_test, test_transform)
+#         train_data = Transform_dataset(X_train, y_train, train_transform)
+#         test_data = Transform_dataset(X_test, y_test, test_transform)
         
+#     if count_labels:
+#         label_info = {}
+#         unique_y, counts=torch.unique(y_train, return_counts=True)
+#         unique_y=unique_y.detach().numpy()
+#         counts=counts.detach().numpy()
+#         label_info['labels']=unique_y
+#         label_info['counts']=counts
+
+#         return id, train_data, test_data, label_info
+    
+#     return id, train_data, test_data
+
+def read_client_data_FCL_imagenet1k(index, task = 0, classes_per_task = 2, count_labels=False):
+    
+    # datadir = '/root/projects/FCL/dataset/imagenet1k224-classes/'
+    datadir = '/media/tuannl1/heavy_weight/FCL/FCL/dataset/imagenet1k-classes/'
+    class_order = np.load('/media/tuannl1/heavy_weight/FCL/FCL/dataset/class_order/class_order_imagenet1k.npy', allow_pickle=True)
+
+    class_order = class_order[index]
+
+    x_train, y_train, x_test, y_test = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task])
+    x_train, x_test = x_train.type(torch.FloatTensor), x_test.type(torch.FloatTensor)
+    y_train, y_test = torch.Tensor(y_train.type(torch.long)), torch.Tensor(y_test.type(torch.long))
+    train_data = Transform_dataset(x_train, y_train)
+    test_data = Transform_dataset(x_test, y_test)
+
     if count_labels:
         label_info = {}
         unique_y, counts=torch.unique(y_train, return_counts=True)
+        # print("unique_y: " + str(unique_y))
         unique_y=unique_y.detach().numpy()
         counts=counts.detach().numpy()
         label_info['labels']=unique_y
         label_info['counts']=counts
 
-        return id, train_data, test_data, label_info
+        return train_data, test_data, label_info
     
-    return id, train_data, test_data
+    return train_data, test_data
+    
+def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per_class = 100):
+    x_train, y_train, x_test, y_test = [], [], [], []
+    
+    for _class in classes:
+        data_file = datadir + str(_class) + '.npy'
+        data = np.load(data_file)
+        
+        x_train.append(data[:train_images_per_class])
+        x_test.append(data[train_images_per_class:])
+        y_train.append(np.array([_class] * train_images_per_class))
+        y_test.append(np.array([_class] * test_images_per_class))
+    x_train = torch.tensor(np.concatenate(x_train))
+    x_test = torch.tensor(np.concatenate(x_test))
+    y_train = torch.from_numpy(np.concatenate(y_train))
+    y_test = torch.from_numpy(np.concatenate(y_test))
+    return x_train, y_train, x_test, y_test
 
 def get_dataset_name(dataset):
     dataset=dataset.lower()

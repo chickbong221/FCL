@@ -13,7 +13,7 @@ class User:
     Base class for users in federated learning.
     """
     def __init__(
-            self, args, id, model, train_data, test_data, use_adam=False, my_model_name = None, unique_labels=None):
+            self, args, id, model, train_data, test_data, use_adam=False, my_model_name = None):
         
         
         self.model = copy.deepcopy(model)
@@ -43,7 +43,7 @@ class User:
         self.test_data_per_task.append(self.test_data)
         
         
-        self.unique_labels = unique_labels
+        # self.unique_labels = unique_labels
 
         # those parameters are for personalized federated learning.
         self.local_model = copy.deepcopy(list(self.model.parameters()))

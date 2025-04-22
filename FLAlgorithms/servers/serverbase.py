@@ -244,6 +244,9 @@ class Server:
         glob_acc = test_correct/num_samples
         glob_loss = loss/num_samples
 
+        print(f"glob_acc: {glob_acc}")
+        print(f"glob_loss: {glob_loss}")
+
         if self.args.wandb:
             wandb.log({
                 "Global/Average_Accuracy(Current_task)": glob_acc*100,

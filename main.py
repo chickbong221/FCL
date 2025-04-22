@@ -41,12 +41,10 @@ def main(args):
     
     logger.info("Finished training.")
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--wandb", type=bool, default=False)
-    parser.add_argument("--dataset", type=str, default="CIFAR100", choices=['EMNIST-Letters', 'EMNIST-Letters-malicious', 
-                                                                            'EMNIST-Letters-shuffle', 'CIFAR100', 'MNIST-SVHN-FASHION'])
+    parser.add_argument("--dataset", type=str, default="CIFAR100")
     parser.add_argument("--datadir", type=str, default="datasets")
     parser.add_argument("--data_split_file", type=str, default="data_split/CIFAR100_split.pkl")
     parser.add_argument("--malicious_client_num", type=int, default=0)
@@ -68,13 +66,13 @@ if __name__ == "__main__":
     parser.add_argument('--use_lastflow_x', action="store_true") 
 
     # optimizer
-    parser.add_argument('--lr', type=float, default=1e-05)  
+    parser.add_argument('--lr', type=float, default=1e-04)  
     parser.add_argument('--beta1', type=float, default=0.9)
     parser.add_argument('--beta2', type=float, default=0.999)
     parser.add_argument('--weight-decay', type=float, default=0)    
 
-    parser.add_argument("--num_glob_iters", type=int, default=500)
-    parser.add_argument("--local_epochs", type=int, default=1)
+    parser.add_argument("--num_glob_iters", type=int, default=60)
+    parser.add_argument("--local_epochs", type=int, default=100)
 
     parser.add_argument("--train", type=int, default=1, choices=[0,1])
     parser.add_argument("--batch_size", type=int, default=64)
@@ -82,8 +80,8 @@ if __name__ == "__main__":
     parser.add_argument("--device", type=str, default="cuda", choices=["cpu","cuda"], help="run device (cpu | cuda)")
     
     # model
-    parser.add_argument('--c-channel-size', type=int, default=64)
-    parser.add_argument("--model", type=str, default="Resnet8_plus", choices=["Resnet8_plus","S_ConvNet","Resnet12_plus","Resnet18_plus"])
+    parser.add_argument('--c_channel_size', type=int, default=64)
+    parser.add_argument("--model", type=str, default="S_ConvNet", choices=["Resnet8_plus","S_ConvNet","Resnet12_plus","Resnet18_plus"])
 
     # run routine
     parser.add_argument('--target_dir_name', type = str, default="output_dir", help="the dim of the solution")

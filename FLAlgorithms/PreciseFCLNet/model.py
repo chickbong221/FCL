@@ -65,9 +65,9 @@ class PreciseModel(nn.Module):
             if self.algorithm=='PreciseFCL':
                 self.flow = self.get_1d_nflow_model(feature_dim=int(np.prod(self.xa_shape)), hidden_feature=512, context_feature=self.num_classes,
                                                 num_layers=4)
-        elif dataset=='CIFAR100':
+        elif dataset=='CIFAR100' or dataset=='IMAGENET1k':
             self.xa_shape=[256]
-            self.num_classes = 100
+            self.num_classes = 1000
             if args.model == "Resnet18_plus":
                 self.xa_shape=[512]
                 self.classifier = Resnet18_plus(32, xa_dim=int(np.prod(self.xa_shape)), num_classes=self.num_classes)

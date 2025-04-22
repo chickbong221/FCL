@@ -22,10 +22,9 @@ class UserPreciseFCL(User):
                  label_info,
                  use_adam=False,
                  my_model_name = None,
-                 unique_labels=None,
                  classifier_head_list=[]
                 ):
-        super().__init__(args, id, model, train_data, test_data, use_adam=use_adam, my_model_name = my_model_name, unique_labels=unique_labels)
+        super().__init__(args, id, model, train_data, test_data, use_adam=use_adam, my_model_name = my_model_name)
         
         self.label_info=label_info
         self.args = args
@@ -158,6 +157,9 @@ class UserPreciseFCL(User):
                 f"Client_{self.id}/Test_Accuracy": evaluate_acc*100.0,
                 f"Client_{self.id}/Test_Loss": evaluate_loss,
             }, step=glob_iter)
+
+        # print(f"acc: {evaluate_acc}")
+        # print(f"loss: {evaluate_loss} \n")
 
         if verbose:
             logger.info(("Training for user {:d}; Acc: {:.2f} %%; c_loss: {:.4f}; kd_loss: {:.4f}; flow_prob_mean: {:.4f}; "

@@ -7,7 +7,7 @@ from FLAlgorithms.users.userPreciseFCL import UserPreciseFCL
 from FLAlgorithms.servers.serverbase import Server
 from FLAlgorithms.PreciseFCLNet.model import PreciseModel
 from utils.dataset import get_dataset
-from utils.model_utils import read_user_data_PreciseFCL
+from utils.model_utils import read_client_data_FCL_imagenet1k
 from utils.utils import str_in_list
 
 class FedPrecise(Server):
@@ -16,10 +16,10 @@ class FedPrecise(Server):
 
         self.classifier_global_mode = args.classifier_global_mode
         self.use_adam = 'adam' in self.algorithm.lower()
-        self.data = get_dataset(args, args.dataset, args.datadir, args.data_split_file)
-        self.unique_labels = self.data['unique_labels']
+        # self.data = get_dataset(args, args.dataset, args.datadir, args.data_split_file)
+        # self.unique_labels = self.data['unique_labels']
         self.classifier_head_list = ['classifier.fc_classifier', 'classifier.fc2']
-        self.init_users(self.data, args, model)
+        self.init_users(args, model)
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         logger.info('Using device: ' + str(device))
@@ -32,14 +32,14 @@ class FedPrecise(Server):
         self.model.to(device)
         # self.gaussian_intiailize(self.model.classifier)
 
-    def init_users(self, data, args, model):
+    def init_users(self, args, model):
         self.users = []
-        total_users = len(data['client_names'])
+        total_users = 10
         for i in range(total_users):
-            id, train_data, test_data, label_info = read_user_data_PreciseFCL(i, data, dataset=args.dataset, count_labels=True, task = 0)
+            train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
 
             # count total samples (accumulative)
-            self.total_train_samples +=len(train_data)
+            self.total_train_samples += len(train_data)
             self.total_test_samples += len(test_data)
             id = i
             
@@ -54,7 +54,6 @@ class FedPrecise(Server):
                 label_info,
                 use_adam=self.use_adam,
                 my_model_name='fedprecise',
-                unique_labels=self.unique_labels,
                 classifier_head_list=self.classifier_head_list,
             )
             
@@ -70,7 +69,7 @@ class FedPrecise(Server):
     
     def train(self, args):
         
-        N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
+        N_TASKS = 500
         print(N_TASKS)
         
         for task in range(N_TASKS):
@@ -102,9 +101,9 @@ class FedPrecise(Server):
                 torch.cuda.empty_cache()
                 for i in range(len(self.users)):
 
-                    id, train_data, test_data, label_info = read_user_data_PreciseFCL(i, self.data, dataset=args.dataset, count_labels=True, task = task)
+                    train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
 
-                    # update dataset 
+                    # update dataset
                     # assert (self.users[i].id == id)
                     self.users[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
 
@@ -129,7 +128,25 @@ class FedPrecise(Server):
             #         logger.info("classes so far: " + str(u.classes_so_far))
             #     logger.info("available labels for the Client: " + str(self.users[-1].available_labels))
             #     logger.info("available labels (current) for the Client: " + str(self.users[-1].available_labels_current))
-            
+
+            # if True:
+            #     log_file = "log.txt"  # Đặt tên file log
+
+            #     with open(log_file, "a") as f:  # Mở file ở chế độ append
+
+            #         f.write("task: " + str(task) + "\n")
+            #         for u in self.users:
+            #             log_msg = "classes so far: " + str(u.classes_so_far)
+            #             print(log_msg)
+            #             f.write(log_msg + "\n")  # Ghi vào file
+
+            #         log_msg = "available labels for the Client: " + str(self.users[-1].available_labels)
+            #         print(log_msg)
+            #         f.write(log_msg + "\n")  # Ghi vào file
+
+            #         log_msg = "available labels (current) for the Client: " + str(self.users[-1].available_labels_current)
+            #         print(log_msg)
+            #         f.write(log_msg + "\n")  # Ghi vào file
 
             # 1. server side:
             # 2. user side:
@@ -141,7 +158,7 @@ class FedPrecise(Server):
                 
                 glob_iter = glob_iter_task + (epoch_per_task) * task
 
-                logger.info("\n\n------------- Round number: %d | Current task: %d -------------\n\n"%(glob_iter, task))
+                logger.info("\n\n------------- Round number: %d | Current task: %d -------------\n\n"%(glob_iter_task, task))
 
                 # select users
                 # self.selected_users, self.user_idxs=self.select_users(glob_iter, self.num_users, return_idx=True)
@@ -176,6 +193,10 @@ class FedPrecise(Server):
                         verbose=verbose)
                         
                     # self.pickle_record['train'][glob_iter][user_id] = user_result
+
+                # self.evaluate_all_(glob_iter=glob_iter, matrix=True, personal=False)
+                self.test_global_model_current(glob_iter=glob_iter)
+                # self.test_global_model_so_far(glob_iter=glob_iter)
 
                 # log training time
                 curr_timestamp = time.time()

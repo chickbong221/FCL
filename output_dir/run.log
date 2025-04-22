@@ -1,0 +1,4217 @@
+I0324 16:16:16.176776 3663982 main.py:24] 
+
+         [ Start training iteration, seed: 2571 ]           
+
+
+I0324 16:16:16.219449 3663982 model.py:117] Classifier model has 1.390 M parameters; Flow model has 0.000 M parameters
+I0324 16:16:39.472536 3663982 serverPreciseFCL.py:67] Number of Train/Test samples: 6400/1600
+I0324 16:16:39.472654 3663982 serverPreciseFCL.py:68] Data from 8 users in total.
+I0324 16:16:39.472680 3663982 serverPreciseFCL.py:69] Finished creating FedAvg server.
+I0324 16:16:39.514380 3663982 serverPreciseFCL.py:25] Using device: cuda
+50
+I0324 16:16:39.730216 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 0 | Current task: 0 -------------
+
+
+I0324 16:16:39.730317 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0
+glob_loss: 0.07185872333745162
+I0324 16:16:41.624936 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 1 | Current task: 0 -------------
+
+
+I0324 16:16:41.625040 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0
+glob_loss: 0.07176499472310145
+I0324 16:16:42.949664 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 2 | Current task: 0 -------------
+
+
+I0324 16:16:42.949769 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.001953125
+glob_loss: 0.07166976574808359
+I0324 16:16:44.311812 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 3 | Current task: 0 -------------
+
+
+I0324 16:16:44.311913 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.028645833333333332
+glob_loss: 0.07157059572637081
+I0324 16:16:45.647394 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 4 | Current task: 0 -------------
+
+
+I0324 16:16:45.647493 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.052083333333333336
+glob_loss: 0.0714622950181365
+I0324 16:16:46.977424 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 5 | Current task: 0 -------------
+
+
+I0324 16:16:46.977540 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.059244791666666664
+glob_loss: 0.07134288363158703
+I0324 16:16:48.346403 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 6 | Current task: 0 -------------
+
+
+I0324 16:16:48.346510 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.061848958333333336
+glob_loss: 0.07120916371544202
+I0324 16:16:49.699088 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 7 | Current task: 0 -------------
+
+
+I0324 16:16:49.699191 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06575520833333333
+glob_loss: 0.07105975008259217
+I0324 16:16:51.041279 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 8 | Current task: 0 -------------
+
+
+I0324 16:16:51.041384 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.0708913275351127
+I0324 16:16:52.382067 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 9 | Current task: 0 -------------
+
+
+I0324 16:16:52.382173 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.0707030991713206
+I0324 16:16:53.722273 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 10 | Current task: 0 -------------
+
+
+I0324 16:16:53.722377 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.0704903993755579
+I0324 16:16:55.064570 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 11 | Current task: 0 -------------
+
+
+I0324 16:16:55.064675 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.07025059219449759
+I0324 16:16:56.396368 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 12 | Current task: 0 -------------
+
+
+I0324 16:16:56.396473 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09375
+glob_loss: 0.06998364192744096
+I0324 16:16:57.724253 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 13 | Current task: 0 -------------
+
+
+I0324 16:16:57.724357 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.06968880879382293
+I0324 16:16:59.058085 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 14 | Current task: 0 -------------
+
+
+I0324 16:16:59.058189 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.06937444334228833
+I0324 16:17:00.442658 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 15 | Current task: 0 -------------
+
+
+I0324 16:17:00.442760 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.06903373698393504
+I0324 16:17:01.761528 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 16 | Current task: 0 -------------
+
+
+I0324 16:17:01.761632 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.06867682592322429
+I0324 16:17:03.143939 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 17 | Current task: 0 -------------
+
+
+I0324 16:17:03.144044 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.06831024835507075
+I0324 16:17:04.517778 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 18 | Current task: 0 -------------
+
+
+I0324 16:17:04.517881 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0703125
+glob_loss: 0.06793462485074997
+I0324 16:17:05.901216 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 19 | Current task: 0 -------------
+
+
+I0324 16:17:05.901320 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.06756295108546813
+I0324 16:17:07.277846 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 20 | Current task: 0 -------------
+
+
+I0324 16:17:07.277947 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.0672019353757302
+I0324 16:17:08.651971 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 21 | Current task: 0 -------------
+
+
+I0324 16:17:08.652079 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.06685803116609652
+I0324 16:17:10.029286 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 22 | Current task: 0 -------------
+
+
+I0324 16:17:10.029389 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.0665271036947767
+I0324 16:17:11.417146 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 23 | Current task: 0 -------------
+
+
+I0324 16:17:11.417251 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.06620568859701355
+I0324 16:17:12.806099 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 24 | Current task: 0 -------------
+
+
+I0324 16:17:12.806205 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.06591831659898162
+I0324 16:17:14.168445 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 25 | Current task: 0 -------------
+
+
+I0324 16:17:14.168549 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.06566699935744207
+I0324 16:17:15.510472 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 26 | Current task: 0 -------------
+
+
+I0324 16:17:15.510581 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.06545775150880218
+I0324 16:17:16.876905 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 27 | Current task: 0 -------------
+
+
+I0324 16:17:16.877010 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.06527366364995639
+I0324 16:17:18.227078 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 28 | Current task: 0 -------------
+
+
+I0324 16:17:18.227192 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07486979166666667
+glob_loss: 0.0651250082689027
+I0324 16:17:19.558792 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 29 | Current task: 0 -------------
+
+
+I0324 16:17:19.558894 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.080078125
+glob_loss: 0.06499514946093161
+I0324 16:17:20.874967 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 30 | Current task: 0 -------------
+
+
+I0324 16:17:20.875069 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07942708333333333
+glob_loss: 0.06488212710246444
+I0324 16:17:22.169080 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 31 | Current task: 0 -------------
+
+
+I0324 16:17:22.169181 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.076171875
+glob_loss: 0.06478960330908497
+I0324 16:17:23.460249 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 32 | Current task: 0 -------------
+
+
+I0324 16:17:23.460346 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.06469739088788629
+I0324 16:17:24.752823 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 33 | Current task: 0 -------------
+
+
+I0324 16:17:24.752924 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07747395833333333
+glob_loss: 0.06462529829392831
+I0324 16:17:26.066145 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 34 | Current task: 0 -------------
+
+
+I0324 16:17:26.066252 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07291666666666667
+glob_loss: 0.06455539508412282
+I0324 16:17:27.391729 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 35 | Current task: 0 -------------
+
+
+I0324 16:17:27.391834 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.06448530110840996
+I0324 16:17:28.702597 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 36 | Current task: 0 -------------
+
+
+I0324 16:17:28.702702 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.06441847623015444
+I0324 16:17:30.061546 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 37 | Current task: 0 -------------
+
+
+I0324 16:17:30.061653 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06575520833333333
+glob_loss: 0.06436477648094296
+I0324 16:17:31.380424 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 38 | Current task: 0 -------------
+
+
+I0324 16:17:31.380528 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.0642995599967738
+I0324 16:17:32.674994 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 39 | Current task: 0 -------------
+
+
+I0324 16:17:32.675100 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.06425624480471015
+I0324 16:17:34.001355 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 40 | Current task: 0 -------------
+
+
+I0324 16:17:34.001474 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.06425067068388064
+I0324 16:17:35.342187 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 41 | Current task: 0 -------------
+
+
+I0324 16:17:35.342289 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.06426855052510898
+I0324 16:17:36.673806 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 42 | Current task: 0 -------------
+
+
+I0324 16:17:36.673910 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.06428621460994084
+I0324 16:17:37.939532 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 43 | Current task: 0 -------------
+
+
+I0324 16:17:37.939646 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.0642827395349741
+I0324 16:17:39.252433 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 44 | Current task: 0 -------------
+
+
+I0324 16:17:39.252536 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.06423501716926694
+I0324 16:17:40.536938 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 45 | Current task: 0 -------------
+
+
+I0324 16:17:40.537043 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.06418604589998722
+I0324 16:17:41.914763 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 46 | Current task: 0 -------------
+
+
+I0324 16:17:41.914864 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.06416657877465089
+I0324 16:17:43.251832 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 47 | Current task: 0 -------------
+
+
+I0324 16:17:43.251935 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.06415979548667868
+I0324 16:17:44.582776 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 48 | Current task: 0 -------------
+
+
+I0324 16:17:44.582877 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.06417629045123856
+I0324 16:17:45.902253 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 49 | Current task: 0 -------------
+
+
+I0324 16:17:45.902360 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.06419033976271749
+I0324 16:17:47.229998 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 50 | Current task: 0 -------------
+
+
+I0324 16:17:47.230104 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06418367909888427
+I0324 16:17:48.567595 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 51 | Current task: 0 -------------
+
+
+I0324 16:17:48.567706 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.06418439513072371
+I0324 16:17:49.914861 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 52 | Current task: 0 -------------
+
+
+I0324 16:17:49.914961 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.0642011109739542
+I0324 16:17:51.281706 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 53 | Current task: 0 -------------
+
+
+I0324 16:17:51.281806 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.06420520832762122
+I0324 16:17:52.638200 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 54 | Current task: 0 -------------
+
+
+I0324 16:17:52.638302 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.06421164252484839
+I0324 16:17:53.962070 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 55 | Current task: 0 -------------
+
+
+I0324 16:17:53.962171 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.06421849752465884
+I0324 16:17:55.306749 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 56 | Current task: 0 -------------
+
+
+I0324 16:17:55.306851 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.06423397827893496
+I0324 16:17:56.683857 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 57 | Current task: 0 -------------
+
+
+I0324 16:17:56.683957 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.06424363950888316
+I0324 16:17:58.054416 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 58 | Current task: 0 -------------
+
+
+I0324 16:17:58.054518 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.06424704256157081
+I0324 16:17:59.413706 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 59 | Current task: 0 -------------
+
+
+I0324 16:17:59.413805 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.06425967222700517
+I0324 16:18:00.779753 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 60 | Current task: 0 -------------
+
+
+I0324 16:18:00.779862 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.06426287566622098
+I0324 16:18:02.132977 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 61 | Current task: 0 -------------
+
+
+I0324 16:18:02.133079 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09440104166666667
+glob_loss: 0.06425923217708866
+I0324 16:18:03.503855 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 62 | Current task: 0 -------------
+
+
+I0324 16:18:03.503956 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09375
+glob_loss: 0.06425715455164512
+I0324 16:18:04.814813 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 63 | Current task: 0 -------------
+
+
+I0324 16:18:04.814916 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06428298943986495
+I0324 16:18:06.156716 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 64 | Current task: 0 -------------
+
+
+I0324 16:18:06.156813 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.0642734772215287
+I0324 16:18:07.550274 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 65 | Current task: 0 -------------
+
+
+I0324 16:18:07.550376 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.095703125
+glob_loss: 0.06425413815304637
+I0324 16:18:08.892297 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 66 | Current task: 0 -------------
+
+
+I0324 16:18:08.892396 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09765625
+glob_loss: 0.06423203352217872
+I0324 16:18:10.268722 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 67 | Current task: 0 -------------
+
+
+I0324 16:18:10.268825 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.06420665591334303
+I0324 16:18:11.578120 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 68 | Current task: 0 -------------
+
+
+I0324 16:18:11.578221 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.06418335950002074
+I0324 16:18:12.915716 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 69 | Current task: 0 -------------
+
+
+I0324 16:18:12.915815 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09309895833333333
+glob_loss: 0.06420184765011072
+I0324 16:18:14.237584 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 70 | Current task: 0 -------------
+
+
+I0324 16:18:14.237687 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09309895833333333
+glob_loss: 0.06424138477693002
+I0324 16:18:15.576943 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 71 | Current task: 0 -------------
+
+
+I0324 16:18:15.577044 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09309895833333333
+glob_loss: 0.06426624084512393
+I0324 16:18:16.925442 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 72 | Current task: 0 -------------
+
+
+I0324 16:18:16.925552 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10091145833333333
+glob_loss: 0.06426089241479833
+I0324 16:18:18.266808 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 73 | Current task: 0 -------------
+
+
+I0324 16:18:18.266925 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10091145833333333
+glob_loss: 0.06423931304986279
+I0324 16:18:19.617461 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 74 | Current task: 0 -------------
+
+
+I0324 16:18:19.617571 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09895833333333333
+glob_loss: 0.06425102334469557
+I0324 16:18:20.972409 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 75 | Current task: 0 -------------
+
+
+I0324 16:18:20.972509 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10416666666666667
+glob_loss: 0.06424105477829774
+I0324 16:18:22.343724 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 76 | Current task: 0 -------------
+
+
+I0324 16:18:22.343828 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.103515625
+glob_loss: 0.06421850342303514
+I0324 16:18:23.705106 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 77 | Current task: 0 -------------
+
+
+I0324 16:18:23.705208 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10546875
+glob_loss: 0.06421547600378592
+I0324 16:18:25.081493 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 78 | Current task: 0 -------------
+
+
+I0324 16:18:25.081595 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10481770833333333
+glob_loss: 0.06420200504362583
+I0324 16:18:26.434501 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 79 | Current task: 0 -------------
+
+
+I0324 16:18:26.434602 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10546875
+glob_loss: 0.0641684156532089
+I0324 16:18:27.776184 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 80 | Current task: 0 -------------
+
+
+I0324 16:18:27.776285 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10677083333333333
+glob_loss: 0.064169535258164
+I0324 16:18:29.125508 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 81 | Current task: 0 -------------
+
+
+I0324 16:18:29.125608 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10221354166666667
+glob_loss: 0.06418138773490985
+I0324 16:18:30.491760 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 82 | Current task: 0 -------------
+
+
+I0324 16:18:30.491859 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10481770833333333
+glob_loss: 0.06414705887436867
+I0324 16:18:31.850891 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 83 | Current task: 0 -------------
+
+
+I0324 16:18:31.850988 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.107421875
+glob_loss: 0.06411821286504467
+I0324 16:18:33.194853 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 84 | Current task: 0 -------------
+
+
+I0324 16:18:33.194957 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.103515625
+glob_loss: 0.06413239194080234
+I0324 16:18:34.539429 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 85 | Current task: 0 -------------
+
+
+I0324 16:18:34.539528 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.1015625
+glob_loss: 0.06413655107220013
+I0324 16:18:35.917845 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 86 | Current task: 0 -------------
+
+
+I0324 16:18:35.917944 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.10221354166666667
+glob_loss: 0.06413704622536898
+I0324 16:18:37.276555 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 87 | Current task: 0 -------------
+
+
+I0324 16:18:37.276656 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09895833333333333
+glob_loss: 0.06412898702546954
+I0324 16:18:38.634490 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 88 | Current task: 0 -------------
+
+
+I0324 16:18:38.634593 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09635416666666667
+glob_loss: 0.06413029289493959
+I0324 16:18:39.995617 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 89 | Current task: 0 -------------
+
+
+I0324 16:18:39.995725 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09700520833333333
+glob_loss: 0.06410983391106129
+I0324 16:18:41.356283 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 90 | Current task: 0 -------------
+
+
+I0324 16:18:41.356384 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09700520833333333
+glob_loss: 0.06407327577471733
+I0324 16:18:42.725606 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 91 | Current task: 0 -------------
+
+
+I0324 16:18:42.725710 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09895833333333333
+glob_loss: 0.06401637988165021
+I0324 16:18:44.078909 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 92 | Current task: 0 -------------
+
+
+I0324 16:18:44.079010 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09765625
+glob_loss: 0.06399532531698544
+I0324 16:18:45.407045 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 93 | Current task: 0 -------------
+
+
+I0324 16:18:45.407146 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09895833333333333
+glob_loss: 0.06401407020166516
+I0324 16:18:46.772911 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 94 | Current task: 0 -------------
+
+
+I0324 16:18:46.773012 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09505208333333333
+glob_loss: 0.06401040420557062
+I0324 16:18:48.115513 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 95 | Current task: 0 -------------
+
+
+I0324 16:18:48.115614 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.095703125
+glob_loss: 0.06400599408273895
+I0324 16:18:49.439689 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 96 | Current task: 0 -------------
+
+
+I0324 16:18:49.439794 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.095703125
+glob_loss: 0.06399634387344122
+I0324 16:18:50.753246 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 97 | Current task: 0 -------------
+
+
+I0324 16:18:50.753347 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09440104166666667
+glob_loss: 0.06400505422304074
+I0324 16:18:52.100738 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 98 | Current task: 0 -------------
+
+
+I0324 16:18:52.100838 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09440104166666667
+glob_loss: 0.06401355533550183
+I0324 16:18:53.421522 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 99 | Current task: 0 -------------
+
+
+I0324 16:18:53.421620 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.06402479810640216
+I0324 16:18:54.773159 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 100 | Current task: 0 -------------
+
+
+I0324 16:18:54.773259 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09440104166666667
+glob_loss: 0.06400514316434662
+I0324 16:18:56.110901 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 101 | Current task: 0 -------------
+
+
+I0324 16:18:56.111002 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09375
+glob_loss: 0.06398986109221975
+I0324 16:18:57.458639 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 102 | Current task: 0 -------------
+
+
+I0324 16:18:57.458742 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.06394130658979218
+I0324 16:18:58.816016 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 103 | Current task: 0 -------------
+
+
+I0324 16:18:58.816113 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.06389626643309991
+I0324 16:19:00.189538 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 104 | Current task: 0 -------------
+
+
+I0324 16:19:00.189635 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.06390960607677698
+I0324 16:19:01.530635 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 105 | Current task: 0 -------------
+
+
+I0324 16:19:01.530737 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.0639268869223694
+I0324 16:19:02.917145 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 106 | Current task: 0 -------------
+
+
+I0324 16:19:02.917254 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06387034027526776
+I0324 16:19:04.254020 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 107 | Current task: 0 -------------
+
+
+I0324 16:19:04.254126 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.0638306491697828
+I0324 16:19:05.592676 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 108 | Current task: 0 -------------
+
+
+I0324 16:19:05.592779 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06383467031021912
+I0324 16:19:06.916959 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 109 | Current task: 0 -------------
+
+
+I0324 16:19:06.917068 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.06383238825947046
+I0324 16:19:08.252526 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 110 | Current task: 0 -------------
+
+
+I0324 16:19:08.252638 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0859375
+glob_loss: 0.06383443701391418
+I0324 16:19:09.587803 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 111 | Current task: 0 -------------
+
+
+I0324 16:19:09.587910 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.06388705472151439
+I0324 16:19:10.916852 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 112 | Current task: 0 -------------
+
+
+I0324 16:19:10.916960 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.06386963153878848
+I0324 16:19:12.203638 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 113 | Current task: 0 -------------
+
+
+I0324 16:19:12.203744 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.06381014315411448
+I0324 16:19:13.502774 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 114 | Current task: 0 -------------
+
+
+I0324 16:19:13.502887 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.0637850087756912
+I0324 16:19:14.847784 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 115 | Current task: 0 -------------
+
+
+I0324 16:19:14.847882 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0859375
+glob_loss: 0.06380953546613455
+I0324 16:19:16.172095 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 116 | Current task: 0 -------------
+
+
+I0324 16:19:16.172194 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06378829525783658
+I0324 16:19:17.453756 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 117 | Current task: 0 -------------
+
+
+I0324 16:19:17.453859 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.06376814221342404
+I0324 16:19:18.739587 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 118 | Current task: 0 -------------
+
+
+I0324 16:19:18.739689 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.06375982069099943
+I0324 16:19:20.042420 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 119 | Current task: 0 -------------
+
+
+I0324 16:19:20.042522 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.06370828642199437
+I0324 16:19:21.391207 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 120 | Current task: 0 -------------
+
+
+I0324 16:19:21.391310 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06369952453921239
+I0324 16:19:22.700649 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 121 | Current task: 0 -------------
+
+
+I0324 16:19:22.700752 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.06363926129415631
+I0324 16:19:24.053225 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 122 | Current task: 0 -------------
+
+
+I0324 16:19:24.053326 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.06357648363336921
+I0324 16:19:25.390792 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 123 | Current task: 0 -------------
+
+
+I0324 16:19:25.390895 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.06357967853546143
+I0324 16:19:26.701263 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 124 | Current task: 0 -------------
+
+
+I0324 16:19:26.701364 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.06361335407321651
+I0324 16:19:28.006457 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 125 | Current task: 0 -------------
+
+
+I0324 16:19:28.006561 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.06356626050546765
+I0324 16:19:29.327267 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 126 | Current task: 0 -------------
+
+
+I0324 16:19:29.327367 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.06355833681300282
+I0324 16:19:30.664017 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 127 | Current task: 0 -------------
+
+
+I0324 16:19:30.664117 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.06355083764841159
+I0324 16:19:32.016983 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 128 | Current task: 0 -------------
+
+
+I0324 16:19:32.017111 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.06354859657585621
+I0324 16:19:33.459671 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 129 | Current task: 0 -------------
+
+
+I0324 16:19:33.459776 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06355878881489237
+I0324 16:19:34.866133 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 130 | Current task: 0 -------------
+
+
+I0324 16:19:34.866238 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06351443550859888
+I0324 16:19:36.236100 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 131 | Current task: 0 -------------
+
+
+I0324 16:19:36.236202 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.06348229230691989
+I0324 16:19:37.543277 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 132 | Current task: 0 -------------
+
+
+I0324 16:19:37.543384 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06347372739886244
+I0324 16:19:38.846415 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 133 | Current task: 0 -------------
+
+
+I0324 16:19:38.846517 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06342860792453091
+I0324 16:19:40.151061 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 134 | Current task: 0 -------------
+
+
+I0324 16:19:40.151157 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06341574744631846
+I0324 16:19:41.502414 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 135 | Current task: 0 -------------
+
+
+I0324 16:19:41.502516 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.06337734218686819
+I0324 16:19:42.889063 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 136 | Current task: 0 -------------
+
+
+I0324 16:19:42.889165 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06333908236895998
+I0324 16:19:44.281051 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 137 | Current task: 0 -------------
+
+
+I0324 16:19:44.281149 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06333388900384307
+I0324 16:19:45.594662 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 138 | Current task: 0 -------------
+
+
+I0324 16:19:45.594763 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.06333535568167765
+I0324 16:19:46.911373 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 139 | Current task: 0 -------------
+
+
+I0324 16:19:46.911474 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06327007167662184
+I0324 16:19:48.255507 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 140 | Current task: 0 -------------
+
+
+I0324 16:19:48.255615 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.0632652376467983
+I0324 16:19:49.564241 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 141 | Current task: 0 -------------
+
+
+I0324 16:19:49.564346 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.06331285275518894
+I0324 16:19:50.885733 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 142 | Current task: 0 -------------
+
+
+I0324 16:19:50.885834 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06329882269104321
+I0324 16:19:52.246097 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 143 | Current task: 0 -------------
+
+
+I0324 16:19:52.246200 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.06325813103467226
+I0324 16:19:53.629479 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 144 | Current task: 0 -------------
+
+
+I0324 16:19:53.629583 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06326191127300262
+I0324 16:19:54.922831 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 145 | Current task: 0 -------------
+
+
+I0324 16:19:54.922941 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06322106005003054
+I0324 16:19:56.264439 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 146 | Current task: 0 -------------
+
+
+I0324 16:19:56.264548 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06323411703730623
+I0324 16:19:57.588569 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 147 | Current task: 0 -------------
+
+
+I0324 16:19:57.588675 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.06323430237049858
+I0324 16:19:58.927278 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 148 | Current task: 0 -------------
+
+
+I0324 16:19:58.927389 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.06315541205306847
+I0324 16:20:00.276594 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 149 | Current task: 0 -------------
+
+
+I0324 16:20:00.276699 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.06314280318717162
+I0324 16:20:01.600742 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 150 | Current task: 0 -------------
+
+
+I0324 16:20:01.600847 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.06318498635664582
+I0324 16:20:02.908264 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 151 | Current task: 0 -------------
+
+
+I0324 16:20:02.908369 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.06317253534992535
+I0324 16:20:04.242552 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 152 | Current task: 0 -------------
+
+
+I0324 16:20:04.242657 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08463541666666667
+glob_loss: 0.0631248705709974
+I0324 16:20:05.601672 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 153 | Current task: 0 -------------
+
+
+I0324 16:20:05.601777 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.06308227653304736
+I0324 16:20:06.912188 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 154 | Current task: 0 -------------
+
+
+I0324 16:20:06.912290 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.06304479871566097
+I0324 16:20:08.271826 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 155 | Current task: 0 -------------
+
+
+I0324 16:20:08.271937 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.0630377596244216
+I0324 16:20:09.627753 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 156 | Current task: 0 -------------
+
+
+I0324 16:20:09.627861 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.06300761333356301
+I0324 16:20:10.987232 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 157 | Current task: 0 -------------
+
+
+I0324 16:20:10.987334 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.06296535131211083
+I0324 16:20:12.304011 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 158 | Current task: 0 -------------
+
+
+I0324 16:20:12.304112 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.0629343621743222
+I0324 16:20:13.603837 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 159 | Current task: 0 -------------
+
+
+I0324 16:20:13.603939 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.0629127089244624
+I0324 16:20:14.922429 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 160 | Current task: 0 -------------
+
+
+I0324 16:20:14.922532 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.0628882849899431
+I0324 16:20:16.292817 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 161 | Current task: 0 -------------
+
+
+I0324 16:20:16.292918 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.06289533122132222
+I0324 16:20:17.672085 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 162 | Current task: 0 -------------
+
+
+I0324 16:20:17.672190 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.0628831940703094
+I0324 16:20:19.003128 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 163 | Current task: 0 -------------
+
+
+I0324 16:20:19.003235 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.0628092138407131
+I0324 16:20:20.342509 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 164 | Current task: 0 -------------
+
+
+I0324 16:20:20.342612 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.06282138017316659
+I0324 16:20:21.657358 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 165 | Current task: 0 -------------
+
+
+I0324 16:20:21.657471 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06281745961556832
+I0324 16:20:23.015260 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 166 | Current task: 0 -------------
+
+
+I0324 16:20:23.015364 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06273043341934681
+I0324 16:20:24.304320 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 167 | Current task: 0 -------------
+
+
+I0324 16:20:24.304419 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06268724876766403
+I0324 16:20:25.631650 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 168 | Current task: 0 -------------
+
+
+I0324 16:20:25.631753 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09440104166666667
+glob_loss: 0.06266220829760034
+I0324 16:20:26.951974 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 169 | Current task: 0 -------------
+
+
+I0324 16:20:26.952075 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.06264505814760923
+I0324 16:20:28.279912 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 170 | Current task: 0 -------------
+
+
+I0324 16:20:28.280015 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.06263282988220453
+I0324 16:20:29.586444 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 171 | Current task: 0 -------------
+
+
+I0324 16:20:29.586543 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.06261869783823688
+I0324 16:20:30.909050 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 172 | Current task: 0 -------------
+
+
+I0324 16:20:30.909155 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.06257134024053812
+I0324 16:20:32.290665 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 173 | Current task: 0 -------------
+
+
+I0324 16:20:32.290766 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.06257475477953751
+I0324 16:20:33.642660 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 174 | Current task: 0 -------------
+
+
+I0324 16:20:33.642765 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.0625517088919878
+I0324 16:20:34.986942 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 175 | Current task: 0 -------------
+
+
+I0324 16:20:34.987046 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.095703125
+glob_loss: 0.06256097306807835
+I0324 16:20:36.279451 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 176 | Current task: 0 -------------
+
+
+I0324 16:20:36.279554 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09635416666666667
+glob_loss: 0.06258329873283704
+I0324 16:20:37.655272 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 177 | Current task: 0 -------------
+
+
+I0324 16:20:37.655379 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.06255232108136018
+I0324 16:20:38.981517 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 178 | Current task: 0 -------------
+
+
+I0324 16:20:38.981622 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.06255164571727316
+I0324 16:20:40.288276 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 179 | Current task: 0 -------------
+
+
+I0324 16:20:40.288382 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.06254873300592105
+I0324 16:20:41.572874 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 180 | Current task: 0 -------------
+
+
+I0324 16:20:41.572978 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.06249747099354863
+I0324 16:20:42.906484 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 181 | Current task: 0 -------------
+
+
+I0324 16:20:42.906589 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.06248100334778428
+I0324 16:20:44.235525 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 182 | Current task: 0 -------------
+
+
+I0324 16:20:44.235625 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.0625094948336482
+I0324 16:20:45.594084 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 183 | Current task: 0 -------------
+
+
+I0324 16:20:45.594191 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.0625442083304127
+I0324 16:20:46.947185 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 184 | Current task: 0 -------------
+
+
+I0324 16:20:46.947289 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.06256046301374833
+I0324 16:20:48.281404 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 185 | Current task: 0 -------------
+
+
+I0324 16:20:48.281525 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.095703125
+glob_loss: 0.0624953379544119
+I0324 16:20:49.605229 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 186 | Current task: 0 -------------
+
+
+I0324 16:20:49.605333 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09440104166666667
+glob_loss: 0.06246981397271156
+I0324 16:20:50.981864 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 187 | Current task: 0 -------------
+
+
+I0324 16:20:50.981966 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09505208333333333
+glob_loss: 0.062433795227358736
+I0324 16:20:52.337728 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 188 | Current task: 0 -------------
+
+
+I0324 16:20:52.337831 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09375
+glob_loss: 0.06240220771481594
+I0324 16:20:53.706491 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 189 | Current task: 0 -------------
+
+
+I0324 16:20:53.706594 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.06236969012146195
+I0324 16:20:55.057651 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 190 | Current task: 0 -------------
+
+
+I0324 16:20:55.057752 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.06236132032548388
+I0324 16:20:56.354453 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 191 | Current task: 0 -------------
+
+
+I0324 16:20:56.354558 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06237023106465737
+I0324 16:20:57.676521 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 192 | Current task: 0 -------------
+
+
+I0324 16:20:57.676628 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.06234022555872798
+I0324 16:20:58.980759 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 193 | Current task: 0 -------------
+
+
+I0324 16:20:58.980860 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.06231832612926761
+I0324 16:21:00.302548 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 194 | Current task: 0 -------------
+
+
+I0324 16:21:00.302655 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.06231819248447815
+I0324 16:21:01.636431 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 195 | Current task: 0 -------------
+
+
+I0324 16:21:01.636531 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.0623107481126984
+I0324 16:21:02.954320 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 196 | Current task: 0 -------------
+
+
+I0324 16:21:02.954424 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0859375
+glob_loss: 0.06227294386674961
+I0324 16:21:04.266746 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 197 | Current task: 0 -------------
+
+
+I0324 16:21:04.266846 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.0622561026054124
+I0324 16:21:05.594094 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 198 | Current task: 0 -------------
+
+
+I0324 16:21:05.594197 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.06228212546557188
+I0324 16:21:06.963585 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 199 | Current task: 0 -------------
+
+
+I0324 16:21:06.963692 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.062263813335448503
+I0324 16:21:08.296794 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 200 | Current task: 0 -------------
+
+
+I0324 16:21:08.296906 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.062209433720757566
+I0324 16:21:09.647104 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 201 | Current task: 0 -------------
+
+
+I0324 16:21:09.647208 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08463541666666667
+glob_loss: 0.06216130964457989
+I0324 16:21:11.056930 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 202 | Current task: 0 -------------
+
+
+I0324 16:21:11.057032 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.062126079419006906
+I0324 16:21:12.444125 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 203 | Current task: 0 -------------
+
+
+I0324 16:21:12.444235 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.0621224717857937
+I0324 16:21:13.812342 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 204 | Current task: 0 -------------
+
+
+I0324 16:21:13.812445 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.06207567205031713
+I0324 16:21:15.199867 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 205 | Current task: 0 -------------
+
+
+I0324 16:21:15.199970 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08268229166666667
+glob_loss: 0.0620781226704518
+I0324 16:21:16.584722 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 206 | Current task: 0 -------------
+
+
+I0324 16:21:16.584827 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.062019573679814734
+I0324 16:21:17.979666 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 207 | Current task: 0 -------------
+
+
+I0324 16:21:17.979770 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07291666666666667
+glob_loss: 0.06196086403603355
+I0324 16:21:19.310451 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 208 | Current task: 0 -------------
+
+
+I0324 16:21:19.310555 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08268229166666667
+glob_loss: 0.06200102064758539
+I0324 16:21:20.681114 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 209 | Current task: 0 -------------
+
+
+I0324 16:21:20.681217 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.06200505249823133
+I0324 16:21:22.057462 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 210 | Current task: 0 -------------
+
+
+I0324 16:21:22.057565 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.061965836212038994
+I0324 16:21:23.427287 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 211 | Current task: 0 -------------
+
+
+I0324 16:21:23.427387 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.061888374077777066
+I0324 16:21:24.788918 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 212 | Current task: 0 -------------
+
+
+I0324 16:21:24.789018 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.061847415597488485
+I0324 16:21:26.167225 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 213 | Current task: 0 -------------
+
+
+I0324 16:21:26.167328 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.061879127441594996
+I0324 16:21:27.551448 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 214 | Current task: 0 -------------
+
+
+I0324 16:21:27.551549 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.061856948460141815
+I0324 16:21:28.926954 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 215 | Current task: 0 -------------
+
+
+I0324 16:21:28.927056 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.06179916330923637
+I0324 16:21:30.297286 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 216 | Current task: 0 -------------
+
+
+I0324 16:21:30.297384 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.06177038714910547
+I0324 16:21:31.616024 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 217 | Current task: 0 -------------
+
+
+I0324 16:21:31.616126 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.06172924007599553
+I0324 16:21:32.931289 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 218 | Current task: 0 -------------
+
+
+I0324 16:21:32.931386 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07486979166666667
+glob_loss: 0.06175344344228506
+I0324 16:21:34.251249 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 219 | Current task: 0 -------------
+
+
+I0324 16:21:34.251351 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.06174445804208517
+I0324 16:21:35.540828 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 220 | Current task: 0 -------------
+
+
+I0324 16:21:35.540933 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.0616946731073161
+I0324 16:21:36.858665 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 221 | Current task: 0 -------------
+
+
+I0324 16:21:36.858763 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.061627811286598444
+I0324 16:21:38.185794 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 222 | Current task: 0 -------------
+
+
+I0324 16:21:38.185909 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.06162961277489861
+I0324 16:21:39.513200 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 223 | Current task: 0 -------------
+
+
+I0324 16:21:39.513312 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.076171875
+glob_loss: 0.061613551496217646
+I0324 16:21:40.843188 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 224 | Current task: 0 -------------
+
+
+I0324 16:21:40.843298 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07942708333333333
+glob_loss: 0.06158472939083973
+I0324 16:21:42.160652 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 225 | Current task: 0 -------------
+
+
+I0324 16:21:42.160756 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.061562763371815286
+I0324 16:21:43.519524 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 226 | Current task: 0 -------------
+
+
+I0324 16:21:43.519642 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.06150089669972658
+I0324 16:21:44.890011 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 227 | Current task: 0 -------------
+
+
+I0324 16:21:44.890119 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.06148017989471555
+I0324 16:21:46.216310 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 228 | Current task: 0 -------------
+
+
+I0324 16:21:46.216412 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0703125
+glob_loss: 0.06147280024985472
+I0324 16:21:47.573826 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 229 | Current task: 0 -------------
+
+
+I0324 16:21:47.573925 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0703125
+glob_loss: 0.06147528082753221
+I0324 16:21:48.924482 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 230 | Current task: 0 -------------
+
+
+I0324 16:21:48.924589 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.064453125
+glob_loss: 0.06142308625082175
+I0324 16:21:50.242030 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 231 | Current task: 0 -------------
+
+
+I0324 16:21:50.242141 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.061421549723794065
+I0324 16:21:51.574668 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 232 | Current task: 0 -------------
+
+
+I0324 16:21:51.574784 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.06140648868555824
+I0324 16:21:52.930221 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 233 | Current task: 0 -------------
+
+
+I0324 16:21:52.930328 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.06138315765808026
+I0324 16:21:54.301272 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 234 | Current task: 0 -------------
+
+
+I0324 16:21:54.301378 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.061378564996023975
+I0324 16:21:55.668750 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 235 | Current task: 0 -------------
+
+
+I0324 16:21:55.668856 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.06143000706409415
+I0324 16:21:57.017358 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 236 | Current task: 0 -------------
+
+
+I0324 16:21:57.017481 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.080078125
+glob_loss: 0.06143296556547284
+I0324 16:21:58.344373 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 237 | Current task: 0 -------------
+
+
+I0324 16:21:58.344480 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.06140708861251672
+I0324 16:21:59.657886 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 238 | Current task: 0 -------------
+
+
+I0324 16:21:59.657988 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.06136978634943565
+I0324 16:22:00.984686 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 239 | Current task: 0 -------------
+
+
+I0324 16:22:00.984792 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.06132972690587243
+I0324 16:22:02.343054 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 240 | Current task: 0 -------------
+
+
+I0324 16:22:02.343158 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0625
+glob_loss: 0.06130099172393481
+I0324 16:22:03.630007 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 241 | Current task: 0 -------------
+
+
+I0324 16:22:03.630108 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06575520833333333
+glob_loss: 0.061341561997930207
+I0324 16:22:04.968186 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 242 | Current task: 0 -------------
+
+
+I0324 16:22:04.968288 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.06135227189709743
+I0324 16:22:06.296185 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 243 | Current task: 0 -------------
+
+
+I0324 16:22:06.296285 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.06129729049280286
+I0324 16:22:07.647545 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 244 | Current task: 0 -------------
+
+
+I0324 16:22:07.647649 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07291666666666667
+glob_loss: 0.061306370267023645
+I0324 16:22:08.984713 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 245 | Current task: 0 -------------
+
+
+I0324 16:22:08.984819 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.061310526449233294
+I0324 16:22:10.302410 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 246 | Current task: 0 -------------
+
+
+I0324 16:22:10.302514 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06575520833333333
+glob_loss: 0.06128561186293761
+I0324 16:22:11.658484 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 247 | Current task: 0 -------------
+
+
+I0324 16:22:11.658588 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06510416666666667
+glob_loss: 0.06126060523092747
+I0324 16:22:12.997799 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 248 | Current task: 0 -------------
+
+
+I0324 16:22:12.997902 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.061848958333333336
+glob_loss: 0.06121159826094905
+I0324 16:22:14.319285 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 249 | Current task: 0 -------------
+
+
+I0324 16:22:14.319389 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.059244791666666664
+glob_loss: 0.06116957186410824
+I0324 16:22:15.645655 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 250 | Current task: 0 -------------
+
+
+I0324 16:22:15.645754 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.06116698309779167
+I0324 16:22:16.944941 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 251 | Current task: 0 -------------
+
+
+I0324 16:22:16.945048 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.0611803208788236
+I0324 16:22:18.297555 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 252 | Current task: 0 -------------
+
+
+I0324 16:22:18.297659 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.061170917159567274
+I0324 16:22:19.646770 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 253 | Current task: 0 -------------
+
+
+I0324 16:22:19.646875 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.061155650609483324
+I0324 16:22:21.020173 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 254 | Current task: 0 -------------
+
+
+I0324 16:22:21.020279 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.06114345695823431
+I0324 16:22:22.346833 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 255 | Current task: 0 -------------
+
+
+I0324 16:22:22.346935 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.061848958333333336
+glob_loss: 0.06109580242385467
+I0324 16:22:23.707999 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 256 | Current task: 0 -------------
+
+
+I0324 16:22:23.708136 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.061848958333333336
+glob_loss: 0.06109495802472035
+I0324 16:22:25.011591 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 257 | Current task: 0 -------------
+
+
+I0324 16:22:25.011692 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.06109169513608018
+I0324 16:22:26.359872 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 258 | Current task: 0 -------------
+
+
+I0324 16:22:26.359972 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.064453125
+glob_loss: 0.061043758100519575
+I0324 16:22:27.758794 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 259 | Current task: 0 -------------
+
+
+I0324 16:22:27.758910 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06315104166666667
+glob_loss: 0.061016134452074766
+I0324 16:22:29.097715 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 260 | Current task: 0 -------------
+
+
+I0324 16:22:29.097831 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.06104025415455302
+I0324 16:22:30.440583 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 261 | Current task: 0 -------------
+
+
+I0324 16:22:30.440685 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.06103566319992145
+I0324 16:22:31.732349 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 262 | Current task: 0 -------------
+
+
+I0324 16:22:31.732459 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.057291666666666664
+glob_loss: 0.060998752557983
+I0324 16:22:33.074337 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 263 | Current task: 0 -------------
+
+
+I0324 16:22:33.074442 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.061848958333333336
+glob_loss: 0.060981781066705786
+I0324 16:22:34.377199 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 264 | Current task: 0 -------------
+
+
+I0324 16:22:34.377302 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06510416666666667
+glob_loss: 0.060956066784759365
+I0324 16:22:35.711463 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 265 | Current task: 0 -------------
+
+
+I0324 16:22:35.711564 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.061197916666666664
+glob_loss: 0.06089636962860823
+I0324 16:22:37.000518 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 266 | Current task: 0 -------------
+
+
+I0324 16:22:37.000634 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0625
+glob_loss: 0.060917448718100786
+I0324 16:22:38.369569 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 267 | Current task: 0 -------------
+
+
+I0324 16:22:38.369678 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.060924152533213295
+I0324 16:22:39.715086 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 268 | Current task: 0 -------------
+
+
+I0324 16:22:39.715190 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.0608901383044819
+I0324 16:22:41.069359 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 269 | Current task: 0 -------------
+
+
+I0324 16:22:41.069469 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.0608892187786599
+I0324 16:22:42.407823 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 270 | Current task: 0 -------------
+
+
+I0324 16:22:42.407932 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.060869949869811535
+I0324 16:22:43.757286 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 271 | Current task: 0 -------------
+
+
+I0324 16:22:43.757391 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.060829085763543844
+I0324 16:22:45.067674 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 272 | Current task: 0 -------------
+
+
+I0324 16:22:45.067778 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.0608104521719118
+I0324 16:22:46.403570 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 273 | Current task: 0 -------------
+
+
+I0324 16:22:46.403676 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.06082683025548855
+I0324 16:22:47.714985 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 274 | Current task: 0 -------------
+
+
+I0324 16:22:47.715088 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.061848958333333336
+glob_loss: 0.06077643344178796
+I0324 16:22:49.062785 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 275 | Current task: 0 -------------
+
+
+I0324 16:22:49.062889 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06575520833333333
+glob_loss: 0.06074912752956152
+I0324 16:22:50.386073 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 276 | Current task: 0 -------------
+
+
+I0324 16:22:50.386188 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.060743340446303286
+I0324 16:22:51.708912 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 277 | Current task: 0 -------------
+
+
+I0324 16:22:51.709018 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.06071814537669221
+I0324 16:22:53.044320 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 278 | Current task: 0 -------------
+
+
+I0324 16:22:53.044423 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.06067852536216378
+I0324 16:22:54.401763 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 279 | Current task: 0 -------------
+
+
+I0324 16:22:54.401865 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.06066723090286056
+I0324 16:22:55.722253 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 280 | Current task: 0 -------------
+
+
+I0324 16:22:55.722356 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.060637494859596096
+I0324 16:22:57.028676 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 281 | Current task: 0 -------------
+
+
+I0324 16:22:57.028782 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.06058670952916145
+I0324 16:22:58.358904 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 282 | Current task: 0 -------------
+
+
+I0324 16:22:58.359007 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.064453125
+glob_loss: 0.06056676618754864
+I0324 16:22:59.652444 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 283 | Current task: 0 -------------
+
+
+I0324 16:22:59.652549 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06315104166666667
+glob_loss: 0.060527834886064134
+I0324 16:23:01.015904 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 284 | Current task: 0 -------------
+
+
+I0324 16:23:01.016009 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06380208333333333
+glob_loss: 0.06049882806837559
+I0324 16:23:02.371629 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 285 | Current task: 0 -------------
+
+
+I0324 16:23:02.371743 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.06051789068927368
+I0324 16:23:03.718056 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 286 | Current task: 0 -------------
+
+
+I0324 16:23:03.718163 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06575520833333333
+glob_loss: 0.06053777349491914
+I0324 16:23:05.079877 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 287 | Current task: 0 -------------
+
+
+I0324 16:23:05.079992 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.06050833982105056
+I0324 16:23:06.415444 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 288 | Current task: 0 -------------
+
+
+I0324 16:23:06.415551 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.06044291611760855
+I0324 16:23:07.742300 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 289 | Current task: 0 -------------
+
+
+I0324 16:23:07.742409 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.06043421089028319
+I0324 16:23:09.102712 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 290 | Current task: 0 -------------
+
+
+I0324 16:23:09.102817 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06315104166666667
+glob_loss: 0.06041473320995768
+I0324 16:23:10.453486 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 291 | Current task: 0 -------------
+
+
+I0324 16:23:10.453588 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.064453125
+glob_loss: 0.06043438706547022
+I0324 16:23:11.758501 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 292 | Current task: 0 -------------
+
+
+I0324 16:23:11.758596 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.060377850818137326
+I0324 16:23:13.074360 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 293 | Current task: 0 -------------
+
+
+I0324 16:23:13.074476 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07161458333333333
+glob_loss: 0.060356871069719396
+I0324 16:23:14.433928 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 294 | Current task: 0 -------------
+
+
+I0324 16:23:14.434033 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06315104166666667
+glob_loss: 0.06032994668930769
+I0324 16:23:15.738890 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 295 | Current task: 0 -------------
+
+
+I0324 16:23:15.738997 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.060296299401670694
+I0324 16:23:17.054574 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 296 | Current task: 0 -------------
+
+
+I0324 16:23:17.054679 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.060250481590628624
+I0324 16:23:18.388947 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 297 | Current task: 0 -------------
+
+
+I0324 16:23:18.389051 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06380208333333333
+glob_loss: 0.060230338790764414
+I0324 16:23:19.772119 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 298 | Current task: 0 -------------
+
+
+I0324 16:23:19.772221 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.060261046358694635
+I0324 16:23:21.158448 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 299 | Current task: 0 -------------
+
+
+I0324 16:23:21.158558 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.06029210239648819
+I0324 16:23:22.468762 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 300 | Current task: 0 -------------
+
+
+I0324 16:23:22.468868 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.06030053816114863
+I0324 16:23:23.818259 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 301 | Current task: 0 -------------
+
+
+I0324 16:23:23.818371 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07291666666666667
+glob_loss: 0.060296377477546535
+I0324 16:23:25.232877 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 302 | Current task: 0 -------------
+
+
+I0324 16:23:25.232981 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.06025805541624626
+I0324 16:23:26.623090 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 303 | Current task: 0 -------------
+
+
+I0324 16:23:26.623188 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.06022744718939066
+I0324 16:23:27.977131 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 304 | Current task: 0 -------------
+
+
+I0324 16:23:27.977238 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.060183434591939054
+I0324 16:23:29.291833 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 305 | Current task: 0 -------------
+
+
+I0324 16:23:29.291943 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.060161468417694174
+I0324 16:23:30.625865 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 306 | Current task: 0 -------------
+
+
+I0324 16:23:30.625979 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06315104166666667
+glob_loss: 0.06011870798344413
+I0324 16:23:31.936295 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 307 | Current task: 0 -------------
+
+
+I0324 16:23:31.936398 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06380208333333333
+glob_loss: 0.06008923271050056
+I0324 16:23:33.260632 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 308 | Current task: 0 -------------
+
+
+I0324 16:23:33.260738 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.06008636858314276
+I0324 16:23:34.630972 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 309 | Current task: 0 -------------
+
+
+I0324 16:23:34.631075 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06575520833333333
+glob_loss: 0.060059601751466594
+I0324 16:23:35.996010 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 310 | Current task: 0 -------------
+
+
+I0324 16:23:35.996113 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.06003451254218817
+I0324 16:23:37.304445 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 311 | Current task: 0 -------------
+
+
+I0324 16:23:37.304546 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.060055361750225224
+I0324 16:23:38.654152 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 312 | Current task: 0 -------------
+
+
+I0324 16:23:38.654252 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0703125
+glob_loss: 0.060027902169773974
+I0324 16:23:39.987977 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 313 | Current task: 0 -------------
+
+
+I0324 16:23:39.988080 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.060015240839372076
+I0324 16:23:41.294670 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 314 | Current task: 0 -------------
+
+
+I0324 16:23:41.294771 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07291666666666667
+glob_loss: 0.05998374676952759
+I0324 16:23:42.621044 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 315 | Current task: 0 -------------
+
+
+I0324 16:23:42.621143 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.060003484754512705
+I0324 16:23:43.902321 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 316 | Current task: 0 -------------
+
+
+I0324 16:23:43.902421 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06380208333333333
+glob_loss: 0.05998007316763202
+I0324 16:23:45.234198 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 317 | Current task: 0 -------------
+
+
+I0324 16:23:45.234298 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.064453125
+glob_loss: 0.059973787516355515
+I0324 16:23:46.603516 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 318 | Current task: 0 -------------
+
+
+I0324 16:23:46.603612 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.05992898841698965
+I0324 16:23:47.930529 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 319 | Current task: 0 -------------
+
+
+I0324 16:23:47.930634 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.05990116701771816
+I0324 16:23:49.270010 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 320 | Current task: 0 -------------
+
+
+I0324 16:23:49.270112 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07942708333333333
+glob_loss: 0.05986196066563328
+I0324 16:23:50.562243 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 321 | Current task: 0 -------------
+
+
+I0324 16:23:50.562347 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.05984044152622422
+I0324 16:23:51.904230 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 322 | Current task: 0 -------------
+
+
+I0324 16:23:51.904345 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06315104166666667
+glob_loss: 0.059813733833531536
+I0324 16:23:53.221842 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 323 | Current task: 0 -------------
+
+
+I0324 16:23:53.221964 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06510416666666667
+glob_loss: 0.05982833681628108
+I0324 16:23:54.548654 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 324 | Current task: 0 -------------
+
+
+I0324 16:23:54.548777 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.05977808916941285
+I0324 16:23:55.921335 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 325 | Current task: 0 -------------
+
+
+I0324 16:23:55.921437 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07161458333333333
+glob_loss: 0.059772060407946505
+I0324 16:23:57.251323 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 326 | Current task: 0 -------------
+
+
+I0324 16:23:57.251427 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.05977481432879964
+I0324 16:23:58.559142 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 327 | Current task: 0 -------------
+
+
+I0324 16:23:58.559245 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.05972857726737857
+I0324 16:23:59.880635 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 328 | Current task: 0 -------------
+
+
+I0324 16:23:59.880738 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07291666666666667
+glob_loss: 0.05969724012538791
+I0324 16:24:01.229182 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 329 | Current task: 0 -------------
+
+
+I0324 16:24:01.229288 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0703125
+glob_loss: 0.059703570790588856
+I0324 16:24:02.544655 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 330 | Current task: 0 -------------
+
+
+I0324 16:24:02.544759 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.05970707815140486
+I0324 16:24:03.871216 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 331 | Current task: 0 -------------
+
+
+I0324 16:24:03.871318 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07486979166666667
+glob_loss: 0.05963165887321035
+I0324 16:24:05.199185 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 332 | Current task: 0 -------------
+
+
+I0324 16:24:05.199293 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.05959585945432385
+I0324 16:24:06.643818 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 333 | Current task: 0 -------------
+
+
+I0324 16:24:06.643931 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.059613719737778105
+I0324 16:24:08.019783 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 334 | Current task: 0 -------------
+
+
+I0324 16:24:08.019889 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.05962363087261716
+I0324 16:24:09.321909 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 335 | Current task: 0 -------------
+
+
+I0324 16:24:09.322013 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06510416666666667
+glob_loss: 0.05959727320199212
+I0324 16:24:10.627410 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 336 | Current task: 0 -------------
+
+
+I0324 16:24:10.627512 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06640625
+glob_loss: 0.05955970815072457
+I0324 16:24:11.954435 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 337 | Current task: 0 -------------
+
+
+I0324 16:24:11.954540 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.059530004703750215
+I0324 16:24:13.285652 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 338 | Current task: 0 -------------
+
+
+I0324 16:24:13.285752 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.05953717433537046
+I0324 16:24:14.598968 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 339 | Current task: 0 -------------
+
+
+I0324 16:24:14.599071 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.05949999221290151
+I0324 16:24:15.922176 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 340 | Current task: 0 -------------
+
+
+I0324 16:24:15.922278 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.05948534359534582
+I0324 16:24:17.237388 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 341 | Current task: 0 -------------
+
+
+I0324 16:24:17.237498 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.05946018872782588
+I0324 16:24:18.615671 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 342 | Current task: 0 -------------
+
+
+I0324 16:24:18.615776 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.059436216950416565
+I0324 16:24:19.998926 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 343 | Current task: 0 -------------
+
+
+I0324 16:24:19.999028 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.05942837567999959
+I0324 16:24:21.306642 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 344 | Current task: 0 -------------
+
+
+I0324 16:24:21.306741 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.0593828484416008
+I0324 16:24:22.647084 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 345 | Current task: 0 -------------
+
+
+I0324 16:24:22.647186 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06770833333333333
+glob_loss: 0.05938186744848887
+I0324 16:24:23.993658 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 346 | Current task: 0 -------------
+
+
+I0324 16:24:23.993764 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.05933897212768594
+I0324 16:24:25.322016 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 347 | Current task: 0 -------------
+
+
+I0324 16:24:25.322135 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.059229691978544
+I0324 16:24:26.644227 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 348 | Current task: 0 -------------
+
+
+I0324 16:24:26.644342 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.059170055047919355
+I0324 16:24:27.968978 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 349 | Current task: 0 -------------
+
+
+I0324 16:24:27.969086 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.05915671136851112
+I0324 16:24:29.287180 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 350 | Current task: 0 -------------
+
+
+I0324 16:24:29.287281 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.059180800492564835
+I0324 16:24:30.596603 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 351 | Current task: 0 -------------
+
+
+I0324 16:24:30.596707 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.059204185071090855
+I0324 16:24:31.911837 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 352 | Current task: 0 -------------
+
+
+I0324 16:24:31.911940 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07161458333333333
+glob_loss: 0.059189094696193933
+I0324 16:24:33.241561 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 353 | Current task: 0 -------------
+
+
+I0324 16:24:33.241662 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.059152310248464346
+I0324 16:24:34.576627 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 354 | Current task: 0 -------------
+
+
+I0324 16:24:34.576732 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.05910318484529853
+I0324 16:24:35.947532 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 355 | Current task: 0 -------------
+
+
+I0324 16:24:35.947634 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.059066088714947305
+I0324 16:24:37.283306 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 356 | Current task: 0 -------------
+
+
+I0324 16:24:37.283411 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07486979166666667
+glob_loss: 0.05904383848731717
+I0324 16:24:38.641419 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 357 | Current task: 0 -------------
+
+
+I0324 16:24:38.641535 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07747395833333333
+glob_loss: 0.05906106252223253
+I0324 16:24:39.954598 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 358 | Current task: 0 -------------
+
+
+I0324 16:24:39.954697 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07161458333333333
+glob_loss: 0.05904716346412897
+I0324 16:24:41.255843 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 359 | Current task: 0 -------------
+
+
+I0324 16:24:41.255950 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.059038900304585695
+I0324 16:24:42.562182 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 360 | Current task: 0 -------------
+
+
+I0324 16:24:42.562291 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.05900838195035855
+I0324 16:24:43.937946 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 361 | Current task: 0 -------------
+
+
+I0324 16:24:43.938059 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07486979166666667
+glob_loss: 0.05898071484019359
+I0324 16:24:45.315578 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 362 | Current task: 0 -------------
+
+
+I0324 16:24:45.315685 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.05893762828782201
+I0324 16:24:46.658070 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 363 | Current task: 0 -------------
+
+
+I0324 16:24:46.658174 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.078125
+glob_loss: 0.058868550385038056
+I0324 16:24:47.982832 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 364 | Current task: 0 -------------
+
+
+I0324 16:24:47.982938 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.05882103353117903
+I0324 16:24:49.354918 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 365 | Current task: 0 -------------
+
+
+I0324 16:24:49.355022 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.068359375
+glob_loss: 0.05878271643693248
+I0324 16:24:50.721602 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 366 | Current task: 0 -------------
+
+
+I0324 16:24:50.721708 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.058807792297254004
+I0324 16:24:52.138355 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 367 | Current task: 0 -------------
+
+
+I0324 16:24:52.138459 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07747395833333333
+glob_loss: 0.0588260474614799
+I0324 16:24:53.453970 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 368 | Current task: 0 -------------
+
+
+I0324 16:24:53.454074 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07486979166666667
+glob_loss: 0.05883066480358442
+I0324 16:24:54.773762 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 369 | Current task: 0 -------------
+
+
+I0324 16:24:54.773870 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07291666666666667
+glob_loss: 0.058808062536021076
+I0324 16:24:56.095860 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 370 | Current task: 0 -------------
+
+
+I0324 16:24:56.095961 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.05873970128595829
+I0324 16:24:57.501394 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 371 | Current task: 0 -------------
+
+
+I0324 16:24:57.501506 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07161458333333333
+glob_loss: 0.0586686497554183
+I0324 16:24:58.834485 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 372 | Current task: 0 -------------
+
+
+I0324 16:24:58.834584 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07096354166666667
+glob_loss: 0.058666101191192865
+I0324 16:25:00.195027 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 373 | Current task: 0 -------------
+
+
+I0324 16:25:00.195126 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0703125
+glob_loss: 0.058658045871804156
+I0324 16:25:01.518302 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 374 | Current task: 0 -------------
+
+
+I0324 16:25:01.518405 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.05864169883231322
+I0324 16:25:02.903076 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 375 | Current task: 0 -------------
+
+
+I0324 16:25:02.903175 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.05868827442949017
+I0324 16:25:04.238957 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 376 | Current task: 0 -------------
+
+
+I0324 16:25:04.239058 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.072265625
+glob_loss: 0.05867130743960539
+I0324 16:25:05.571448 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 377 | Current task: 0 -------------
+
+
+I0324 16:25:05.571549 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06705729166666667
+glob_loss: 0.05860613069186608
+I0324 16:25:06.902277 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 378 | Current task: 0 -------------
+
+
+I0324 16:25:06.902379 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.058630708449830614
+I0324 16:25:08.266472 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 379 | Current task: 0 -------------
+
+
+I0324 16:25:08.266576 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.05857027104745308
+I0324 16:25:09.623011 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 380 | Current task: 0 -------------
+
+
+I0324 16:25:09.623117 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0703125
+glob_loss: 0.05854309598604838
+I0324 16:25:10.936200 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 381 | Current task: 0 -------------
+
+
+I0324 16:25:10.936299 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.078125
+glob_loss: 0.058566657826304436
+I0324 16:25:12.278843 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 382 | Current task: 0 -------------
+
+
+I0324 16:25:12.278954 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.058536354607592024
+I0324 16:25:13.731296 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 383 | Current task: 0 -------------
+
+
+I0324 16:25:13.731413 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.05846811551600695
+I0324 16:25:15.103649 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 384 | Current task: 0 -------------
+
+
+I0324 16:25:15.103759 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06966145833333333
+glob_loss: 0.05845009566595157
+I0324 16:25:16.427946 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 385 | Current task: 0 -------------
+
+
+I0324 16:25:16.428052 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.076171875
+glob_loss: 0.058462563126037516
+I0324 16:25:17.726726 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 386 | Current task: 0 -------------
+
+
+I0324 16:25:17.726829 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.078125
+glob_loss: 0.0584287882472078
+I0324 16:25:19.068309 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 387 | Current task: 0 -------------
+
+
+I0324 16:25:19.068413 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.05836082762107253
+I0324 16:25:20.452498 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 388 | Current task: 0 -------------
+
+
+I0324 16:25:20.452610 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.05834061341981093
+I0324 16:25:21.789060 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 389 | Current task: 0 -------------
+
+
+I0324 16:25:21.789162 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07747395833333333
+glob_loss: 0.058355888507018484
+I0324 16:25:23.111876 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 390 | Current task: 0 -------------
+
+
+I0324 16:25:23.111978 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0703125
+glob_loss: 0.05836372341339787
+I0324 16:25:24.453679 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 391 | Current task: 0 -------------
+
+
+I0324 16:25:24.453783 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.06901041666666667
+glob_loss: 0.05835806640485922
+I0324 16:25:25.781021 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 392 | Current task: 0 -------------
+
+
+I0324 16:25:25.781123 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07161458333333333
+glob_loss: 0.058327285728106894
+I0324 16:25:27.132432 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 393 | Current task: 0 -------------
+
+
+I0324 16:25:27.132534 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.078125
+glob_loss: 0.05831293590987722
+I0324 16:25:28.486268 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 394 | Current task: 0 -------------
+
+
+I0324 16:25:28.486373 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.0582969404446582
+I0324 16:25:29.851844 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 395 | Current task: 0 -------------
+
+
+I0324 16:25:29.851947 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07942708333333333
+glob_loss: 0.05822139186784625
+I0324 16:25:31.221544 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 396 | Current task: 0 -------------
+
+
+I0324 16:25:31.221646 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.058184987399727106
+I0324 16:25:32.542287 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 397 | Current task: 0 -------------
+
+
+I0324 16:25:32.542389 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.05814728746190667
+I0324 16:25:33.873369 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 398 | Current task: 0 -------------
+
+
+I0324 16:25:33.873480 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07486979166666667
+glob_loss: 0.058156106155365705
+I0324 16:25:35.229389 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 399 | Current task: 0 -------------
+
+
+I0324 16:25:35.229501 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.078125
+glob_loss: 0.05814542776594559
+I0324 16:25:36.615392 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 400 | Current task: 0 -------------
+
+
+I0324 16:25:36.615498 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07486979166666667
+glob_loss: 0.05811582521225015
+I0324 16:25:37.970158 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 401 | Current task: 0 -------------
+
+
+I0324 16:25:37.970263 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07552083333333333
+glob_loss: 0.058162335151185594
+I0324 16:25:39.311464 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 402 | Current task: 0 -------------
+
+
+I0324 16:25:39.311570 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.058135337506731354
+I0324 16:25:40.678686 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 403 | Current task: 0 -------------
+
+
+I0324 16:25:40.678794 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.058096475123117365
+I0324 16:25:42.006793 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 404 | Current task: 0 -------------
+
+
+I0324 16:25:42.006895 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.058070217880109944
+I0324 16:25:43.372628 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 405 | Current task: 0 -------------
+
+
+I0324 16:25:43.372733 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07747395833333333
+glob_loss: 0.05797472937653462
+I0324 16:25:44.788797 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 406 | Current task: 0 -------------
+
+
+I0324 16:25:44.788906 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07421875
+glob_loss: 0.05795541933427254
+I0324 16:25:46.168554 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 407 | Current task: 0 -------------
+
+
+I0324 16:25:46.168660 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.05795188760384917
+I0324 16:25:47.580722 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 408 | Current task: 0 -------------
+
+
+I0324 16:25:47.580825 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.057932221330702305
+I0324 16:25:48.942449 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 409 | Current task: 0 -------------
+
+
+I0324 16:25:48.942553 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.05790676564599077
+I0324 16:25:50.250779 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 410 | Current task: 0 -------------
+
+
+I0324 16:25:50.250885 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08463541666666667
+glob_loss: 0.05785486754029989
+I0324 16:25:51.568390 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 411 | Current task: 0 -------------
+
+
+I0324 16:25:51.568494 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.05780423727507392
+I0324 16:25:52.911896 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 412 | Current task: 0 -------------
+
+
+I0324 16:25:52.912002 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07356770833333333
+glob_loss: 0.057770717733850084
+I0324 16:25:54.236073 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 413 | Current task: 0 -------------
+
+
+I0324 16:25:54.236180 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.076171875
+glob_loss: 0.05776807044943174
+I0324 16:25:55.552089 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 414 | Current task: 0 -------------
+
+
+I0324 16:25:55.552192 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07747395833333333
+glob_loss: 0.05779627260441581
+I0324 16:25:56.855445 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 415 | Current task: 0 -------------
+
+
+I0324 16:25:56.855547 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.05777426312367121
+I0324 16:25:58.188795 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 416 | Current task: 0 -------------
+
+
+I0324 16:25:58.188904 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08203125
+glob_loss: 0.05773124393696586
+I0324 16:25:59.527180 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 417 | Current task: 0 -------------
+
+
+I0324 16:25:59.527282 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.0577289336360991
+I0324 16:26:00.833636 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 418 | Current task: 0 -------------
+
+
+I0324 16:26:00.833736 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07942708333333333
+glob_loss: 0.05774157618482908
+I0324 16:26:02.173928 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 419 | Current task: 0 -------------
+
+
+I0324 16:26:02.174035 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.076171875
+glob_loss: 0.057728713378310204
+I0324 16:26:03.482547 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 420 | Current task: 0 -------------
+
+
+I0324 16:26:03.482651 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07682291666666667
+glob_loss: 0.057661380153149366
+I0324 16:26:04.874315 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 421 | Current task: 0 -------------
+
+
+I0324 16:26:04.874420 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.05758529637629787
+I0324 16:26:06.166760 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 422 | Current task: 0 -------------
+
+
+I0324 16:26:06.166861 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08203125
+glob_loss: 0.05754806768770019
+I0324 16:26:07.458894 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 423 | Current task: 0 -------------
+
+
+I0324 16:26:07.458996 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08203125
+glob_loss: 0.05755640706047416
+I0324 16:26:08.778668 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 424 | Current task: 0 -------------
+
+
+I0324 16:26:08.778780 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.05759502466147145
+I0324 16:26:10.088883 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 425 | Current task: 0 -------------
+
+
+I0324 16:26:10.088987 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.05757791502401233
+I0324 16:26:11.393810 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 426 | Current task: 0 -------------
+
+
+I0324 16:26:11.393914 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.0575738299327592
+I0324 16:26:12.698346 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 427 | Current task: 0 -------------
+
+
+I0324 16:26:12.698451 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.078125
+glob_loss: 0.05751099965224663
+I0324 16:26:13.968790 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 428 | Current task: 0 -------------
+
+
+I0324 16:26:13.968891 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07747395833333333
+glob_loss: 0.057478427266081177
+I0324 16:26:15.268763 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 429 | Current task: 0 -------------
+
+
+I0324 16:26:15.268865 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.05743146517003576
+I0324 16:26:16.547057 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 430 | Current task: 0 -------------
+
+
+I0324 16:26:16.547160 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.057451135789354645
+I0324 16:26:17.815505 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 431 | Current task: 0 -------------
+
+
+I0324 16:26:17.815605 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.05750696935380498
+I0324 16:26:19.065796 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 432 | Current task: 0 -------------
+
+
+I0324 16:26:19.065897 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.080078125
+glob_loss: 0.05753346982722481
+I0324 16:26:20.333620 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 433 | Current task: 0 -------------
+
+
+I0324 16:26:20.333723 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.078125
+glob_loss: 0.05751101983090242
+I0324 16:26:21.620643 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 434 | Current task: 0 -------------
+
+
+I0324 16:26:21.620744 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.078125
+glob_loss: 0.05747225880622864
+I0324 16:26:22.889657 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 435 | Current task: 0 -------------
+
+
+I0324 16:26:22.889759 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.057373196041832365
+I0324 16:26:24.148933 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 436 | Current task: 0 -------------
+
+
+I0324 16:26:24.149038 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.080078125
+glob_loss: 0.057341144109765686
+I0324 16:26:25.424966 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 437 | Current task: 0 -------------
+
+
+I0324 16:26:25.425063 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08268229166666667
+glob_loss: 0.0573456147685647
+I0324 16:26:26.674063 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 438 | Current task: 0 -------------
+
+
+I0324 16:26:26.674160 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.05738613304371635
+I0324 16:26:27.937119 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 439 | Current task: 0 -------------
+
+
+I0324 16:26:27.937222 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07942708333333333
+glob_loss: 0.057431020929167666
+I0324 16:26:29.195742 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 440 | Current task: 0 -------------
+
+
+I0324 16:26:29.195839 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07942708333333333
+glob_loss: 0.05740003241226077
+I0324 16:26:30.450754 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 441 | Current task: 0 -------------
+
+
+I0324 16:26:30.450857 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.05733787935848037
+I0324 16:26:31.709053 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 442 | Current task: 0 -------------
+
+
+I0324 16:26:31.709154 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.057315021908531584
+I0324 16:26:32.981934 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 443 | Current task: 0 -------------
+
+
+I0324 16:26:32.982036 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.05728593903283278
+I0324 16:26:34.250185 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 444 | Current task: 0 -------------
+
+
+I0324 16:26:34.250284 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07877604166666667
+glob_loss: 0.057227974912772574
+I0324 16:26:35.548502 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 445 | Current task: 0 -------------
+
+
+I0324 16:26:35.548606 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08203125
+glob_loss: 0.05714197130873799
+I0324 16:26:36.819445 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 446 | Current task: 0 -------------
+
+
+I0324 16:26:36.819547 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.05718692267934481
+I0324 16:26:38.033720 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 447 | Current task: 0 -------------
+
+
+I0324 16:26:38.033824 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.080078125
+glob_loss: 0.05724591932569941
+I0324 16:26:39.244503 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 448 | Current task: 0 -------------
+
+
+I0324 16:26:39.244604 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.05714607750996947
+I0324 16:26:40.464434 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 449 | Current task: 0 -------------
+
+
+I0324 16:26:40.464540 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08463541666666667
+glob_loss: 0.057025700341910124
+I0324 16:26:41.732859 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 450 | Current task: 0 -------------
+
+
+I0324 16:26:41.732961 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.05698002905895313
+I0324 16:26:43.012757 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 451 | Current task: 0 -------------
+
+
+I0324 16:26:43.012861 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.05696891015395522
+I0324 16:26:44.266533 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 452 | Current task: 0 -------------
+
+
+I0324 16:26:44.266632 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.05694602010771632
+I0324 16:26:45.518858 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 453 | Current task: 0 -------------
+
+
+I0324 16:26:45.518962 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08072916666666667
+glob_loss: 0.05695236334577203
+I0324 16:26:46.793612 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 454 | Current task: 0 -------------
+
+
+I0324 16:26:46.793712 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.056920007802546024
+I0324 16:26:48.061342 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 455 | Current task: 0 -------------
+
+
+I0324 16:26:48.061455 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.07942708333333333
+glob_loss: 0.05692011987169584
+I0324 16:26:49.336921 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 456 | Current task: 0 -------------
+
+
+I0324 16:26:49.337027 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.080078125
+glob_loss: 0.05693379044532776
+I0324 16:26:50.600696 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 457 | Current task: 0 -------------
+
+
+I0324 16:26:50.600799 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08463541666666667
+glob_loss: 0.056847790256142616
+I0324 16:26:51.861489 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 458 | Current task: 0 -------------
+
+
+I0324 16:26:51.861588 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.05679838235179583
+I0324 16:26:53.121675 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 459 | Current task: 0 -------------
+
+
+I0324 16:26:53.121778 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.05678747703010837
+I0324 16:26:54.368985 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 460 | Current task: 0 -------------
+
+
+I0324 16:26:54.369086 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08138020833333333
+glob_loss: 0.05678152587885658
+I0324 16:26:55.621039 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 461 | Current task: 0 -------------
+
+
+I0324 16:26:55.621143 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.056786814549316965
+I0324 16:26:56.872840 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 462 | Current task: 0 -------------
+
+
+I0324 16:26:56.872943 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.056731002094844975
+I0324 16:26:58.126022 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 463 | Current task: 0 -------------
+
+
+I0324 16:26:58.126123 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.056715431778381266
+I0324 16:26:59.386200 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 464 | Current task: 0 -------------
+
+
+I0324 16:26:59.386304 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.05673210866128405
+I0324 16:27:00.642001 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 465 | Current task: 0 -------------
+
+
+I0324 16:27:00.642107 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.05664858175441623
+I0324 16:27:01.909908 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 466 | Current task: 0 -------------
+
+
+I0324 16:27:01.910010 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.0566604183986783
+I0324 16:27:03.179462 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 467 | Current task: 0 -------------
+
+
+I0324 16:27:03.179566 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.05663911625742912
+I0324 16:27:04.452912 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 468 | Current task: 0 -------------
+
+
+I0324 16:27:04.453015 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.05655416442702214
+I0324 16:27:05.720893 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 469 | Current task: 0 -------------
+
+
+I0324 16:27:05.720998 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0859375
+glob_loss: 0.056538580606381096
+I0324 16:27:06.983924 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 470 | Current task: 0 -------------
+
+
+I0324 16:27:06.984029 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08203125
+glob_loss: 0.056552829686552286
+I0324 16:27:08.248167 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 471 | Current task: 0 -------------
+
+
+I0324 16:27:08.248267 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.056548052467405796
+I0324 16:27:09.512254 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 472 | Current task: 0 -------------
+
+
+I0324 16:27:09.512357 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.05646728537976742
+I0324 16:27:10.765109 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 473 | Current task: 0 -------------
+
+
+I0324 16:27:10.765212 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.05644221246863405
+I0324 16:27:12.029989 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 474 | Current task: 0 -------------
+
+
+I0324 16:27:12.030092 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.05646247183904052
+I0324 16:27:13.304156 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 475 | Current task: 0 -------------
+
+
+I0324 16:27:13.304260 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08268229166666667
+glob_loss: 0.05640320215995113
+I0324 16:27:14.575730 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 476 | Current task: 0 -------------
+
+
+I0324 16:27:14.575825 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.083984375
+glob_loss: 0.056412462455530964
+I0324 16:27:15.829094 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 477 | Current task: 0 -------------
+
+
+I0324 16:27:15.829196 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08333333333333333
+glob_loss: 0.056424706087758146
+I0324 16:27:17.083366 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 478 | Current task: 0 -------------
+
+
+I0324 16:27:17.083468 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.05641331787531575
+I0324 16:27:18.348428 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 479 | Current task: 0 -------------
+
+
+I0324 16:27:18.348527 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.05636817325527469
+I0324 16:27:19.612235 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 480 | Current task: 0 -------------
+
+
+I0324 16:27:19.612342 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.056329937341312565
+I0324 16:27:20.869036 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 481 | Current task: 0 -------------
+
+
+I0324 16:27:20.869138 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.056327742679665484
+I0324 16:27:22.131252 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 482 | Current task: 0 -------------
+
+
+I0324 16:27:22.131357 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.05629591767986616
+I0324 16:27:23.381653 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 483 | Current task: 0 -------------
+
+
+I0324 16:27:23.381758 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08528645833333333
+glob_loss: 0.05628441646695137
+I0324 16:27:24.661177 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 484 | Current task: 0 -------------
+
+
+I0324 16:27:24.661274 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08463541666666667
+glob_loss: 0.05616717987383405
+I0324 16:27:25.914891 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 485 | Current task: 0 -------------
+
+
+I0324 16:27:25.914988 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0859375
+glob_loss: 0.056094127551962934
+I0324 16:27:27.176779 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 486 | Current task: 0 -------------
+
+
+I0324 16:27:27.176877 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.0859375
+glob_loss: 0.05612156012405952
+I0324 16:27:28.448255 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 487 | Current task: 0 -------------
+
+
+I0324 16:27:28.448351 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.05611326778307557
+I0324 16:27:29.714414 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 488 | Current task: 0 -------------
+
+
+I0324 16:27:29.714512 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08463541666666667
+glob_loss: 0.056100191393246256
+I0324 16:27:30.995517 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 489 | Current task: 0 -------------
+
+
+I0324 16:27:30.995618 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.05609624832868576
+I0324 16:27:32.258910 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 490 | Current task: 0 -------------
+
+
+I0324 16:27:32.259011 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.05605421339472135
+I0324 16:27:33.517858 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 491 | Current task: 0 -------------
+
+
+I0324 16:27:33.517961 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.05600209177161256
+I0324 16:27:34.780123 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 492 | Current task: 0 -------------
+
+
+I0324 16:27:34.780219 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.05598143953830004
+I0324 16:27:36.044213 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 493 | Current task: 0 -------------
+
+
+I0324 16:27:36.044308 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.055939447755614914
+I0324 16:27:37.295317 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 494 | Current task: 0 -------------
+
+
+I0324 16:27:37.295419 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08463541666666667
+glob_loss: 0.05600846108670036
+I0324 16:27:38.546636 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 495 | Current task: 0 -------------
+
+
+I0324 16:27:38.546740 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08658854166666667
+glob_loss: 0.05594486060241858
+I0324 16:27:39.808608 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 496 | Current task: 0 -------------
+
+
+I0324 16:27:39.808708 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.05587015518297752
+I0324 16:27:41.067599 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 497 | Current task: 0 -------------
+
+
+I0324 16:27:41.067709 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.055886950343847275
+I0324 16:27:42.316729 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 498 | Current task: 0 -------------
+
+
+I0324 16:27:42.316833 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.05590295931324363
+I0324 16:27:43.573996 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 499 | Current task: 0 -------------
+
+
+I0324 16:27:43.574092 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09244791666666667
+glob_loss: 0.055827929017444454
+I0324 16:27:44.833747 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 500 | Current task: 0 -------------
+
+
+I0324 16:27:44.833849 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.05579836651061972
+I0324 16:27:46.106076 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 501 | Current task: 0 -------------
+
+
+I0324 16:27:46.106179 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.05577543284744024
+I0324 16:27:47.359609 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 502 | Current task: 0 -------------
+
+
+I0324 16:27:47.359705 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.0557417751600345
+I0324 16:27:48.609632 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 503 | Current task: 0 -------------
+
+
+I0324 16:27:48.609735 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.05574433272704482
+I0324 16:27:49.861619 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 504 | Current task: 0 -------------
+
+
+I0324 16:27:49.861716 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08723958333333333
+glob_loss: 0.05573756728942195
+I0324 16:27:51.117711 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 505 | Current task: 0 -------------
+
+
+I0324 16:27:51.117810 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.05568007240071893
+I0324 16:27:52.384637 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 506 | Current task: 0 -------------
+
+
+I0324 16:27:52.384742 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.0556431842657427
+I0324 16:27:53.653822 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 507 | Current task: 0 -------------
+
+
+I0324 16:27:53.653927 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.055691698721299566
+I0324 16:27:54.925820 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 508 | Current task: 0 -------------
+
+
+I0324 16:27:54.925924 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09440104166666667
+glob_loss: 0.05567807952562968
+I0324 16:27:56.191198 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 509 | Current task: 0 -------------
+
+
+I0324 16:27:56.191293 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09049479166666667
+glob_loss: 0.055642545533676945
+I0324 16:27:57.446175 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 510 | Current task: 0 -------------
+
+
+I0324 16:27:57.446269 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.05560022545978427
+I0324 16:27:58.710956 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 511 | Current task: 0 -------------
+
+
+I0324 16:27:58.711055 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08854166666666667
+glob_loss: 0.055621028101692595
+I0324 16:27:59.981631 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 512 | Current task: 0 -------------
+
+
+I0324 16:27:59.981730 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.05562835605815053
+I0324 16:28:01.232875 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 513 | Current task: 0 -------------
+
+
+I0324 16:28:01.232973 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.087890625
+glob_loss: 0.05567904841154814
+I0324 16:28:02.505245 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 514 | Current task: 0 -------------
+
+
+I0324 16:28:02.505342 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.05564418652405342
+I0324 16:28:03.785648 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 515 | Current task: 0 -------------
+
+
+I0324 16:28:03.785757 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.05555372250576814
+I0324 16:28:05.050871 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 516 | Current task: 0 -------------
+
+
+I0324 16:28:05.050971 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09309895833333333
+glob_loss: 0.05551910757397612
+I0324 16:28:06.304461 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 517 | Current task: 0 -------------
+
+
+I0324 16:28:06.304560 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08984375
+glob_loss: 0.055450823778907456
+I0324 16:28:07.590618 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 518 | Current task: 0 -------------
+
+
+I0324 16:28:07.590722 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.091796875
+glob_loss: 0.0552786560729146
+I0324 16:28:08.870346 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 519 | Current task: 0 -------------
+
+
+I0324 16:28:08.870439 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09375
+glob_loss: 0.05518846089641253
+I0324 16:28:10.148680 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 520 | Current task: 0 -------------
+
+
+I0324 16:28:10.148783 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09700520833333333
+glob_loss: 0.05514463223516941
+I0324 16:28:11.430627 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 521 | Current task: 0 -------------
+
+
+I0324 16:28:11.430726 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09700520833333333
+glob_loss: 0.05519202305004001
+I0324 16:28:12.659235 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 522 | Current task: 0 -------------
+
+
+I0324 16:28:12.659331 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09375
+glob_loss: 0.05523402042066058
+I0324 16:28:13.988245 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 523 | Current task: 0 -------------
+
+
+I0324 16:28:13.988359 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.09114583333333333
+glob_loss: 0.055204040526101984
+I0324 16:28:15.266031 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 524 | Current task: 0 -------------
+
+
+I0324 16:28:15.266132 3663982 serverbase.py:168] All users are selected
+glob_acc: 0.08919270833333333
+glob_loss: 0.05519659103204807
+I0324 16:28:16.610199 3663982 serverPreciseFCL.py:162] 
+
+------------- Round number: 525 | Current task: 0 -------------
+
+
+I0324 16:28:16.610299 3663982 serverbase.py:168] All users are selected
