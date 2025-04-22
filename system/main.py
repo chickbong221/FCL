@@ -101,6 +101,7 @@ def run(args):
             server = FedWeIT(args, i)
 
         elif args.algorithm == "PreciseFCL":
+            # print("PreciseFCL")
             server = FedPrecise(args, i)
 
         elif args.algorithm == 'FedAS':

@@ -70,7 +70,7 @@ class Server(object):
 
     def set_clients(self, clientObj):
         for i in range(self.num_clients):
-            
+            print(f"Creating client {i} ...")
             if self.args.dataset == 'IMAGENET1k':
                 train_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
             elif self.args.dataset == 'CIFAR100':

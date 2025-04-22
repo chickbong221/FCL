@@ -10,8 +10,8 @@ from flcore.utils_core.precise_utils import str_in_list, Meter
 eps = 1e-30
 
 class ClientPreciseFCL(Client):
-    def __init__(self, args, id, train_data, test_data, classifier_head_list=[], **kwargs):
-        super().__init__(args, id, train_data, test_data, **kwargs)
+    def __init__(self, args, id, train_data, classifier_head_list=[], **kwargs):
+        super().__init__(args, id, train_data, **kwargs)
         
         self.args = args
         self.k_loss_flow = args.k_loss_flow
@@ -23,6 +23,7 @@ class ClientPreciseFCL(Client):
     
     def train(
         self,
+        task,
         glob_iter,
         global_classifier,
         verbose
@@ -31,7 +32,7 @@ class ClientPreciseFCL(Client):
         @ glob_iter: the overall iterations across all tasks
         
         '''
-        trainloader = self.load_train_data()
+        trainloader = self.load_train_data(task=task)
         correct = 0
         sample_num = 0
         cls_meter = Meter()
@@ -55,6 +56,9 @@ class ClientPreciseFCL(Client):
                 if self.algorithm=='PreciseFCL' and self.k_loss_flow>0:
                     self.model.classifier.eval()
                     self.model.flow.train()
+                    # print("Classifier device:", next(self.model.classifier.parameters()).device)
+                    # print("Flow device:", next(self.model.flow.parameters()).device)
+                    # self.model.flow.to(self.device)
                     flow_result = self.model.train_a_batch(
                         x, y, train_flow=True, flow=None, last_flow=last_flow,
                         last_classifier = last_classifier,
@@ -72,8 +76,12 @@ class ClientPreciseFCL(Client):
                     else:
                         flow = self.model.flow
                         flow.eval()
+                        # print("Classifier device:", next(self.model.classifier.parameters()).device)
+                        # print("Flow device:", next(self.model.flow.parameters()).device)
 
                 self.model.classifier.train()
+                # print("Classifier device:", next(self.model.classifier.parameters()).device)
+                # print("Flow device:", next(self.model.flow.parameters()).device)
                 cls_result = self.model.train_a_batch(
                     x, y, train_flow=False, flow=flow, last_flow=last_flow,
                     last_classifier = last_classifier,
@@ -110,8 +118,6 @@ class ClientPreciseFCL(Client):
 
     def test_metrics(self, task):
         testloader = self.load_test_data(task=task)
-        # self.model = self.load_model('model')
-        # self.model.to(self.device)
 
         self.model.eval()
 
@@ -133,8 +139,8 @@ class ClientPreciseFCL(Client):
         
         return test_acc, test_num
 
-    def train_metrics(self):
-        trainloader = self.load_train_data()
+    def train_metrics(self, task):
+        trainloader = self.load_train_data(task=task)
         self.model.eval()
 
         train_num = 0

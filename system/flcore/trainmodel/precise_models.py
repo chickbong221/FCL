@@ -76,6 +76,7 @@ class PreciseModel(nn.Module):
                                                 num_layers=4)
 
         elif dataset=='IMAGENET1k':
+            # print("aaaaaaaaaaaaaaa")
             self.xa_shape=[512]
             self.num_classes = 1000
             # self.classifier = Resnet_plus(32, xa_dim=int(np.prod(self.xa_shape)), num_classes=self.num_classes)

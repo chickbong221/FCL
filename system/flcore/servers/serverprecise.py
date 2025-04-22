@@ -10,7 +10,7 @@ class FedPrecise(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
         self.classifier_head_list = ['classifier.fc_classifier', 'classifier.fc2']
-        
+
         self.set_clients(ClientPreciseFCL)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
@@ -83,10 +83,11 @@ class FedPrecise(Server):
 
                 global_classifier = self.global_model.classifier
                 global_classifier.eval()
-                
+
                 for client in self.selected_clients:
+                    print("ahihi")
                     verbose = False
-                    client.train(glob_iter, global_classifier, verbose=verbose)
+                    client.train(task, glob_iter, global_classifier, verbose=verbose)
 
                 self.receive_models()
                 self.aggregate_parameters()
@@ -153,24 +154,16 @@ class FedPrecise(Server):
                 server_param.data = server_param.data + client_param.data.clone() * ratio
 
     def set_clients(self, clientObj):
-        total_clients = 10
-        for i, train_slow, send_slow in zip(range(self.num_clients), self.train_slow_clients, self.send_slow_clients):
+        for i in range(self.num_clients):
             
             if self.args.dataset == 'IMAGENET1k':
-                train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+                train_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
             elif self.args.dataset == 'CIFAR100':
-                train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=2, count_labels=True)
+                train_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=2, count_labels=True)
             else:
                 raise NotImplementedError("Not supported dataset")
 
-            client = clientObj(self.args, 
-                        id=i,
-                        train_data=train_data,
-                        test_data=test_data,
-                        classifier_head_list = self.classifier_head_list,
-                        train_slow=train_slow, 
-                        send_slow=send_slow)
-
+            client = clientObj(self.args, id=i, train_data=train_data, classifier_head_list=self.classifier_head_list)
             self.clients.append(client)
 
             # update classes so far & current labels

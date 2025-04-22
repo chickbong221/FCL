@@ -40,6 +40,7 @@ gdown 1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z
 ```sh
 # ImageNet1k
 python system/main.py --cfp ./hparams/FedSTGM.json --wandb True
+python system/main.py --cfp ./hparams/PreciseFCL.json
 
 # Cifar100
 python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 0 -lr 1e-4 --flow_lr 1e-4 --optimizer adam
@@ -53,6 +54,8 @@ python system/main.py --dataset CIFAR100 --num_classes 100 -did 0 -gr 1000 -algo
 Sweep
 ```sh
 bash scripts/sweep_STGM_scripts/computer1_part3.sh
+bash scripts/sweep_STGM_scripts/computer3_gpu0_job0.sh
+bash scripts/sweep_STGM_scripts/computer3_gpu1_job0.sh
 ```
 
 ## Benchmarked Algorithms
