@@ -1,5 +1,24 @@
+import numpy as np
 import torch
-import os
+from torch import nn
+from tqdm import tqdm
+from torch.nn import functional as F
+from torch.utils.data import DataLoader
+from utils.inc_net import IncrementalNet
+from methods.base import BaseLearner
+from utils.data_manager import partition_data, DatasetSplit, average_weights, setup_seed
+import copy, wandb
+import torch.nn.functional as F
+from torch.autograd import Variable
+from torchvision import transforms
+from kornia import augmentation
+import time, os, math
+import torch.nn.init as init
+from PIL import Image
+import pickle
+from methods.generator import NLGenerator, NLGenerator_IN
+import shutil
+
 
 class Buffer(nn.Module):
     def __init__(self, args, input_size=None):
