@@ -661,3 +661,18 @@ class UnlabeledImageDataset(torch.utils.data.Dataset):
     def __repr__(self):
         return 'Unlabeled data:\n\troot: %s\n\tdata mount: %d\n\ttransforms: %s' % (
         self.root, len(self), self.transform)
+
+
+def _collect_all_images(nums, root, postfix=['png', 'jpg', 'jpeg', 'JPEG']):
+    images = []
+    if isinstance(postfix, str):
+        postfix = [postfix]
+    for dirpath, dirnames, files in os.walk(root):
+        for pos in postfix:
+            if nums != None:
+                files.sort()
+                files = files[:nums]
+            for f in files:
+                if f.endswith(pos):
+                    images.append(os.path.join(dirpath, f))
+    return images
