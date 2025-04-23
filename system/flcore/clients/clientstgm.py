@@ -27,6 +27,8 @@ class clientSTGM(Client):
 
         self.grad_balance = args.grad_balance
 
+        self.mem_manager = ImagePool(root=self.save_dir)
+
     def train(self, task=None):
         trainloader = self.load_train_data(task=task)
         self.model.train()
