@@ -284,7 +284,7 @@ class Server(object):
             subdir = os.path.join(self.save_folder, "Local")
             log_key = "Local/Averaged Forgetting"
 
-        forgetting = metric_average_forgetting(task, accuracy_matrix)
+        forgetting = metric_average_forgetting(int(task%self.N_TASKS), accuracy_matrix)
 
         if self.args.wandb:
             wandb.log({log_key: forgetting}, step=glob_iter)

@@ -64,7 +64,7 @@ bash scripts/sweep_STGM_scripts/computer3_gpu1_job0.sh
 
 ## Benchmarked Algorithms
 - **FedAvg** (Federated Averaging)
-- **PreciseFCL** 
+- **AF-FCL** 
 - **FedWeIT** 
 - **FedALA** 
 - **FedAS**

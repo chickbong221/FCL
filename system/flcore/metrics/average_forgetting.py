@@ -4,9 +4,9 @@ def metric_average_forgetting(task, accuracy_matrix):
     result = 0
     F_list = []
     
-    for i in range(task-1):
-        acc_values = [accuracy_matrix[t][i] for t in range(task-1)]
-        max_acc = max(acc_values) if acc_values else 0.0
+    for i in range(task):
+        acc_values = [accuracy_matrix[t][i] for t in range(task)]
+        max_acc = max(acc_values)
         
         current_acc = accuracy_matrix[task][i]
 

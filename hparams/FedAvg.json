@@ -5,7 +5,7 @@
     "optimizer": "sgd",
     "datadir": "dataset",
     "device": "cuda",
-    "device_id": "0",
+    "device_id": "1",
     "dataset": "IMAGENET1k",
     "num_classes": 1000,
     "model": "CNN",
@@ -18,12 +18,13 @@
     "algorithm": "FedAvg",
     "join_ratio": 1.0,
     "random_join_ratio": false,
-    "num_clients": 20,
+    "num_clients": 10,
     "prev": 0,
     "times": 1,
     "eval_gap": 1,
     "out_folder": "out",
     "note": null,
+    "num_tasks": 2500,
 
     "client_drop_rate": 0.0,
     "time_threthold": 10000

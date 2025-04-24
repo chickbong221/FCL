@@ -23,6 +23,7 @@
     "eval_gap": 1,
     "out_folder": "out",
     "note": null,
+    "num_tasks": 2500,
 
     "client_drop_rate": 0.0,
     "time_threthold": 10000,
