@@ -11,13 +11,13 @@ from torch.autograd import grad
 class clientAS(Client):
 
 
-    def __init__(self, args, id, train_data, test_data, **kwargs):
-        super().__init__(args, id, train_data, test_data, **kwargs)
+    def __init__(self, args, id, train_data, **kwargs):
+        super().__init__(args, id, train_data, **kwargs)
         self.fim_trace_history = []
 
-    def train(self, is_selected):
+    def train(self, is_selected, task):
         if is_selected:
-            trainloader = self.load_train_data()
+            trainloader = self.load_train_data(task=task)
             # self.model.to(self.device)
             self.model.train()
 
@@ -53,7 +53,7 @@ class clientAS(Client):
             # print(f'client{self.id}, start cal fim.')
             # Compute FIM and its trace after training
             fim_trace_sum = 0
-            for i, (x, y) in enumerate(self.load_train_data()):
+            for i, (x, y) in enumerate(self.load_train_data(task=task)):
                 # Forward pass
                 x = x.to(self.device)
                 y = y.to(self.device)
@@ -77,7 +77,7 @@ class clientAS(Client):
             # print(f"Selected: {is_selected}, FIM-T value change: {(self.fim_trace_history[-1] - (self.fim_trace_history[-2] if len(self.fim_trace_history) > 1 else 0)):.1f}")
 
         else:
-            trainloader = self.load_train_data()
+            trainloader = self.load_train_data(task=task)
             # self.model.to(self.device)
             self.model.eval()
             # Compute FIM and its trace after training
@@ -126,12 +126,12 @@ class clientAS(Client):
         # for new_param, old_param in zip(model.base.parameters(), self.model.base.parameters()):
         #     old_param.data = new_param.data.clone()
 
-    def set_parameters(self, model, progress):
+    def set_parameters(self, model, progress, task):
 
         # Get class-specific prototypes from the local model
         local_prototypes = [[] for _ in range(self.num_classes)]
         batch_size = 16  # or any other suitable value
-        trainloader = self.load_train_data(batch_size=batch_size)
+        trainloader = self.load_train_data(task=task, batch_size=batch_size)
 
         # print(f'client{id}')
         for x_batch, y_batch in trainloader:

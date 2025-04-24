@@ -5,8 +5,8 @@ from flcore.utils_core.ALA import ALA
 
 
 class clientALA(Client):
-    def __init__(self, args, id, train_data, test_data, **kwargs):
-        super().__init__(args, id, train_data, test_data, **kwargs)
+    def __init__(self, args, id, train_data, **kwargs):
+        super().__init__(args, id, train_data, **kwargs)
 
         self.eta = args.eta
         self.rand_percent = args.rand_percent
@@ -16,8 +16,8 @@ class clientALA(Client):
         self.ALA = ALA(self.id, self.loss, train_data, self.batch_size, 
                     self.rand_percent, self.layer_idx, self.eta, self.device)
 
-    def train(self):
-        trainloader = self.load_train_data()
+    def train(self, task):
+        trainloader = self.load_train_data(task=task)
         # self.model.to(self.device)
         self.model.train()
         

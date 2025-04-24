@@ -7,14 +7,14 @@ from torch.autograd import Variable
 
 
 class clientDBE(Client):
-    def __init__(self, args, id, train_data, test_data, **kwargs):
-        super().__init__(args, id, train_data, test_data, **kwargs)
+    def __init__(self, args, id, train_data, **kwargs):
+        super().__init__(args, id, train_data, **kwargs)
 
         self.klw = args.kl_weight
         self.momentum = args.momentum
         self.global_mean = None
 
-        trainloader = self.load_train_data()        
+        trainloader = self.load_train_data(task=self.current_task)        
         for x, y in trainloader:
             if type(x) == type([]):
                 x[0] = x[0].to(self.device)
@@ -31,8 +31,8 @@ class clientDBE(Client):
         self.opt_client_mean = torch.optim.SGD([self.client_mean], lr=self.learning_rate)
 
 
-    def train(self):
-        trainloader = self.load_train_data()
+    def train(self, task):
+        trainloader = self.load_train_data(task=task)
         # self.model.to(self.device)
         self.model.train()
 
@@ -91,8 +91,8 @@ class clientDBE(Client):
     def detach_running(self):
         self.running_mean.detach_()
 
-    def train_metrics(self):
-        trainloader = self.load_train_data()
+    def train_metrics(self, task):
+        trainloader = self.load_train_data(task=task)
         self.model.eval()
 
         train_num = 0

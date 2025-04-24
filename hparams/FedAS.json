@@ -10,15 +10,15 @@
     "num_classes": 1000,
     "model": "CNN",
     "batch_size": 64,
-    "local_learning_rate": 0.005,
+    "local_learning_rate": 0.05,
     "learning_rate_decay": false,
     "learning_rate_decay_gamma": 0.99,
-    "global_rounds": 100,
-    "local_epochs": 1,
-    "algorithm": "FedAvg",
+    "global_rounds": 25,
+    "local_epochs": 5,
+    "algorithm": "FedAS",
     "join_ratio": 1.0,
     "random_join_ratio": false,
-    "num_clients": 10,
+    "num_clients": 20,
     "prev": 0,
     "times": 1,
     "eval_gap": 1,
@@ -26,8 +26,6 @@
     "note": null,
 
     "client_drop_rate": 0.0,
-    "time_threthold": 10000,
+    "time_threthold": 10000
 
-    "momentum": 0.1,
-    "kl_weight": 0.0
 }

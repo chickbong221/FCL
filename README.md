@@ -39,8 +39,12 @@ gdown 1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z
 ### Running an Experiment
 ```sh
 # ImageNet1k
-python system/main.py --cfp ./hparams/FedSTGM.json --wandb True
-python system/main.py --cfp ./hparams/PreciseFCL.json
+python system/main.py --cfp ./hparams/FedSTGM.json 
+python system/main.py --cfp ./hparams/AFFCLFCL.json
+python system/main.py --cfp ./hparams/FedAS.json
+python system/main.py --cfp ./hparams/FedALA.json
+python system/main.py --cfp ./hparams/FedDBE.json
+python system/main.py --cfp ./hparams/FedAvg.json
 
 # Cifar100
 python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 0 -lr 1e-4 --flow_lr 1e-4 --optimizer adam

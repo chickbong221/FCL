@@ -23,7 +23,7 @@ class FedAS(Server):
     def all_clients(self):
         return self.clients
 
-    def send_selected_models(self, selected_ids, epoch):
+    def send_selected_models(self, selected_ids, epoch, task):
         assert (len(self.clients) > 0)
 
         # for client in self.clients:
@@ -32,7 +32,7 @@ class FedAS(Server):
 
             progress = (epoch+1) / self.global_rounds
             
-            client.set_parameters(self.global_model, progress)
+            client.set_parameters(self.global_model, progress, task)
 
             client.send_time_cost['num_rounds'] += 1
             client.send_time_cost['total_cost'] += 2 * (time.time() - start_time)    
@@ -80,14 +80,14 @@ class FedAS(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
                     elif self.args.dataset == 'CIFAR100':
-                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
                     else:
                         raise NotImplementedError("Not supported dataset")
 
                     # update dataset
-                    self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
+                    self.clients[i].next_task(train_data, label_info) # assign dataloader for new data
                     # print(self.clients[i].task_dict)
 
                 # update labels info.
@@ -116,6 +116,7 @@ class FedAS(Server):
                 selected_ids = [client.id for client in self.selected_clients]
 
                 # self.send_models()
+                self.send_selected_models(selected_ids, i, task)
 
                 # evaluate personalized models, ie FedAvg-C
                 if i%self.eval_gap == 0:
@@ -123,7 +124,6 @@ class FedAS(Server):
                     self.eval(task=task, glob_iter=glob_iter, flag="global")
 
                 # self.send_models()
-                self.send_selected_models(selected_ids, i)
 
                 # print(f'send selected models done')
 
@@ -132,7 +132,7 @@ class FedAS(Server):
 
                 for client in self.alled_clients:
                     # print("===============")
-                    client.train(client.id in selected_ids)
+                    client.train(client.id in selected_ids, task)
                 # assert 1==0
 
                 self.print_fim_histories()
@@ -146,12 +146,12 @@ class FedAS(Server):
                 self.Budget.append(time.time() - s_t)
                 # print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
-            self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+            if self.args.offlog == True and not self.args.debug: 
+                self.eval_task(task=task, glob_iter=glob_iter, flag="local")
 
-            # need eval before data update
-            # self.send_models()
-            self.send_selected_models(selected_ids, self.global_rounds-1)
-            self.eval_task(task=task, glob_iter=glob_iter, flag="global")
+                # need eval before data update
+                self.send_selected_models(selected_ids, self.global_rounds-1, task)
+                self.eval_task(task=task, glob_iter=glob_iter, flag="global")
 
             # print(f'+++++++++++++++++++++++++++++++++++++++++')
             # gen_acc = self.avg_generalization_metrics()

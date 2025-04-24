@@ -68,14 +68,14 @@ class FedDBE(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
                     elif self.args.dataset == 'CIFAR100':
-                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
                     else:
                         raise NotImplementedError("Not supported dataset")
 
                     # update dataset
-                    self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
+                    self.clients[i].next_task(train_data, label_info) # assign dataloader for new data
                     # print(self.clients[i].task_dict)
 
                 # update labels info.
@@ -108,7 +108,7 @@ class FedDBE(Server):
                     self.eval(task=task, glob_iter=glob_iter, flag="global")
 
                 for client in self.selected_clients:
-                    client.train()
+                    client.train(task=task)
 
                 # threads = [Thread(target=client.train)
                 #            for client in self.selected_clients]
@@ -124,8 +124,9 @@ class FedDBE(Server):
                 self.Budget.append(time.time() - s_t)
                 # print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
-            self.eval_task(task=task, glob_iter=glob_iter, flag="local")
-            
-            # need eval before data update
-            self.send_models()
-            self.eval_task(task=task, glob_iter=glob_iter, flag="global")
+            if self.args.offlog == True and not self.args.debug:
+                self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+                
+                # need eval before data update
+                self.send_models()
+                self.eval_task(task=task, glob_iter=glob_iter, flag="global")
