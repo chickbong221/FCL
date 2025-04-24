@@ -1,17 +1,19 @@
 import torch
 import time
 import numpy as np
+import copy
+import statistics
 
-from flcore.clients.clientprecise import ClientPreciseFCL
+from flcore.clients.clientaffcl import ClientAFFCL
 from flcore.servers.serverbase import Server
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
-class FedPrecise(Server):
+class FedAFFCL(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
         self.classifier_head_list = ['classifier.fc_classifier', 'classifier.fc2']
 
-        self.set_clients(ClientPreciseFCL)
+        self.set_clients(ClientAFFCL)
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
@@ -44,14 +46,14 @@ class FedPrecise(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
                     elif self.args.dataset == 'CIFAR100':
-                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
                     else:
                         raise NotImplementedError("Not supported dataset")
 
                     # update dataset
-                    self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
+                    self.clients[i].next_task(train_data, label_info) # assign dataloader for new data
                     # print(self.clients[i].task_dict)
 
                 # update labels info.
@@ -73,9 +75,8 @@ class FedPrecise(Server):
                 
                 glob_iter = i + self.global_rounds * task
                 s_t = time.time()
-
                 self.selected_clients = self.select_clients()
-                self.send_models()
+                self.send_parameters(mode='all', beta=1)
 
                 if i%self.eval_gap == 0:
                     print(f"\n-------------Round number: {i}-------------")
@@ -85,24 +86,41 @@ class FedPrecise(Server):
                 global_classifier.eval()
 
                 for client in self.selected_clients:
-                    print("ahihi")
                     verbose = False
                     client.train(task, glob_iter, global_classifier, verbose=verbose)
 
                 self.receive_models()
+                self.receive_grads()
+                model_origin = copy.deepcopy(self.global_model)
                 self.aggregate_parameters()
+
+
+                angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
+                distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
+                norm = [self.distance(model_origin, models) for models in self.uploaded_models]
+                self.angle_value = statistics.mean(angle)
+                self.distance_value = statistics.mean(distance)
+                self.norm_value = statistics.mean(norm)
+                angle_value = []
+                for grad_i in self.grads:
+                    for grad_j in self.grads:
+                        angle_value.append(self.cosine_similarity(grad_i, grad_j))
+                self.grads_angle_value = statistics.mean(angle_value)
+                print(f"grad angle: {self.grads_angle_value}")
+
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
                 self.Budget.append(time.time() - s_t)
                 print('-'*25, 'time cost', '-'*25, self.Budget[-1])
-                    
-            self.eval_task(task=task, glob_iter=glob_iter, flag="local")
             
-            # need eval before data update
-            self.send_models()
-            self.eval_task(task=task, glob_iter=glob_iter, flag="global")
+            if self.args.offlog == True and not self.args.debug:        
+                self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+                
+                # need eval before data update
+                self.send_models()
+                self.eval_task(task=task, glob_iter=glob_iter, flag="global")
 
     def aggregate_parameters(self, class_partial=False):
         assert (self.selected_clients is not None and len(self.selected_clients) > 0)
@@ -170,3 +188,15 @@ class FedPrecise(Server):
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
             client.task_dict[0] = label_info['labels']
+
+    def send_parameters(self, mode='all', beta=1, selected=False):
+        users = self.clients
+        if selected:
+            assert (self.selected_users is not None and len(self.selected_users) > 0)
+            users = self.selected_users
+        
+        for user in users:
+            if mode == 'all': # share all parameters
+                user.set_parameters_precise(self.global_model, beta=beta)
+            else: # share a part parameters
+                user.set_shared_parameters(self.global_model, mode=mode)

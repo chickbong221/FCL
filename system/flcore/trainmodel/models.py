@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
 from torch import nn
+from flcore.trainmodel.resnet import resnet18_cbam
 
 batch_size = 10
 
@@ -654,6 +655,44 @@ class S_ConvNet(nn.Module):
         return xa
 
     def forward_from_xa(self, xa):
+        xb = F.leaky_relu(self.fc2(xa))
+        logits = self.fc_classifier(xb)        
+        classes_p = self.softmax(logits)
+
+        return classes_p, logits
+    
+
+class Resnet_plus(nn.Module):
+    def __init__(self, image_size, xa_dim, num_classes = 10):
+        # configurations
+        super().__init__()
+        self.image_size = image_size
+        self.num_classes = num_classes
+        
+        # layers
+        self.features = resnet18_cbam(False)
+        channel_size = 512
+        self.fc1 = nn.Linear(channel_size, xa_dim)
+        self.fc2 = nn.Linear(xa_dim, xa_dim)
+        
+        # aux-classifier fc
+        self.fc_classifier = nn.Linear(xa_dim, self.num_classes)
+        
+        # activation functions:
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        xa = self.forward_to_xa(x)
+        classes_p, logits = self.forward_from_xa(xa)
+
+        return classes_p, xa, logits  
+    
+    def forward_to_xa(self, x):
+        xa = self.features(x) # [N, 512]
+        return xa
+
+    def forward_from_xa(self, xa):
+        xa = F.leaky_relu(self.fc1(xa))
         xb = F.leaky_relu(self.fc2(xa))
         logits = self.fc_classifier(xb)        
         classes_p = self.softmax(logits)

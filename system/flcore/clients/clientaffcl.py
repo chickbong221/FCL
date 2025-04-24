@@ -3,13 +3,14 @@ import torch.nn as nn
 import glog as logger
 import numpy as np
 import wandb
+import copy
 
 from flcore.clients.clientbase import Client
-from flcore.utils_core.precise_utils import str_in_list, Meter
+from flcore.utils_core.AFFCL_utils import str_in_list, Meter
 
 eps = 1e-30
 
-class ClientPreciseFCL(Client):
+class ClientAFFCL(Client):
     def __init__(self, args, id, train_data, classifier_head_list=[], **kwargs):
         super().__init__(args, id, train_data, **kwargs)
         
@@ -19,6 +20,7 @@ class ClientPreciseFCL(Client):
         self.use_lastflow_x = args.use_lastflow_x
         self.classifier_global_mode = args.classifier_global_mode
         self.beta = args.beta
+        self.local_model_name = copy.deepcopy(list(self.model.named_parameters()))
         self.init_loss_fn()
     
     def train(
@@ -37,7 +39,10 @@ class ClientPreciseFCL(Client):
         sample_num = 0
         cls_meter = Meter()
         for iteration in range(self.local_epochs):
+            counter = 0
             for i, (x, y) in enumerate(trainloader):
+                if counter >= 1:
+                    break
                 if type(x) == type([]):
                     x[0] = x[0].to(self.device)
                 else:
@@ -95,6 +100,7 @@ class ClientPreciseFCL(Client):
                 correct += cls_result['correct']
                 sample_num += x.shape[0]
                 cls_meter._update(cls_result, batch_size=x.shape[0])
+                counter += 1
 
         acc = float(correct)/sample_num
         result_dict = cls_meter.get_scalar_dict('global_avg')
@@ -166,3 +172,27 @@ class ClientPreciseFCL(Client):
         self.dist_loss = nn.MSELoss()
         self.ensemble_loss=nn.KLDivLoss(reduction="batchmean")
         self.ce_loss = nn.CrossEntropyLoss()
+
+    def set_parameters_precise(self, model, beta=1):
+        '''
+        self.model: old user model
+        model: the global model on the server (new model)
+        '''
+        for (name1, old_param), (name2, new_param), (name3, local_param) in zip(
+                self.model.named_parameters(), model.named_parameters(), self.local_model_name):
+            assert name1==name2==name3
+            if (self.algorithm=='PreciseFCL') and (self.classifier_global_mode=='head') and \
+                    ('classifier' in name1) and (not str_in_list(name1, self.classifier_head_list)):
+                continue
+            elif (self.algorithm=='PreciseFCL') and (self.classifier_global_mode=='extractor') and \
+                    ('classifier' in name1) and (str_in_list(name1, self.classifier_head_list)):
+                continue
+            elif (self.algorithm=='PreciseFCL') and (self.classifier_global_mode=='none') and 'classifier' in name1:
+                continue
+            else:
+                if beta == 1:
+                    old_param.data = new_param.data.clone()
+                    local_param.data = new_param.data.clone()
+                else:
+                    old_param.data = beta * new_param.data.clone() + (1 - beta)  * old_param.data.clone()
+                    local_param.data = beta * new_param.data.clone() + (1-beta) * local_param.data.clone()

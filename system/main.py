@@ -17,11 +17,11 @@ from flcore.servers.serverala import FedALA
 from flcore.servers.serverdbe import FedDBE
 from flcore.servers.serveras import FedAS
 from flcore.servers.serverweit import FedWeIT
-from flcore.servers.serverprecise import FedPrecise
+from flcore.servers.serveraffcl import FedAFFCL
 
 from flcore.trainmodel.models import *
 
-from flcore.trainmodel.precise_models import PreciseModel
+from flcore.trainmodel.AFFCL_models import AFFCLModel
 from flcore.servers.serverstgm import FedSTGM
 from flcore.servers.serverfcil import FedFCIL
 
@@ -79,8 +79,8 @@ def run(args):
             args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
         elif model_str == "Swin_t":
             args.model = torchvision.models.swin_t(weights=None, num_classes=args.num_classes).to(args.device)
-        elif model_str == "PreciseModel":    
-            args.model = PreciseModel(args).to(args.device)
+        elif model_str == "AFFCLModel":    
+            args.model = AFFCLModel(args).to(args.device)
         else:
             raise NotImplementedError
 
@@ -102,7 +102,7 @@ def run(args):
 
         elif args.algorithm == "PreciseFCL":
             # print("PreciseFCL")
-            server = FedPrecise(args, i)
+            server = FedAFFCL(args, i)
 
         elif args.algorithm == 'FedAS':
 

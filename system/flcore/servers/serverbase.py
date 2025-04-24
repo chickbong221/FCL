@@ -239,9 +239,15 @@ class Server(object):
                 "Local/Averaged Test Accuracy": test_acc,
             }
 
-        if self.args.log:
-            print("\nAveraged Test Accuracy.")
-            print(test_acc)
+        if self.args.log and flag == "global":
+            # print(f"{sum(stats_train[2])}, {sum(stats_train[1])}")
+            print(f"Global Averaged Test Accuracy: {test_acc}")
+            print(f"Global Averaged Test Loss: {train_loss}")
+
+        if self.args.log and flag == "local":
+            # print(f"{sum(stats_train[2])}, {sum(stats_train[1])}")
+            print(f"Local Averaged Test Accuracy: {test_acc}")
+            print(f"Local Averaged Test Loss: {train_loss}")
 
         if self.args.wandb:
             wandb.log(log_keys, step=glob_iter)
