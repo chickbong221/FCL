@@ -264,48 +264,50 @@ class Buffer(nn.Module):
         indices = torch.randperm(self.current_index).to(self.args.device)
         self.bx = self.bx[indices]
         self.by = self.by[indices]
-        self.bt = self.bt[indices]class Buffer(nn.Module):
-    def __init__(self, args, input_size=None):
-        super().__init__()
-        self.args = args
-        self.k = 0.03
+        self.bt = self.bt[indices]
+        
+    class Buffer(nn.Module):
+        def __init__(self, args, input_size=None):
+            super().__init__()
+            self.args = args
+            self.k = 0.03
 
-        self.place_left = True
+            self.place_left = True
 
-        if input_size is None:
-            input_size = args.input_size
+            if input_size is None:
+                input_size = args.input_size
 
-        buffer_size = args.buffer_size
-        print('buffer has %d slots' % buffer_size)
+            buffer_size = args.buffer_size
+            print('buffer has %d slots' % buffer_size)
 
-        bx = torch.FloatTensor(buffer_size, *input_size).fill_(0)
-        print("bx", bx.shape)
-        by = torch.LongTensor(buffer_size).fill_(0)
-        bt = torch.LongTensor(buffer_size).fill_(0)
+            bx = torch.FloatTensor(buffer_size, *input_size).fill_(0)
+            print("bx", bx.shape)
+            by = torch.LongTensor(buffer_size).fill_(0)
+            bt = torch.LongTensor(buffer_size).fill_(0)
 
-        logits = torch.FloatTensor(buffer_size, args.n_classes).fill_(0)
-        feature = torch.FloatTensor(buffer_size, 512).fill_(0)
+            logits = torch.FloatTensor(buffer_size, args.n_classes).fill_(0)
+            feature = torch.FloatTensor(buffer_size, 512).fill_(0)
 
-        bx = bx.cuda()
-        by = by.cuda()
-        bt = bt.cuda()
-        logits = logits.cuda()
-        feature = feature.cuda()
-        self.save_logits = None
+            bx = bx.cuda()
+            by = by.cuda()
+            bt = bt.cuda()
+            logits = logits.cuda()
+            feature = feature.cuda()
+            self.save_logits = None
 
-        self.current_index = 0
-        self.n_seen_so_far = 0
-        self.is_full = 0
+            self.current_index = 0
+            self.n_seen_so_far = 0
+            self.is_full = 0
 
-        # registering as buffer allows us to save the object using torch.save
-        self.register_buffer('bx', bx)
-        self.register_buffer('by', by)
-        self.register_buffer('bt', bt)
-        self.register_buffer('logits', logits)
-        self.register_buffer('feature', feature)
-        self.to_one_hot = lambda x: x.new(x.size(0), args.n_classes).fill_(0).scatter_(1, x.unsqueeze(1), 1)
-        self.arange_like = lambda x: torch.arange(x.size(0)).to(x.device)
-        self.shuffle = lambda x: x[torch.randperm(x.size(0))]
+            # registering as buffer allows us to save the object using torch.save
+            self.register_buffer('bx', bx)
+            self.register_buffer('by', by)
+            self.register_buffer('bt', bt)
+            self.register_buffer('logits', logits)
+            self.register_buffer('feature', feature)
+            self.to_one_hot = lambda x: x.new(x.size(0), args.n_classes).fill_(0).scatter_(1, x.unsqueeze(1), 1)
+            self.arange_like = lambda x: torch.arange(x.size(0)).to(x.device)
+            self.shuffle = lambda x: x[torch.randperm(x.size(0))]
 
     @property
     def x(self):

@@ -22,7 +22,7 @@ from flcore.servers.serveraffcl import FedAFFCL
 from flcore.trainmodel.models import *
 
 from flcore.trainmodel.AFFCL_models import AFFCLModel
-from flcore.servers.serverstgm import FedSTGM
+# from flcore.servers.serverstgm import FedSTGM
 from flcore.servers.serverfcil import FedFCIL
 
 from flcore.trainmodel.bilstm import *
