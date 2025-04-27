@@ -13,7 +13,7 @@ import numpy as np
 import statistics
 
 
-class FedAvg(Server):
+class FedLoRM(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
 
@@ -60,8 +60,7 @@ class FedAvg(Server):
                         raise NotImplementedError("Not supported dataset")
 
                     # update dataset
-                    self.clients[i].next_task(train_data, label_info) # assign dataloader for new data
-                    # print(self.clients[i].task_dict)
+                    self.clients[i].next_task(train_data, label_info)
 
                 # update labels info.
                 available_labels = set()
@@ -75,8 +74,6 @@ class FedAvg(Server):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
-
-                    # print(available_labels)
 
             # ============ train ==============
 
@@ -94,29 +91,8 @@ class FedAvg(Server):
                 for client in self.selected_clients:
                     client.train(task=task)
 
-                # threads = [Thread(target=client.train)
-                #            for client in self.selected_clients]
-                # [t.start() for t in threads]
-                # [t.join() for t in threads]
-
                 self.receive_models()
-                # self.receive_grads()
-                # model_origin = copy.deepcopy(self.global_model)
                 self.aggregate_parameters()
-
-                # angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
-                # distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
-                # norm = [self.distance(model_origin, models) for models in self.uploaded_models]
-                # self.angle_value = statistics.mean(angle)
-                # self.distance_value = statistics.mean(distance)
-                # self.norm_value = statistics.mean(norm)
-                # angle_value = []
-                # for grad_i in self.grads:
-                #     for grad_j in self.grads:
-                #         angle_value.append(self.cosine_similarity(grad_i, grad_j))
-                # self.grads_angle_value = statistics.mean(angle_value)
-                # print(f"grad angle: {self.grads_angle_value}")
-
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")

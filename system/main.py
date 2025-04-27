@@ -66,10 +66,6 @@ def run(args):
             else:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=10816).to(args.device)
 
-        elif model_str == "LeNet_big":
-            args.model = LeNet_big(in_features=3, num_classes=args.num_classes, dim=4096).to(args.device)
-        elif model_str == "LeNet_normal":
-            args.model = LeNet_normal(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
         elif model_str == "ResNet50":
             args.model = torchvision.models.resnet50(pretrained=False, num_classes=args.num_classes).to(args.device)
         elif model_str == "ResNet50-pretrained":

@@ -12,10 +12,38 @@ import numpy as np
 
 import statistics
 
+from torch import nn
+from torch.nn import functional as F
+import torch.utils
+from torch.utils.data import DataLoader
+import torch.utils.data
+from typing import List
+from _models._utils import BaseModel
+from _networks.vit import VisionTransformer as Vit
+from torch.func import functional_call
+from copy import deepcopy
 
-class FedAvg(Server):
+from tqdm import tqdm
+from torchvision import transforms
+from kornia import augmentation
+import time, os, math
+import torch.nn.init as init
+from PIL import Image
+from torch.autograd import Variable
+from abc import ABC
+import shutil
+
+class FedTARGET(Server):
     def __init__(self, args, times):
         super().__init__(args, times)
+        self.synthtic_save_dir = "synthetic_data"
+        if os.path.exists(self.synthtic_save_dir):
+            shutil.rmtree(self.synthtic_save_dir)
+        self.nums = 8000
+        self.total_classes = []
+        self.syn_data_loader = None
+        self.old_network = None
+        self.kd_alpha = 25
 
         self.set_clients(clientAVG)
 
@@ -60,8 +88,7 @@ class FedAvg(Server):
                         raise NotImplementedError("Not supported dataset")
 
                     # update dataset
-                    self.clients[i].next_task(train_data, label_info) # assign dataloader for new data
-                    # print(self.clients[i].task_dict)
+                    self.clients[i].next_task(train_data, label_info)
 
                 # update labels info.
                 available_labels = set()
@@ -75,8 +102,6 @@ class FedAvg(Server):
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
-
-                    # print(available_labels)
 
             # ============ train ==============
 
@@ -94,29 +119,8 @@ class FedAvg(Server):
                 for client in self.selected_clients:
                     client.train(task=task)
 
-                # threads = [Thread(target=client.train)
-                #            for client in self.selected_clients]
-                # [t.start() for t in threads]
-                # [t.join() for t in threads]
-
                 self.receive_models()
-                # self.receive_grads()
-                # model_origin = copy.deepcopy(self.global_model)
                 self.aggregate_parameters()
-
-                # angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
-                # distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
-                # norm = [self.distance(model_origin, models) for models in self.uploaded_models]
-                # self.angle_value = statistics.mean(angle)
-                # self.distance_value = statistics.mean(distance)
-                # self.norm_value = statistics.mean(norm)
-                # angle_value = []
-                # for grad_i in self.grads:
-                #     for grad_j in self.grads:
-                #         angle_value.append(self.cosine_similarity(grad_i, grad_j))
-                # self.grads_angle_value = statistics.mean(angle_value)
-                # print(f"grad angle: {self.grads_angle_value}")
-
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
