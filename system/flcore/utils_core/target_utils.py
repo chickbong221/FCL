@@ -4,17 +4,10 @@ from torch.nn import functional as F
 import torch.utils
 from torch.utils.data import DataLoader
 import torch.utils.data
-from _models import register_model
 from typing import List
-from _models._utils import BaseModel
-from _networks.vit import VisionTransformer as Vit
 from torch.func import functional_call
 from copy import deepcopy
-from utils.tools import str_to_bool, compute_fisher_expectation_fabric
 
-from _models.lora import Lora, merge_AB, zero_pad
-from _models.regmean import RegMean
-from _models.lora import Lora
 from tqdm import tqdm
 from torchvision import transforms
 from kornia import augmentation
@@ -24,7 +17,6 @@ from PIL import Image
 import numpy as np
 from torch.autograd import Variable
 from abc import ABC
-from _models.fedavg import FedAvg
 import shutil
 
 #dataset = "cifar100"
@@ -53,11 +45,16 @@ data_normalize = dict(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
 
 train_transform = transforms.Compose([
     #transforms.RandomCrop(32, padding=4),
-    transforms.RandomResizedCrop(size=(224, 224), interpolation=3),
+    transforms.RandomResizedCrop(size=(32, 32), interpolation=3),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
     transforms.Normalize(**dict(data_normalize)),
 ])
+
+def KD_loss(pred, soft, T):
+    pred = torch.log_softmax(pred / T, dim=1)
+    soft = torch.softmax(soft / T, dim=1)
+    return -1 * torch.mul(soft, pred).sum() / pred.shape[0]
 
 def normalize(tensor, mean, std, reverse=False):
     if reverse:
@@ -155,17 +152,17 @@ def pack_images(images, col=None, channel_last=False, padding=1):
         pack[:, h:h+H, w:w+W] = img
     return pack
 
-def reptile_grad(src, tar):
+def reptile_grad(src, tar, device):
     for p, tar_p in zip(src.parameters(), tar.parameters()):
         if p.grad is None:
-            p.grad = Variable(torch.zeros(p.size())).cuda()
+            p.grad = Variable(torch.zeros(p.size())).to(device)
         p.grad.data.add_(p.data - tar_p.data, alpha=67) # , alpha=40
 
 
-def fomaml_grad(src, tar):
+def fomaml_grad(src, tar, device):
     for p, tar_p in zip(src.parameters(), tar.parameters()):
         if p.grad is None:
-            p.grad = Variable(torch.zeros(p.size())).cuda()
+            p.grad = Variable(torch.zeros(p.size())).to(device)
         p.grad.data.add_(tar_p.grad.data)   #, alpha=0.67
 
 
@@ -175,7 +172,7 @@ def reset_l0_fun(model):
             nn.init.normal_(m.weight, 0.0, 0.02)
             nn.init.constant_(m.bias, 0)
 
-def save_image_batch(imgs, output, col=None, size=None, pack=True):
+def save_image_batch(imgs, output, col=None, size=None, pack=True, device=None):
     if isinstance(imgs, torch.Tensor):
         imgs = (imgs.detach().clamp(0, 1).cpu().numpy()*255).astype('uint8')
     base_dir = os.path.dirname(output)
@@ -245,13 +242,14 @@ class DeepInversionHook():
 
 
 class ImagePool(object):
-    def __init__(self, root):
+    def __init__(self, root, device):
+        self.device = device
         self.root = os.path.abspath(root)
         os.makedirs(self.root, exist_ok=True)
         self._idx = 0
 
     def add(self, imgs, targets=None):
-        save_image_batch(imgs, os.path.join( self.root, "%d.png"%(self._idx) ), pack=False)
+        save_image_batch(imgs, os.path.join( self.root, "%d.png"%(self._idx) ), pack=False, device=self.device)
         self._idx+=1
 
     def get_dataset(self, nums=None, transform=None, labeled=True):
@@ -259,11 +257,12 @@ class ImagePool(object):
 
 
 class Generator(nn.Module):
-    def __init__(self, nz=100, ngf=64, img_size=32, nc=3):
+    def __init__(self, nz=100, ngf=64, img_size=32, nc=3, device=None):
         super(Generator, self).__init__()
         self.params = (nz, ngf, img_size, nc)
         self.init_size = img_size // 4
         self.l1 = nn.Sequential(nn.Linear(nz, ngf * 2 * self.init_size ** 2))
+        self.device = device
 
         self.conv_blocks = nn.Sequential(
             nn.BatchNorm2d(ngf * 2),
@@ -291,7 +290,7 @@ class Generator(nn.Module):
     def clone(self):
         clone = Generator(self.params[0], self.params[1], self.params[2], self.params[3])
         clone.load_state_dict(self.state_dict())
-        return clone.cuda()
+        return clone.to(self.device)
 
 
 def kldiv( logits, targets, T=1.0, reduction='batchmean'):
@@ -308,21 +307,15 @@ class KLDiv(nn.Module):
     def forward(self, logits, targets):
         return kldiv(logits, targets, T=self.T, reduction=self.reduction)
 
-
-def _KD_loss(pred, soft, T):
-    pred = torch.log_softmax(pred / T, dim=1)
-    soft = torch.softmax(soft / T, dim=1)
-    return -1 * torch.mul(soft, pred).sum() / pred.shape[0]
-
 class GlobalSynthesizer(ABC):
-    def __init__(self, teacher, student, generator, nz, num_classes, img_size,
+    def __init__(self, teacher, student, generator, nz, allowed_classes, img_size,
                     init_dataset=None, iterations=100, lr_g=0.1,
                     synthesis_batch_size=128, sample_batch_size=128, 
                     adv=0.0, bn=1, oh=1,
                     save_dir='run/fast', transform=None, autocast=None, use_fp16=False,
                     normalizer=None, distributed=False, lr_z = 0.01,
                     warmup=10, reset_l0=0, reset_bn=0, bn_mmt=0,
-                    is_maml=1, fabric = None):#, args=None):
+                    is_maml=1, fabric = None, args=None):
         super(GlobalSynthesizer, self).__init__()
         self.teacher = teacher
         self.student = student
@@ -336,16 +329,17 @@ class GlobalSynthesizer(ABC):
         self.bn = bn
         self.oh = oh
         self.ismaml = is_maml
-        #self.args = args
+        self.args = args
+        self.device = args.device
 
-        self.num_classes = num_classes
+        self.allowed_classes = list(allowed_classes)
         self.synthesis_batch_size = synthesis_batch_size
         self.sample_batch_size = sample_batch_size
         self.normalizer = normalizer
 
-        self.data_pool = ImagePool(root=self.save_dir)
+        self.data_pool = ImagePool(root=self.save_dir, device=self.device)
         self.transform = transform
-        self.generator = generator.cuda().train()
+        self.generator = generator.to(self.device).train()
         self.ep = 0
         self.ep_start = warmup
         self.reset_l0 = reset_l0
@@ -383,13 +377,14 @@ class GlobalSynthesizer(ABC):
             reset_l0_fun(self.generator)
         
         best_inputs = None
-        z = torch.randn(size=(self.synthesis_batch_size, self.nz)).cuda()
+        z = torch.randn(size=(self.synthesis_batch_size, self.nz)).to(self.device)
         z.requires_grad = True
         if targets is None:
-            targets = torch.randint(low=0, high=self.num_classes, size=(self.synthesis_batch_size,))
+            targets = np.random.choice(self.allowed_classes, size=self.synthesis_batch_size, replace=True)
+            targets = torch.from_numpy(targets).long().to(self.device)
         else:
             targets = targets.sort()[0] # sort for better visualization
-        targets = targets.cuda()
+        targets = targets.to(self.device)
 
         fast_generator = self.generator.clone() 
         optimizer = torch.optim.Adam([
@@ -404,7 +399,7 @@ class GlobalSynthesizer(ABC):
             t_out = self.teacher(inputs_aug)#["logits"]
             if targets is None:
                 targets = torch.argmax(t_out, dim=-1)
-                targets = targets.cuda()
+                targets = targets.to(self.device)
 
             loss_bn = sum([h.r_feature for h in self.hooks])
             loss_oh = F.cross_entropy( t_out, targets )
@@ -429,7 +424,7 @@ class GlobalSynthesizer(ABC):
 
             if self.ismaml:
                 if it==0: self.meta_optimizer.zero_grad()
-                fomaml_grad(self.generator, fast_generator)
+                fomaml_grad(self.generator, fast_generator, device=self.device)
                 if it == (self.iterations-1): self.meta_optimizer.step()
 
             optimizer.step()
@@ -441,7 +436,7 @@ class GlobalSynthesizer(ABC):
         # REPTILE meta gradient
         if not self.ismaml:
             self.meta_optimizer.zero_grad()
-            reptile_grad(self.generator, fast_generator)
+            reptile_grad(self.generator, fast_generator, device=self.device)
             self.meta_optimizer.step()
 
         self.student.train()

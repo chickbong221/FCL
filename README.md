@@ -45,6 +45,7 @@ python system/main.py --cfp ./hparams/FedAS.json
 python system/main.py --cfp ./hparams/FedALA.json
 python system/main.py --cfp ./hparams/FedDBE.json
 python system/main.py --cfp ./hparams/FedAvg.json
+python system/main.py --cfp ./hparams/FedTARGET.json
 
 # Cifar100
 python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 0 -lr 1e-4 --flow_lr 1e-4 --optimizer adam

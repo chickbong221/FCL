@@ -18,6 +18,7 @@ from flcore.servers.serverdbe import FedDBE
 from flcore.servers.serveras import FedAS
 from flcore.servers.serverweit import FedWeIT
 from flcore.servers.serveraffcl import FedAFFCL
+from flcore.servers.servertarget import FedTARGET
 
 from flcore.trainmodel.models import *
 
@@ -101,7 +102,6 @@ def run(args):
             server = FedAFFCL(args, i)
 
         elif args.algorithm == 'FedAS':
-
             args.head = copy.deepcopy(args.model.fc)
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
@@ -118,6 +118,12 @@ def run(args):
             args.model.fc = nn.Identity()
             args.model = BaseHeadSplit(args.model, args.head)
             server = FedSTGM(args, i)
+
+        elif args.algorithm == "FedTARGET":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
+            server = FedTARGET(args, i)
 
         else:
             raise NotImplementedError
