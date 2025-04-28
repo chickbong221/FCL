@@ -72,8 +72,8 @@ def run(args):
         elif model_str == "ResNet50-pretrained":
             weights = torchvision.models.ResNet50_Weights.IMAGENET1K_V1
             args.model = torchvision.models.resnet50(weights=weights, num_classes=args.num_classes).to(args.device)
-        elif model_str == "ResNet18":
-            args.model = torchvision.models.resnet18(pretrained=False, num_classes=args.num_classes).to(args.device)
+        elif model_str == "ResNet34":
+            args.model = torchvision.models.resnet34(pretrained=False, num_classes=args.num_classes).to(args.device)
         elif model_str == "Swin_t":
             args.model = torchvision.models.swin_t(weights=None, num_classes=args.num_classes).to(args.device)
         elif model_str == "AFFCLModel":    

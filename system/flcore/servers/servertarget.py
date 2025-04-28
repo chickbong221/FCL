@@ -123,11 +123,10 @@ class FedTARGET(Server):
                 
                 if task > 0 :
                     for u in self.clients:
-                        for new_param, old_param in zip(self.old_network.parameters(), self.clients[i].old_network.parameters()):
-                            old_param.data = new_param.data.clone()
-                        self.clients[i].syn_data_loader = self.clients[i].get_syn_data_loader()
-                        self.clients[i].it = DataIter(self.clients[i].syn_data_loader)
-                        self.clients[i].old_network = self.clients[i].old_network.to(self.device)
+                        u.old_network = deepcopy(self.old_network)
+                        u.syn_data_loader = u.get_syn_data_loader()
+                        u.it = DataIter(u.syn_data_loader)
+                        u.old_network = u.old_network.to(self.device)
 
                 glob_iter = i + self.global_rounds * task
                 s_t = time.time()

@@ -12,6 +12,7 @@ class clientTARGET(Client):
         self.total_classes = []
         self.syn_data_loader = None
         self.old_network = None
+        self.it = None
         self.kd_alpha = 25
         self.synthtic_save_dir = "dataset/synthetic_data"
         
@@ -33,11 +34,12 @@ class clientTARGET(Client):
                 output = self.model(x)
                 loss = self.loss(output, y)
                 if self.syn_data_loader is not None:
-                    syn_inputs = next(iter(self.syn_data_loader)).cuda()
+                    syn_inputs = next(iter(self.syn_data_loader)).to(self.device)
                     syn_outputs = self.model(syn_inputs)
                     with torch.no_grad():
                         syn_old_outputs = self.old_network(syn_inputs)
                     kd_loss = KD_loss(syn_outputs, syn_old_outputs, 2)
+                    # print("kd_loss: {}".format(kd_loss))
                     loss += self.kd_alpha * kd_loss
                 self.optimizer.zero_grad()
                 loss.backward()
