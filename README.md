@@ -48,12 +48,12 @@ python system/main.py --cfp ./hparams/FedAvg.json
 python system/main.py --cfp ./hparams/FedTARGET.json
 
 # Cifar100
-python system/main.py --dataset CIFAR100 --num_classes 100 -algo PreciseFCL -m PreciseModel -gr 1000 --wandb True -did 0 -lr 1e-4 --flow_lr 1e-4 --optimizer adam
-python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000
-python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedDBE
-python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedALA
-python system/main.py --dataset CIFAR100 --num_classes 100  -did 0 -gr 1000 -algo FedAS
-python system/main.py --dataset CIFAR100 --num_classes 100 -did 0 -gr 1000 -algo FedFCIL
+python system/main.py --cfp ./hparams/FedAvg_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/FedAS_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/FedALA_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/FedDBE_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/FedTARGET_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/AFFCL_cifar100.json --wandb True --offlog True --log True --note final
 ```
 
 Sweep

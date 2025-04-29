@@ -8,7 +8,7 @@
     "device_id": "0",
     "dataset": "IMAGENET1k",
     "num_classes": 1000,
-    "model": "ResNet34",
+    "model": "CNN",
     "batch_size": 64,
     "local_learning_rate": 0.0003,
     "learning_rate_decay": false,

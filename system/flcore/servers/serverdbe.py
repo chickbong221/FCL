@@ -14,7 +14,7 @@ class FedDBE(Server):
         self.set_clients(clientDBE)
         self.selected_clients = self.clients
         for client in self.selected_clients:
-            client.train() # no DBE
+            client.train(task=0) # no DBE
 
         self.uploaded_ids = []
         self.uploaded_weights = []
