@@ -40,7 +40,7 @@ gdown 1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z
 ```sh
 # ImageNet1k
 python system/main.py --cfp ./hparams/FedSTGM.json 
-python system/main.py --cfp ./hparams/AFFCLFCL.json
+python system/main.py --cfp ./hparams/AFFCL.json
 python system/main.py --cfp ./hparams/FedAS.json
 python system/main.py --cfp ./hparams/FedALA.json
 python system/main.py --cfp ./hparams/FedDBE.json
