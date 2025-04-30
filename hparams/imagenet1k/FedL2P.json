@@ -5,7 +5,7 @@
     "optimizer": "sgd",
     "datadir": "dataset",
     "device": "cuda",
-    "device_id": "0",
+    "device_id": "1",
     "dataset": "IMAGENET1k",
     "num_classes": 1000,
     "model": "VitL2P",
