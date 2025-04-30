@@ -19,6 +19,7 @@ from flcore.servers.serveras import FedAS
 from flcore.servers.serverweit import FedWeIT
 from flcore.servers.serveraffcl import FedAFFCL
 from flcore.servers.servertarget import FedTARGET
+from flcore.servers.serverl2p import FedL2P
 
 from flcore.trainmodel.models import *
 
@@ -27,10 +28,10 @@ from flcore.trainmodel.AFFCL_models import AFFCLModel
 from flcore.servers.serverfcil import FedFCIL
 
 from flcore.trainmodel.bilstm import *
-# from flcore.trainmodel.resnet import *
 from flcore.trainmodel.alexnet import *
 from flcore.trainmodel.mobilenet_v2 import *
 from flcore.trainmodel.transformer import *
+from flcore.trainmodel.vit_prompt_l2p import *
 
 warnings.simplefilter("ignore")
 torch.manual_seed(0)
@@ -78,6 +79,14 @@ def run(args):
             args.model = torchvision.models.swin_t(weights=None, num_classes=args.num_classes).to(args.device)
         elif model_str == "AFFCLModel":    
             args.model = AFFCLModel(args).to(args.device)
+        elif model_str == "VitL2P":
+            args.model = VitL2P(
+                num_classes=args.num_classes,
+                n_prompts=args.n_prompts,
+                prompt_length=args.prompt_length,
+                prompt_pool=args.prompt_pool,
+                pool_size=args.pool_size,
+            ).to(args.device)
         else:
             raise NotImplementedError
 
@@ -89,41 +98,28 @@ def run(args):
             server = FedALA(args, i)
 
         elif args.algorithm == "FedDBE":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
             server = FedDBE(args, i)
 
         elif args.algorithm == "FedWeIT":
             server = FedWeIT(args, i)
 
         elif args.algorithm == "PreciseFCL":
-            # print("PreciseFCL")
             server = FedAFFCL(args, i)
 
         elif args.algorithm == 'FedAS':
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
             server = FedAS(args, i)
 
         elif args.algorithm == "FedFCIL":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
             server = FedFCIL(args, i)
             
         elif args.algorithm == "FedSTGM":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
             server = FedSTGM(args, i)
 
         elif args.algorithm == "FedTARGET":
-            args.head = copy.deepcopy(args.model.fc)
-            args.model.fc = nn.Identity()
-            args.model = BaseHeadSplit(args.model, args.head)
             server = FedTARGET(args, i)
+
+        elif args.algorithm == "FedL2P":
+            server = FedL2P(args, i)
 
         else:
             raise NotImplementedError

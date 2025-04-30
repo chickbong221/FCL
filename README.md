@@ -39,21 +39,22 @@ gdown 1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z
 ### Running an Experiment
 ```sh
 # ImageNet1k
-python system/main.py --cfp ./hparams/FedSTGM.json 
-python system/main.py --cfp ./hparams/AFFCL.json
-python system/main.py --cfp ./hparams/FedAS.json
-python system/main.py --cfp ./hparams/FedALA.json
-python system/main.py --cfp ./hparams/FedDBE.json
-python system/main.py --cfp ./hparams/FedAvg.json
-python system/main.py --cfp ./hparams/FedTARGET.json
+python system/main.py --cfp ./hparams/imagenet1k/FedSTGM.json 
+python system/main.py --cfp ./hparams/imagenet1k/AFFCL.json
+python system/main.py --cfp ./hparams/imagenet1k/FedAS.json
+python system/main.py --cfp ./hparams/imagenet1k/FedALA.json
+python system/main.py --cfp ./hparams/imagenet1k/FedDBE.json
+python system/main.py --cfp ./hparams/imagenet1k/FedAvg.json
+python system/main.py --cfp ./hparams/imagenet1k/FedTARGET.json
+python system/main.py --cfp ./hparams/imagenet1k/FedL2P.json
 
 # Cifar100
-python system/main.py --cfp ./hparams/FedAvg_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/FedAS_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/FedALA_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/FedDBE_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/FedTARGET_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/AFFCL_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/cifar100/FedAvg_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/cifar100/FedAS_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/cifar100/FedALA_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/cifar100/FedDBE_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/cifar100/FedTARGET_cifar100.json --wandb True --offlog True --log True --note final
+python system/main.py --cfp ./hparams/cifar100/AFFCL_cifar100.json --wandb True --offlog True --log True --note final
 ```
 
 Sweep
