@@ -98,6 +98,9 @@ def run(args):
             server = FedALA(args, i)
 
         elif args.algorithm == "FedDBE":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
             server = FedDBE(args, i)
 
         elif args.algorithm == "FedWeIT":
@@ -107,6 +110,9 @@ def run(args):
             server = FedAFFCL(args, i)
 
         elif args.algorithm == 'FedAS':
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
             server = FedAS(args, i)
 
         elif args.algorithm == "FedFCIL":

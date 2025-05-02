@@ -20,7 +20,7 @@ class FedL2P(Server):
             if ("prompt" in n and not "pos_embed" in n) or "last" in n:
                 p.requires_grad = True
             else:
-                p.requires_grad = False
+                p.requires_grad = True
 
         self.set_clients(clientL2P)
 
