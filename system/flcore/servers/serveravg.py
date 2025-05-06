@@ -41,6 +41,7 @@ class FedAvg(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
+                print("ahihi " + str(len(available_labels_current)))
                 for u in self.clients:
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
@@ -53,9 +54,9 @@ class FedAvg(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        train_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=self.args.cpt, count_labels=True)
                     elif self.args.dataset == 'CIFAR100':
-                        train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=2, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=self.args.cpt, count_labels=True)
                     else:
                         raise NotImplementedError("Not supported dataset")
 
@@ -119,8 +120,8 @@ class FedAvg(Server):
                 # print(f"grad angle: {self.grads_angle_value}")
 
 
-                if i%self.eval_gap == 0:
-                    self.eval(task=task, glob_iter=glob_iter, flag="local")
+                # if i%self.eval_gap == 0:
+                #     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
                 self.Budget.append(time.time() - s_t)
                 print('-'*25, 'time cost', '-'*25, self.Budget[-1])

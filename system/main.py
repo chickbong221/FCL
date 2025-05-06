@@ -151,6 +151,8 @@ if __name__ == "__main__":
     parser.add_argument('--offlog', type=bool, default=False, help='Save wandb logger')
     parser.add_argument('--log', type=bool, default=False, help='Print logger')
     parser.add_argument('--debug', type=bool, default=False, help='When use Debug, turn off forgetting')
+    parser.add_argument('--cpt', type=int, default=2, help='Class per task')
+    parser.add_argument('--nt', type=int, default=None, help='Num tasks')
 
     args = parser.parse_args()
 
@@ -158,11 +160,15 @@ if __name__ == "__main__":
         cfdct = json.load(f)
     if args.note is not None:
         cfdct['note'] = args.note
+    if args.nt is not None:
+        cfdct['num_tasks'] = args.nt
 
+    cfdct['nt'] = args.nt
     cfdct['wandb'] = args.wandb
     cfdct['offlog'] = args.offlog
     cfdct['log'] = args.log
     cfdct['debug'] = args.debug
+    cfdct['cpt'] = args.cpt
 
     args = Namespace(**cfdct)
 

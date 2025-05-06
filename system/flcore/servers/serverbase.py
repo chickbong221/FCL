@@ -58,6 +58,8 @@ class Server(object):
             self.N_TASKS = 500
         elif self.args.dataset == 'CIFAR100':
             self.N_TASKS = 50
+        if self.args.nt is not None:
+            self.N_TASKS = self.args.num_classes // self.args.cpt
 
         # FCL
         self.task_dict = {}
@@ -72,9 +74,9 @@ class Server(object):
         for i in range(self.num_clients):
             print(f"Creating client {i} ...")
             if self.args.dataset == 'IMAGENET1k':
-                train_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=2, count_labels=True)
+                train_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=self.args.cpt, count_labels=True)
             elif self.args.dataset == 'CIFAR100':
-                train_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=2, count_labels=True)
+                train_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=self.args.cpt, count_labels=True)
             else:
                 raise NotImplementedError("Not supported dataset")
 
