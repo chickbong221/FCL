@@ -71,14 +71,11 @@ class FedAvg(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-                # print("ahihi" + str(available_labels_current))
 
                 for u in self.clients:
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
                     u.available_labels_past = list(available_labels_past)
-
-                    # print(available_labels)
 
             # ============ train ==============
 

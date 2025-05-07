@@ -10,7 +10,9 @@ from torch.nn.utils import vector_to_parameters, parameters_to_vector
 from flcore.clients.clientbase import Client
 
 from flcore.trainmodel.models import *
+
 from flcore.utils_core.buffer_utils import ImagePool
+from flcore.utils_core.protonet_utils import ProtoNet_Loss, OnPro_Loss
 
 
 class clientSTGM(Client):
@@ -29,6 +31,8 @@ class clientSTGM(Client):
         self.grad_balance = args.grad_balance
 
         self.mem_manager = ImagePool(root=self.save_dir)
+
+        self.proto_loss = nn.CrossEntropyLoss()
 
     def train(self, task=None):
         trainloader = self.load_train_data(task=task)
@@ -104,7 +108,6 @@ class clientSTGM(Client):
                         trainloader = self.load_train_data(task=task)
                         """ Train CoreSet """
 
-                        """ Train ProtoNet """
                     else:
                         trainloader = self.load_train_data(task=task)
                     for epoch in range(max_local_epochs):
