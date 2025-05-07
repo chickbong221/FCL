@@ -8,8 +8,8 @@ from flcore.trainmodel.fedewit_models import *
 from flcore.utils_core.fedweit_utils import *
 
 class clientWeIT(Client):
-    def __init__(self, args, id, train_data, test_data, initial_weights, **kwargs):
-        super().__init__(args, id, train_data, test_data, **kwargs)
+    def __init__(self, args, id, train_data, initial_weights, **kwargs):
+        super().__init__(args, id, train_data, **kwargs)
 
         self.args = args
         self.device = self.args.device

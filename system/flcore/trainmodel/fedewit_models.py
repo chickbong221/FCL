@@ -4,6 +4,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 import time
+import torch.nn.init as init
+import math
+import psutil
+import os
 
 from flcore.utils_core.fedweit_utils import *
 
@@ -374,16 +378,84 @@ class NetModule:
             global_weights = body.state_dict()
         return global_weights
 
+    # def init_decomposed_variables(self, initial_weights):
+    #     print("hello")
+    #     self.decomposed_variables['shared'] = [torch.nn.Parameter(torch.tensor(initial_weights[i]), requires_grad=True) for i in range(len(self.shapes))]
+    #     for tid in range(500): ## bug, sua sau
+    #         print(tid)
+    #         for lid in range(len(self.shapes)):
+    #             var_types = ['adaptive', 'bias', 'mask'] if self.args.model == 'apd' else ['adaptive', 'bias', 'mask', 'atten', 'from_kb']
+    #             for var_type in var_types:
+    #                 self.create_variable(var_type, lid, tid)
+    #     # print("hello1")
+
+    def get_memory_usage_mb(self):
+        process = psutil.Process(os.getpid())
+        return process.memory_info().rss / 1024 / 1024  # RSS: Resident Set Size in bytes → MB
+
     def init_decomposed_variables(self, initial_weights):
+        import time
+        import psutil
+        import os
+
         print("hello")
-        self.decomposed_variables['shared'] = [torch.nn.Parameter(torch.tensor(initial_weights[i]), requires_grad=True) for i in range(len(self.shapes))]
-        for tid in range(self.args.num_tasks):
-            # print(tid)
+        self.decomposed_variables['shared'] = [
+            torch.nn.Parameter(torch.tensor(initial_weights[i]), requires_grad=True) 
+            for i in range(len(self.shapes))
+        ]
+
+        mem_before = self.get_memory_usage_mb()
+        for tid in range(500):  # bug, sửa sau
+            print(f"tid={tid}")
+            t0 = time.time()
             for lid in range(len(self.shapes)):
                 var_types = ['adaptive', 'bias', 'mask'] if self.args.model == 'apd' else ['adaptive', 'bias', 'mask', 'atten', 'from_kb']
                 for var_type in var_types:
                     self.create_variable(var_type, lid, tid)
-        print("hello1")
+            mem_after = self.get_memory_usage_mb()
+            print(f"  RAM used: {mem_after - mem_before:.2f} MB (+{mem_after:.2f} total)")
+            mem_before = mem_after
+
+    # def create_variable(self, var_type, lid, tid=None):
+    #     trainable = True
+    #     if tid not in self.decomposed_variables[var_type]:
+    #         self.decomposed_variables[var_type][tid] = {}
+
+    #     if var_type == 'adaptive':
+    #         # Tạo bản sao khởi tạo từ shared weight, chia theo factor
+    #         init_value = self.decomposed_variables['shared'][lid].detach().clone() / self.adaptive_factor
+
+    #     elif var_type == 'atten':
+    #         shape = (int(round(self.args.num_clients * self.args.join_ratio)),)
+    #         init_value = torch.zeros(shape)
+    #         if tid != 0:
+    #             init.kaiming_uniform_(init_value.unsqueeze(0), a=math.sqrt(5))  # cần thêm math
+    #             init_value = init_value.squeeze(0)
+    #         else:
+    #             trainable = False
+
+    #     elif var_type == 'from_kb':
+    #         shape = list(self.shapes[lid]) + [int(round(self.args.num_clients * self.args.join_ratio))]
+    #         init_value = torch.zeros(shape)
+    #         if tid != 0:
+    #             init.kaiming_uniform_(init_value, a=math.sqrt(5))
+    #         else:
+    #             trainable = False
+
+    #     elif var_type == 'bias' and lid in [2, 3]:
+    #         shape = (self.shapes[lid][-1],)
+    #         init_value = torch.zeros(shape)
+    #         init.kaiming_uniform_(init_value.unsqueeze(0), a=math.sqrt(5))
+    #         init_value = init_value.squeeze(0)
+
+    #     else:
+    #         shape = (self.shapes[lid][0],)
+    #         init_value = torch.zeros(shape)
+    #         init.kaiming_uniform_(init_value.unsqueeze(0), a=math.sqrt(5))
+    #         init_value = init_value.squeeze(0)
+
+    #     var = torch.nn.Parameter(init_value, requires_grad=trainable)
+    #     self.decomposed_variables[var_type][tid][lid] = var
 
     def create_variable(self, var_type, lid, tid=None):
         trainable = True 
