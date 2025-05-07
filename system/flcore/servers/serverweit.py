@@ -29,22 +29,17 @@ class FedWeIT(Server):
         self.global_weights = self.nets.init_global_weights()
 
         self.set_clients(clientWeIT)
+        print(f"Number of clients: {len(self.clients)}")
 
         print(f"\nJoin ratio / total clients: {self.join_ratio} / {self.num_clients}")
         print("Finished creating server and clients.")
 
     def train(self):
-        if os.path.exists("/media/tuannl1/heavy_weight/FCL/PFLlib/output_fedweit"):
-            shutil.rmtree("/media/tuannl1/heavy_weight/FCL/PFLlib/output_fedweit")
-        
-        if self.args.dataset == 'IMAGENET1k':
-            N_TASKS = self.args.num_tasks
-        else:
-            N_TASKS = len(self.data['train_data'][self.data['client_names'][0]]['x'])
-        print(str(N_TASKS) + " tasks are available")
+        if os.path.exists("./output_fedweit"):
+            shutil.rmtree("./output_fedweit")
 
-        for task in range(N_TASKS):
-            print("Change task")
+        for task in range(self.args.num_tasks):
+            # print("Change task")
             print(f"\n================ Current Task: {task} =================")
             if task == 0:
                  # update labels info. for the first task
@@ -67,15 +62,15 @@ class FedWeIT(Server):
                 for i in range(len(self.clients)):
                     
                     if self.args.dataset == 'IMAGENET1k':
-                        train_data, test_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=self.args.cpt, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_imagenet1k(i, task=task, classes_per_task=self.args.cpt, count_labels=True)
                     elif self.args.dataset == 'CIFAR100':
-                        train_data, test_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=self.args.cpt, count_labels=True)
+                        train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=self.args.cpt, count_labels=True)
                     else:
                         raise NotImplementedError("Not supported dataset")
 
                     # update dataset
                     # assert (self.users[i].id == id)
-                    self.clients[i].next_task(train_data, test_data, label_info) # assign dataloader for new data
+                    self.clients[i].next_task(train_data, label_info) # assign dataloader for new data
                     
                 # update labels info.
                 available_labels = set()
@@ -120,24 +115,6 @@ class FedWeIT(Server):
 
                 self.Budget.append(time.time() - s_t)
                 print('-'*25, 'time cost', '-'*25, self.Budget[-1])
-
-                if self.auto_break and self.check_done(acc_lss=[self.rs_test_acc], top_cnt=self.top_cnt):
-                    break
-
-            print("\nBest accuracy.")
-            print(max(self.rs_test_acc))
-            print("\nAverage time cost per round.")
-            print(sum(self.Budget[1:])/len(self.Budget[1:]))
-
-            self.save_results()
-            # self.save_global_model()
-
-            if self.num_new_clients > 0:
-                self.eval_new_clients = True
-                self.set_new_clients(clientWeIT)
-                print(f"\n-------------Fine tuning round-------------")
-                print("\nEvaluate new clients")
-                self.evaluate(glob_iter=glob_iter)
 
     def get_weights(self):
         return self.global_weights

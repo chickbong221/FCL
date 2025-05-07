@@ -15,7 +15,7 @@
     "learning_rate_decay_gamma": 0.99,
     "global_rounds": 100,
     "local_epochs": 1,
-    "algorithm": "FedAvg",
+    "algorithm": "FedWeIT",
     "join_ratio": 1.0,
     "random_join_ratio": false,
     "num_clients": 10,
@@ -24,6 +24,7 @@
     "eval_gap": 1,
     "out_folder": "out",
     "note": null,
+    "num_tasks": 2500,
 
     "client_drop_rate": 0.0,
     "time_threthold": 10000,
@@ -39,6 +40,5 @@
     "wd": 1e-4,
     "lambda_l1": 1e-3,
     "lambda_l2": 100.0,
-    "lambda_mask": 0.0,
-    "num_tasks": 500
+    "lambda_mask": 0.0
 }

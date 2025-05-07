@@ -41,6 +41,7 @@ gdown 1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z
 # ImageNet1k
 python system/main.py --cfp ./hparams/imagenet1k/FedSTGM.json 
 python system/main.py --cfp ./hparams/imagenet1k/AFFCL.json
+python system/main.py --cfp ./hparams/imagenet1k/FedWeIT.json
 python system/main.py --cfp ./hparams/imagenet1k/FedAS.json
 python system/main.py --cfp ./hparams/imagenet1k/FedALA.json
 python system/main.py --cfp ./hparams/imagenet1k/FedDBE.json
