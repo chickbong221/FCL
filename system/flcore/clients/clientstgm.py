@@ -32,7 +32,19 @@ class clientSTGM(Client):
 
         self.mem_manager = ImagePool(root=self.save_dir)
 
-        self.proto_loss = nn.CrossEntropyLoss()
+        self.proto_loss = ProtoNet_Loss(n_support = 50)
+
+        """ ==== Optimizer for ProtoNet ==== """
+        if args.optimizer == "sgd":
+            self.optimizer_proto = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
+        elif args.optimizer == "adam":
+            self.optimizer_proto = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
+        else:
+            raise ValueError(f"Unsupported optimizer: {args.optimizer}.")
+        self.lr_scheduler_proto = torch.optim.lr_scheduler.ExponentialLR(
+            optimizer=self.optimizer_proto,
+            gamma=args.learning_rate_decay_gamma
+        )
 
     def train(self, task=None):
         trainloader = self.load_train_data(task=task)
@@ -99,6 +111,9 @@ class clientSTGM(Client):
             #     else:
             #         pass
 
+            """ Train CoreSet """
+
+
             for task_id, task in enumerate(self.task_dict):
                 if task_id == self.current_task:
                     pass
@@ -106,10 +121,9 @@ class clientSTGM(Client):
                     if self.args.coreset:
                         """ Load CoreSet """
                         trainloader = self.load_train_data(task=task)
-                        """ Train CoreSet """
-
                     else:
                         trainloader = self.load_train_data(task=task)
+
                     for epoch in range(max_local_epochs):
                         for i, (x, y) in enumerate(trainloader):
                             if type(x) == type([]):

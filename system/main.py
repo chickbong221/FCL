@@ -42,7 +42,7 @@ def run(args):
     if args.wandb:
         wandb.login(key="b1d6eed8871c7668a889ae74a621b5dbd2f3b070")
         wandb.init(
-            project="FCL",
+            project="FCL",optimizer
             entity="letuanhf-hanoi-university-of-science-and-technology",
             config=args, 
             name=f"{args.dataset}_{args.model}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}_{args.note}" if args.note else f"{args.dataset}_{args.model}_{args.algorithm}_{args.optimizer}_lr{args.local_learning_rate}", 
