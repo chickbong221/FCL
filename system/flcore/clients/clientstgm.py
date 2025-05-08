@@ -316,6 +316,8 @@ class clientSTGM(Client):
         self.network_inner = []
         self.optimizer_inner = []
         self.optimizer_proto_inner = []
+        self.optimizer_head_inner = []
+        
         for task_id in range(n_task):
             temp_model = FedAvgCNN(in_features=3, num_classes=self.num_classes, dim=1600).to(self.device)
             temp_head = copy.deepcopy(temp_model.fc)

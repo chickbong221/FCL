@@ -34,7 +34,6 @@ def euclidean_dist(x, y):
     '''
     # x: N x D
     # y: M x D
-    print(f"x: {x.size()}|| y: {y.size()}")
 
     n = x.size(0)
     m = y.size(0)
@@ -42,8 +41,10 @@ def euclidean_dist(x, y):
     if d != y.size(1):
         raise Exception
 
+    print(f"Before - x: {x.size()}|| y: {y.size()}")
     x = x.unsqueeze(1).expand(n, m, d)
     y = y.unsqueeze(0).expand(n, m, d)
+    print(f"After  - x: {x.size()}|| y: {y.size()}")
 
     return torch.pow(x - y, 2).sum(2)
 
