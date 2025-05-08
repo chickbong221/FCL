@@ -47,6 +47,11 @@ class clientSTGM(Client):
             optimizer=self.optimizer_proto,
             gamma=args.learning_rate_decay_gamma
         )
+        self.lr_scheduler_head = torch.optim.lr_scheduler.ExponentialLR(
+            optimizer=self.optimizer_head,
+            gamma=args.learning_rate_decay_gamma
+        )
+
 
     def train(self, task=None):
         trainloader = self.load_train_data(task=task)
@@ -57,10 +62,11 @@ class clientSTGM(Client):
 
         self.optimizer_inner_state = self.optimizer.state_dict()
         self.optimizer_proto_inner_state = self.optimizer_proto.state_dict()
+        self.optimizer_head_inner_state = self.optimizer_head.state_dict()
 
         max_local_epochs = self.local_epochs
         """ ============ Current Task ============  """
-        if self.args.coreset:
+        if self.args.coreset:   # TODO: Use coreset -> ProtoNet + Classifier
             for epoch in range(max_local_epochs):
                 for i, (x, y) in enumerate(trainloader):
                     if type(x) == type([]):
@@ -79,11 +85,10 @@ class clientSTGM(Client):
                     # TODO Second Step: Entire model update (Or classifier only?)
                     output = self.model(x)
                     loss = self.loss(output, y)
-                    self.optimizer.zero_grad()
+                    self.optimizer_head.zero_grad()
                     loss.backward()
-                    self.optimizer.step()
-
-        else:
+                    self.optimizer_head.step()
+        else:   # TODO: Do not use coreset -> normal learner
             for epoch in range(max_local_epochs):
                 for i, (x, y) in enumerate(trainloader):
                     if type(x) == type([]):
@@ -91,6 +96,8 @@ class clientSTGM(Client):
                     else:
                         x = x.to(self.device)
                     y = y.to(self.device)
+
+                    # TODO Base+Head use the same classification loss
                     output = self.model(x)
                     loss = self.loss(output, y)
                     self.optimizer.zero_grad()
