@@ -1,6 +1,7 @@
 import copy
 import torch
 import torch.nn as nn
+from torch.nn import functional as F
 import numpy as np
 
 
@@ -33,6 +34,8 @@ def euclidean_dist(x, y):
     '''
     # x: N x D
     # y: M x D
+    print(f"x: {x.size()}|| y: {y.size()}")
+
     n = x.size(0)
     m = y.size(0)
     d = x.size(1)
@@ -78,13 +81,19 @@ def prototypical_loss(input, target, n_support):
     support_idxs = list(map(supp_idxs, classes))
 
     prototypes = torch.stack([input_cpu[idx_list].mean(0) for idx_list in support_idxs])
+
     # FIXME when torch will support where as np
-    query_idxs = torch.stack(list(map(lambda c: target_cpu.eq(c).nonzero()[n_support:], classes))).view(-1)
+    query_idxs = torch.cat([target_cpu.eq(c).nonzero()[n_support:] for c in classes]).view(-1)
 
     query_samples = input.to('cpu')[query_idxs]
+
+    print(f"q_idxs: {query_idxs.size()} | q_samples: {query_samples.size()}")
+
     dists = euclidean_dist(query_samples, prototypes)
 
-    log_p_y = F.log_softmax(-dists, dim=1).view(n_classes, n_query, -1)
+    print(f"dists: {dists.size()}")
+
+    log_p_y = F.log_softmax(-dists, dim=1).view(n_classes, n_query)
 
     target_inds = torch.arange(0, n_classes)
     target_inds = target_inds.view(n_classes, 1, 1)

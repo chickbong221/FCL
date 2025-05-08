@@ -32,7 +32,7 @@ class clientSTGM(Client):
 
         # self.mem_manager = ImagePool(root=self.save_dir)
 
-        self.proto_loss = ProtoNet_Loss(n_support = 50)
+        self.proto_loss = ProtoNet_Loss(n_support = 20)
 
         """ ==== Optimizer for ProtoNet ==== """
         if args.optimizer == "sgd":
@@ -76,8 +76,8 @@ class clientSTGM(Client):
                     y = y.to(self.device)
 
                     # TODO First Step: ProtoNet update
-                    output = self.model(x)
-                    protoloss = self.proto_loss(output, y)
+                    proto, output = self.model.get_proto(x)
+                    protoloss = self.proto_loss(proto, y)
                     self.optimizer_proto.zero_grad()
                     protoloss.backward()
                     self.optimizer_proto.step()

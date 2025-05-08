@@ -20,6 +20,12 @@ class BaseHeadSplit(nn.Module):
 
         return out
 
+    def get_proto(self, x):
+        hidden = self.base(x)
+        out    = self.head(hidden)
+
+        return hidden, out
+
 ###########################################################
 
 # https://github.com/jindongwang/Deep-learning-activity-recognition/blob/master/pytorch/network.py
