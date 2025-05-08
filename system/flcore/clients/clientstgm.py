@@ -30,7 +30,7 @@ class clientSTGM(Client):
 
         self.grad_balance = args.grad_balance
 
-        self.mem_manager = ImagePool(root=self.save_dir)
+        # self.mem_manager = ImagePool(root=self.save_dir)
 
         self.proto_loss = ProtoNet_Loss(n_support = 50)
 
@@ -88,7 +88,7 @@ class clientSTGM(Client):
                     self.optimizer_head.zero_grad()
                     loss.backward()
                     self.optimizer_head.step()
-        else:   # TODO: Do not use coreset -> normal learner
+        else:       # TODO: Do not use coreset -> normal learner
             for epoch in range(max_local_epochs):
                 for i, (x, y) in enumerate(trainloader):
                     if type(x) == type([]):

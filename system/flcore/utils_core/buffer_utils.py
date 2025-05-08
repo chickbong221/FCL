@@ -4,9 +4,6 @@ from torch import nn
 from tqdm import tqdm
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
-from utils.inc_net import IncrementalNet
-from methods.base import BaseLearner
-from utils.data_manager import partition_data, DatasetSplit, average_weights, setup_seed
 import copy, wandb
 import torch.nn.functional as F
 from torch.autograd import Variable
@@ -16,7 +13,6 @@ import time, os, math
 import torch.nn.init as init
 from PIL import Image
 import pickle
-from methods.generator import NLGenerator, NLGenerator_IN
 import shutil
 
 
@@ -573,7 +569,7 @@ class Buffer(nn.Module):
         indices = torch.randperm(self.current_index).to(self.args.device)
         return indices[:amt], indices[amt:]
 
-    def onlysample(self, amt, task=None, ret_ind=False):clear
+    def onlysample(self, amt, task=None, ret_ind=False):
 
         if self.save_logits:
             if task is not None:

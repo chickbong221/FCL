@@ -24,7 +24,7 @@ from flcore.servers.serverl2p import FedL2P
 from flcore.trainmodel.models import *
 
 from flcore.trainmodel.AFFCL_models import AFFCLModel
-# from flcore.servers.serverstgm import FedSTGM
+from flcore.servers.serverstgm import FedSTGM
 from flcore.servers.serverfcil import FedFCIL
 
 from flcore.trainmodel.bilstm import *
@@ -121,6 +121,9 @@ def run(args):
             server = FedFCIL(args, i)
             
         elif args.algorithm == "FedSTGM":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
             server = FedSTGM(args, i)
 
         elif args.algorithm == "FedTARGET":
