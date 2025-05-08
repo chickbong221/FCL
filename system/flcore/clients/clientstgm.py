@@ -96,7 +96,6 @@ class clientSTGM(Client):
                     else:
                         x = x.to(self.device)
                     y = y.to(self.device)
-
                     # TODO Base+Head use the same classification loss
                     output = self.model(x)
                     loss = self.loss(output, y)
@@ -155,39 +154,45 @@ class clientSTGM(Client):
                     pass
                 else:
                     if self.args.coreset:
-                        """ Load CoreSet """
+                        # TODO Load CoreSet
                         trainloader = self.load_train_data(task=task)
-                    else:
+                        for epoch in range(max_local_epochs):
+                            for i, (x, y) in enumerate(trainloader):
+                                if type(x) == type([]):
+                                    x[0] = x[0].to(self.device)
+                                else:
+                                    x = x.to(self.device)
+                                y = y.to(self.device)
+
+                                # TODO First Step: ProtoNet update
+                                output = self.model(x)
+                                protoloss = self.proto_loss(output, y)
+                                self.optimizer_proto_inner[task_id].zero_grad()
+                                protoloss.backward()
+                                self.optimizer_proto_inner[task_id].step()
+
+                                # TODO Second Step: Entire model update (Or classifier only?)
+                                output = self.model(x)
+                                loss = self.loss(output, y)
+                                self.optimizer_head_inner[task_id].zero_grad()
+                                loss.backward()
+                                self.optimizer_head_inner[task_id].step()
+
+                    else: # TODO Base+Head use the same classification loss
                         trainloader = self.load_train_data(task=task)
-
-                    """ ==== Train Prototypical Network  ==== """
-                    for epoch in range(max_local_epochs):
-                        for i, (x, y) in enumerate(trainloader):
-                            if type(x) == type([]):
-                                x[0] = x[0].to(self.device)
-                            else:
-                                x = x.to(self.device)
-                            y = y.to(self.device)
-                            # FIXME Split support/query set
-                            output = self.network_inner[task_id](x)
-                            loss = self.loss(output, y)
-                            self.optimizer_proto[task_id].zero_grad()
-                            loss.backward()
-                            self.optimizer_proto[task_id].step()
-
-                    """ ==== Train Classifier Network  ==== """
-                    for epoch in range(max_local_epochs):
-                        for i, (x, y) in enumerate(trainloader):
-                            if type(x) == type([]):
-                                x[0] = x[0].to(self.device)
-                            else:
-                                x = x.to(self.device)
-                            y = y.to(self.device)
-                            output = self.network_inner[task_id](x)
-                            loss = self.loss(output, y)
-                            self.optimizer_inner[task_id].zero_grad()
-                            loss.backward()
-                            self.optimizer_inner[task_id].step()
+                        for epoch in range(max_local_epochs):
+                            for i, (x, y) in enumerate(trainloader):
+                                if type(x) == type([]):
+                                    x[0] = x[0].to(self.device)
+                                else:
+                                    x = x.to(self.device)
+                                y = y.to(self.device)
+                                # TODO Base+Head use the same classification loss
+                                output = self.network_inner[task_id](x)
+                                loss = self.loss(output, y)
+                                self.optimizer_inner[task_id].zero_grad()
+                                loss.backward()
+                                self.optimizer_inner[task_id].step()
 
             self.network_inner.append(self.model)
 
@@ -327,6 +332,9 @@ class clientSTGM(Client):
                 self.optimizer_proto_inner.append(
                     torch.optim.SGD(self.model.base.parameters(), lr=self.learning_rate)
                 )
+                self.optimizer_head_inner.append(
+                    torch.optim.SGD(self.model.head.parameters(), lr=self.learning_rate)
+                )
             elif self.args.optimizer == "adam":
                 self.optimizer_inner.append(
                     torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
@@ -334,12 +342,16 @@ class clientSTGM(Client):
                 self.optimizer_proto_inner.append(
                     torch.optim.Adam(self.model.base.parameters(), lr=self.learning_rate)
                 )
+                self.optimizer_head_inner.append(
+                    torch.optim.Adam(self.model.head.parameters(), lr=self.learning_rate)
+                )
             else:
                 raise ValueError(f"Unsupported optimizer: {self.args.optimizer}.")
 
             if self.optimizer_inner_state is not None:
                 self.optimizer_inner[task_id].load_state_dict(self.optimizer_inner_state)
-                self.optimizer_proto_inner[task_id].load_state_dict(self.optimizer_inner_state)
+                self.optimizer_proto_inner[task_id].load_state_dict(self.optimizer_proto_inner_state)
+                self.optimizer_head_inner[task_id].load_state_dict(self.optimizer_head_inner_state)
 
         def count_parameters(model):
             return sum(p.numel() for p in model.parameters() if p.requires_grad)

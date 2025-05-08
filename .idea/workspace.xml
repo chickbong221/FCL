@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="99ce310d-b914-4464-8807-136f6ae09a0b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/hparams/imagenet1k/FedSTGM.json" beforeDir="false" afterPath="$PROJECT_DIR$/hparams/imagenet1k/FedSTGM.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/system/flcore/clients/clientstgm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/clients/clientstgm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
