@@ -77,9 +77,9 @@ class clientSTGM(Client):
 
                     # TODO First Step: ProtoNet update
                     proto, output = self.model.get_proto(x)
-                    protoloss = self.proto_loss(proto, y)
+                    proto_metric = self.proto_loss(proto, y)
                     self.optimizer_proto.zero_grad()
-                    protoloss.backward()
+                    proto_metric[0].backward()
                     self.optimizer_proto.step()
 
                     # TODO Second Step: Entire model update (Or classifier only?)
@@ -166,9 +166,9 @@ class clientSTGM(Client):
 
                                 # TODO First Step: ProtoNet update
                                 output = self.model(x)
-                                protoloss = self.proto_loss(output, y)
+                                proto_metric = self.proto_loss(output, y)
                                 self.optimizer_proto_inner[task_id].zero_grad()
-                                protoloss.backward()
+                                proto_metric[0].backward()
                                 self.optimizer_proto_inner[task_id].step()
 
                                 # TODO Second Step: Entire model update (Or classifier only?)

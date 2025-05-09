@@ -41,67 +41,56 @@ def euclidean_dist(x, y):
     if d != y.size(1):
         raise Exception
 
-    print(f"Before - x: {x.size()}|| y: {y.size()}")
     x = x.unsqueeze(1).expand(n, m, d)
     y = y.unsqueeze(0).expand(n, m, d)
-    print(f"After  - x: {x.size()}|| y: {y.size()}")
 
     return torch.pow(x - y, 2).sum(2)
 
 
-def prototypical_loss(input, target, n_support):
+def prototypical_loss(input, target, n_query):
     """
-    Inspired by https://github.com/jakesnell/prototypical-networks/blob/master/protonets/models/few_shot.py
+    Compute prototypical loss and accuracy using fixed n_query per class.
 
-    Compute the bary-centers by averaging the features of n_support
-    samples for each class in target, computes then the distances from each
-    samples' features to each one of the bary-centers, computes the
-    log_probability for each n_query samples for each one of the current
-    classes, of appertaining to a class c, loss and accuracy are then computed
-    and returned
     Args:
-    - input: the model output for a batch of samples
-    - target: ground truth for the above batch of samples
-    - n_support: number of samples to keep in account when computing
-      bary-centers, for each one of the current classes
+        input (Tensor): Model output of shape [N, D]
+        target (Tensor): Ground truth labels of shape [N]
+        n_query (int): Number of query samples per class
+
+    Returns:
+        Tuple[Tensor, Tensor]: loss and accuracy
     """
-    target_cpu = target.to('cpu')
-    input_cpu = input.to('cpu')
-
-    def supp_idxs(c):
-        # FIXME when torch will support where as np
-        return target_cpu.eq(c).nonzero()[:n_support].squeeze(1)
-
-    # FIXME when torch.unique will be available on cuda too
-    classes = torch.unique(target_cpu)
+    classes = torch.unique(target)
     n_classes = len(classes)
-    # FIXME when torch will support where as np
-    # assuming n_query, n_target constants
-    n_query = target_cpu.eq(classes[0].item()).sum().item() - n_support
 
-    support_idxs = list(map(supp_idxs, classes))
+    support_idxs = []
+    query_idxs = []
 
-    prototypes = torch.stack([input_cpu[idx_list].mean(0) for idx_list in support_idxs])
+    for cls in classes:
+        cls_idxs = (target == cls).nonzero(as_tuple=True)[0]
+        if len(cls_idxs) < n_query + 1:
+            raise ValueError(f"Not enough samples for class {cls.item()}: need > {n_query}, got {len(cls_idxs)}")
+        query_idxs.append(cls_idxs[-n_query:])
+        support_idxs.append(cls_idxs[:-n_query])
 
-    # FIXME when torch will support where as np
-    query_idxs = torch.cat([target_cpu.eq(c).nonzero()[n_support:] for c in classes]).view(-1)
+    support_idxs = torch.cat(support_idxs)
+    query_idxs = torch.cat(query_idxs)
 
-    query_samples = input.to('cpu')[query_idxs]
+    support = input[support_idxs]
+    query = input[query_idxs]
 
-    print(f"q_idxs: {query_idxs.size()} | q_samples: {query_samples.size()}")
+    prototypes = []
+    for cls in classes:
+        cls_support = support[(target[support_idxs] == cls)]
+        prototypes.append(cls_support.mean(0))
+    prototypes = torch.stack(prototypes)
 
-    dists = euclidean_dist(query_samples, prototypes)
+    dists = euclidean_dist(query, prototypes)
+    log_p_y = F.log_softmax(-dists, dim=1)
 
-    print(f"dists: {dists.size()}")
+    target_inds = torch.arange(n_classes, device=target.device).repeat_interleave(n_query)
+    loss = -log_p_y[range(len(query_idxs)), target_inds].mean()
 
-    log_p_y = F.log_softmax(-dists, dim=1).view(n_classes, n_query)
+    pred = log_p_y.argmax(dim=1)
+    acc = (pred == target_inds).float().mean()
 
-    target_inds = torch.arange(0, n_classes)
-    target_inds = target_inds.view(n_classes, 1, 1)
-    target_inds = target_inds.expand(n_classes, n_query, 1).long()
-
-    loss_val = -log_p_y.gather(2, target_inds).squeeze().view(-1).mean()
-    _, y_hat = log_p_y.max(2)
-    acc_val = y_hat.eq(target_inds.squeeze(2)).float().mean()
-
-    return loss_val,  acc_val
+    return loss, acc
