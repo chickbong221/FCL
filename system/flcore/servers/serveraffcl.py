@@ -95,7 +95,7 @@ class FedAFFCL(Server):
                 # self.receive_models()
                 self.receive_grads()
                 model_origin = copy.deepcopy(self.global_model)
-                self.aggregate_parameters()
+                self.aggregate_parameters_affcl()
 
                 angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
                 distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
@@ -125,7 +125,7 @@ class FedAFFCL(Server):
                     self.send_models()
                     self.eval_task(task=task, glob_iter=glob_iter, flag="global")
 
-    def aggregate_parameters(self, class_partial=False):
+    def aggregate_parameters_affcl(self, class_partial=False):
         assert (self.selected_clients is not None and len(self.selected_clients) > 0)
         
         param_dict = {}

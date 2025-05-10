@@ -60,6 +60,9 @@ python system/main.py --cfp ./hparams/cifar100/AFFCL_cifar100.json --wandb True 
 python3 system/main.py --cfp ./hparams/cifar100/FedAS_cifar100.json --cpt 20 --nt 15 --log True --offlog True --wandb True --note 20classes
 ```
 
+Test gradient angle
+--log True --offlog True --wandb True --note 20clients
+
 Sweep
 ```sh
 bash scripts/sweep_STGM_scripts/computer1_part3.sh
