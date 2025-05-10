@@ -92,7 +92,7 @@ class FedAFFCL(Server):
                     verbose = False
                     client.train(task, glob_iter, global_classifier, verbose=verbose)
 
-                # self.receive_models()
+                self.receive_models()
                 self.receive_grads()
                 model_origin = copy.deepcopy(self.global_model)
                 self.aggregate_parameters_affcl()
