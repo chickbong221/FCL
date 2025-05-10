@@ -173,8 +173,8 @@ class FedSTGM(Server):
 
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])
-                if i % self.eval_gap == 0:
-                    self.eval(task=task, glob_iter=glob_iter, flag="local")
+                # if i % self.eval_gap == 0:
+                #     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
             if int(task/self.N_TASKS) == int(self.args.num_tasks/self.N_TASKS-1):
                 if not self.args.debug:
@@ -265,16 +265,25 @@ class FedSTGM(Server):
             w_opt.zero_grad()
             ww = torch.softmax(w, dim=0)
             obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
+            print(f"ww {ww}")
+            print(f"Gg {Gg}")
+            print(f"GG {GG}")
+            print(f"c {c}")
+            print(f"inner part before square {ww.t().mm(GG).mm(ww)}")
+            print(f"linear part {ww.t().mm(Gg)}")
+            print(f"obj item {obj.item()}")
             if obj.item() < obj_best:
                 obj_best = obj.item()
                 w_best = w.clone()
+                # print("Anh Duong dep trai")
             if i < self.stgm_rounds:
                 obj.backward(retain_graph=True)
                 w_opt.step()
                 scheduler.step()
 
                 # Check this scheduler. step()
-
+        
+        print(w_best)
         ww = torch.softmax(w_best, dim=0)
         gw_norm = (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
 
