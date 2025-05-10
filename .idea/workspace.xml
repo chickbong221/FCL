@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="99ce310d-b914-4464-8807-136f6ae09a0b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/flcore/clients/clientstgm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/clients/clientstgm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/flcore/utils_core/protonet_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/utils_core/protonet_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serveraffcl.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serveraffcl.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serveras.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serveras.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serverdbe.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serverdbe.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serverlorm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serverlorm.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,16 +42,46 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;PFLlib-based&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/skydvn/Documents/git/ContinualLearning/FCL&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.toDoOptions&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.grad_angle.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "PFLlib-based",
+    "last_opened_file_path": "/home/skydvn/Documents/git/ContinualLearning/FCL",
+    "run.code.analysis.last.selected.profile": "aDefault",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
   }
-}</component>
+}]]></component>
+  <component name="RunManager">
+    <configuration name="grad_angle" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="FCL" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/draw/grad_angle" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/draw/grad_angle/grad_angle.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.grad_angle" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -85,6 +117,10 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/system/flcore/servers/serverbase.py</url>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/system/flcore/servers/serveras.py</url>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

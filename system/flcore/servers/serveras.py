@@ -7,6 +7,7 @@ from flcore.clients.clientas import clientAS
 from flcore.servers.serverbase import Server
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 
+import statistics
 
 class FedAS(Server):
     def __init__(self, args, times):
@@ -141,7 +142,22 @@ class FedAS(Server):
                 self.print_fim_histories()
 
                 self.receive_models()
+                self.receive_grads()
+                model_origin = copy.deepcopy(self.global_model)
                 self.aggregate_wrt_fisher()
+
+                angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
+                distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
+                norm = [self.distance(model_origin, models) for models in self.uploaded_models]
+                self.angle_value = statistics.mean(angle)
+                self.distance_value = statistics.mean(distance)
+                self.norm_value = statistics.mean(norm)
+                angle_value = []
+                for grad_i in self.grads:
+                    for grad_j in self.grads:
+                        angle_value.append(self.cosine_similarity(grad_i, grad_j))
+                self.grads_angle_value = statistics.mean(angle_value)
+                print(f"grad angle: {self.grads_angle_value}")
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
