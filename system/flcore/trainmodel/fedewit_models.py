@@ -398,14 +398,14 @@ class NetModule:
         import psutil
         import os
 
-        print("hello")
+        # print("hello")
         self.decomposed_variables['shared'] = [
             torch.nn.Parameter(torch.tensor(initial_weights[i]), requires_grad=True) 
             for i in range(len(self.shapes))
         ]
 
         mem_before = self.get_memory_usage_mb()
-        for tid in range(500):  # bug, sửa sau
+        for tid in range(50):  # bug, sửa sau
             print(f"tid={tid}")
             t0 = time.time()
             for lid in range(len(self.shapes)):

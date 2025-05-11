@@ -101,8 +101,7 @@ class FedWeIT(Server):
 
                 if i%self.eval_gap == 0:
                     print(f"\n-------------Round number: {i}-------------")
-                    print("\nEvaluate global model")
-                    self.evaluate(glob_iter=glob_iter)
+                    self.eval(task=task, glob_iter=glob_iter, flag="global")
 
                 for client in self.selected_clients:
                     update = client.train_one_round(client.id, glob_iter, True, self.get_weights(), self.get_adapts(glob_iter=glob_iter))

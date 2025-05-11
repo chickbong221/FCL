@@ -39,24 +39,24 @@ gdown 1i0ok3LT5_mYmFWaN7wlkpHsitUngGJ8z
 ### Running an Experiment
 ```sh
 # ImageNet1k
-python system/main.py --cfp ./hparams/imagenet1k/FedSTGM.json 
-python system/main.py --cfp ./hparams/imagenet1k/AFFCL.json
-python system/main.py --cfp ./hparams/imagenet1k/FedWeIT.json
-python system/main.py --cfp ./hparams/imagenet1k/FedAS.json
-python system/main.py --cfp ./hparams/imagenet1k/FedALA.json
-python system/main.py --cfp ./hparams/imagenet1k/FedDBE.json
-python system/main.py --cfp ./hparams/imagenet1k/FedAvg.json
-python system/main.py --cfp ./hparams/imagenet1k/FedTARGET.json
-python system/main.py --cfp ./hparams/imagenet1k/FedL2P.json
-python3 system/main.py --cfp ./hparams/imagenet1k/FedAvg.json --cpt 20 --nt 50 --log True --offlog True --note 20classes 
+python3 system/main.py --cfp ./hparams/imagenet1k/FedSTGM.json 
+python3 system/main.py --cfp ./hparams/imagenet1k/AFFCL.json
+python3 system/main.py --cfp ./hparams/imagenet1k/FedWeIT.json
+python3 system/main.py --cfp ./hparams/imagenet1k/FedAS.json
+python3 system/main.py --cfp ./hparams/imagenet1k/FedALA.json
+python3 system/main.py --cfp ./hparams/imagenet1k/FedDBE.json
+python3 system/main.py --cfp ./hparams/imagenet1k/FedAvg.json
+python3 system/main.py --cfp ./hparams/imagenet1k/FedTARGET.json
+python3 system/main.py --cfp ./hparams/imagenet1k/FedL2P.json
+python3 system/main.py --cfp ./hparams/imagenet1k/FedAvg.json --cpt 20 --nt 50 --log True --offlog True --note 20classes --wandb True
 
 # Cifar100
-python system/main.py --cfp ./hparams/cifar100/FedAvg_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/cifar100/FedAS_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/cifar100/FedALA_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/cifar100/FedDBE_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/cifar100/FedTARGET_cifar100.json --wandb True --offlog True --log True --note final
-python system/main.py --cfp ./hparams/cifar100/AFFCL_cifar100.json --wandb True --offlog True --log True --note final
+python3 system/main.py --cfp ./hparams/cifar100/FedAvg_cifar100.json --wandb True --offlog True --log True --note final
+python3 system/main.py --cfp ./hparams/cifar100/FedAS_cifar100.json --wandb True --offlog True --log True --note final
+python3 system/main.py --cfp ./hparams/cifar100/FedALA_cifar100.json --wandb True --offlog True --log True --note final
+python3 system/main.py --cfp ./hparams/cifar100/FedDBE_cifar100.json --wandb True --offlog True --log True --note final
+python3 system/main.py --cfp ./hparams/cifar100/FedTARGET_cifar100.json --wandb True --offlog True --log True --note final
+python3 system/main.py --cfp ./hparams/cifar100/AFFCL_cifar100.json --wandb True --offlog True --log True --note final
 python3 system/main.py --cfp ./hparams/cifar100/FedAS_cifar100.json --cpt 20 --nt 15 --log True --offlog True --wandb True --note 20classes
 ```
 
