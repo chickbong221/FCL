@@ -13,7 +13,7 @@
     "local_learning_rate": 0.005,
     "learning_rate_decay": false,
     "learning_rate_decay_gamma": 0.99,
-    "global_rounds": 100,
+    "global_rounds": 25,
     "local_epochs": 5,
     "algorithm": "FedL2P",
     "join_ratio": 1.0,
@@ -31,6 +31,7 @@
     "n_prompts": 1,
     "prompt_length": 5,
     "prompt_pool": true,
-    "pool_size": 10
+    "pool_size": 10,
+    "tgm": false
 
 }
