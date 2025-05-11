@@ -47,6 +47,6 @@
     "tgm_meta_lr": 1,
 
     "coreset": true,
-    "tgm": false,
+    "tgm": true,
     "sgm": true
 }

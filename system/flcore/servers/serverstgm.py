@@ -265,13 +265,13 @@ class FedSTGM(Server):
             w_opt.zero_grad()
             ww = torch.softmax(w, dim=0)
             obj = ww.t().mm(Gg) + c * (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
-            print(f"ww {ww}")
-            print(f"Gg {Gg}")
-            print(f"GG {GG}")
-            print(f"c {c}")
-            print(f"inner part before square {ww.t().mm(GG).mm(ww)}")
-            print(f"linear part {ww.t().mm(Gg)}")
-            print(f"obj item {obj.item()}")
+            # print(f"ww {ww}")
+            # print(f"Gg {Gg}")
+            # print(f"GG {GG}")
+            # print(f"c {c}")
+            # print(f"inner part before square {ww.t().mm(GG).mm(ww)}")
+            # print(f"linear part {ww.t().mm(Gg)}")
+            # print(f"obj item {obj.item()}")
             if obj.item() < obj_best:
                 obj_best = obj.item()
                 w_best = w.clone()
@@ -283,7 +283,7 @@ class FedSTGM(Server):
 
                 # Check this scheduler. step()
         
-        print(w_best)
+        # print(w_best)
         ww = torch.softmax(w_best, dim=0)
         gw_norm = (ww.t().mm(GG).mm(ww) + 1e-4).sqrt()
 

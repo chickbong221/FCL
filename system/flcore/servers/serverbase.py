@@ -12,6 +12,8 @@ import random
 from utils.data_utils import load_full_test_data, read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 from flcore.metrics.average_forgetting import metric_average_forgetting
 
+import statistics
+
 class Server(object):
     def __init__(self, args, times):
         # Set up the main attributes
@@ -234,6 +236,26 @@ class Server(object):
                 "Global/Averaged Distance": self.distance_value,
                 "Global/Averaged GradNorm": self.norm_value,
             }
+            if self.args.tgm:
+                self.t_distance_before = statistics.mean(client.t_distance_before for client in self.selected_clients)
+                self.t_norm_before = statistics.mean(client.t_norm_before for client in self.selected_clients)
+                self.t_angle_before = statistics.mean(client.t_angle_before for client in self.selected_clients)
+
+                self.t_distance_after = statistics.mean(client.t_distance_after for client in self.selected_clients)
+                self.t_norm_after = statistics.mean(client.t_norm_after for client in self.selected_clients)
+                self.t_angle_after = statistics.mean(client.t_angle_after for client in self.selected_clients)
+
+                log_keys.update({
+                    "Global/Timestep Distance Before": self.t_distance_before,
+                    "Global/Timestep Norm Before": self.t_norm_before,
+                    "Global/Timestep Angle Before": self.t_angle_before,
+
+                    "Global/Timestep Distance After": self.t_distance_after,
+                    "Global/Timestep Norm After": self.t_norm_after,
+                    "Global/Timestep Angle After": self.t_angle_after,
+                })
+                # print(log_keys)
+
         elif flag == "local":
             subdir = os.path.join(self.save_folder, "Local")
             log_keys = {
