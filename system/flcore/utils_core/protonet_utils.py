@@ -67,8 +67,8 @@ def prototypical_loss(input, target, n_query):
 
     for cls in classes:
         cls_idxs = (target == cls).nonzero(as_tuple=True)[0]
-        if len(cls_idxs) < n_query + 1:
-            raise ValueError(f"Not enough samples for class {cls.item()}: need > {n_query}, got {len(cls_idxs)}")
+        # if len(cls_idxs) < n_query + 1:
+        #     raise ValueError(f"Not enough samples for class {cls.item()}: need > {n_query}, got {len(cls_idxs)}")
         query_idxs.append(cls_idxs[-n_query:])
         support_idxs.append(cls_idxs[:-n_query])
 
