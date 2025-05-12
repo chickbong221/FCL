@@ -109,6 +109,7 @@ def run(args):
             server = FedDBE(args, i)
 
         elif args.algorithm == "FedWeIT":
+            # args.model = None
             server = FedWeIT(args, i)
 
         elif args.algorithm == "PreciseFCL":

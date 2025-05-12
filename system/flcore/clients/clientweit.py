@@ -2,6 +2,7 @@ import math
 import torch
 import numpy as np
 import time
+import copy
 
 from flcore.clients.clientbase import Client
 from flcore.trainmodel.fedewit_models import *
@@ -18,7 +19,8 @@ class clientWeIT(Client):
 
         self.nets = NetModule(self.args)
         self.train = TrainModule(self.args, self.logger, self.nets)
-        
+        self.trainloader = self.load_train_data(task=0)
+
         self.init_model(initial_weights)
 
     def init_model(self, initial_weights):
@@ -78,7 +80,6 @@ class clientWeIT(Client):
     def load_data(self):
         self.train.set_task({
             'trainloader': self.trainloader,
-            'testloader': self.testloader,
         })
 
     def get_model_by_tid(self, tid):
@@ -223,8 +224,8 @@ class clientWeIT(Client):
             adapts.append(aw * hard_threshold)
         return adapts
 
-    def test_metrics(self):
-        testloader = self.load_test_data()
+    def test_metrics(self, task):
+        testloader = self.load_test_data(task=task)
         if hasattr(clientWeIT, 'state'):
             self.curr_model = self.nets.get_model_by_tid(self.state['curr_task'])
         else:
@@ -252,8 +253,8 @@ class clientWeIT(Client):
         
         return test_acc, test_num
 
-    def train_metrics(self):
-        trainloader = self.load_train_data()
+    def train_metrics(self, task):
+        trainloader = self.load_train_data(task=task)
         if hasattr(clientWeIT, 'state'):
             self.curr_model = self.nets.get_model_by_tid(self.state['curr_task'])
         else:
@@ -280,3 +281,37 @@ class clientWeIT(Client):
         # self.save_model(self.model, 'model')
 
         return losses, train_num
+
+    def next_task(self, train, label_info = None, if_label = True):
+        
+        # if self.args.algorithm != "PreciseFCL" and self.learning_rate_decay:
+        #     # update last model:
+        #     for param_group in self.optimizer.param_groups:
+        #         param_group['lr'] = self.learning_rate  # Đặt lại về giá trị ban đầu
+
+        #     self.learning_rate_scheduler = torch.optim.lr_scheduler.ExponentialLR(
+        #         optimizer=self.optimizer, 
+        #         gamma=self.args.learning_rate_decay_gamma
+        #     )
+
+        # self.last_copy  = copy.deepcopy(self.model)
+        # self.last_copy.cuda()
+        self.if_last_copy = True
+        
+        # update dataset: 
+        self.train_data = train
+        self.train_targets = [label for _, label in self.train_data]
+        
+        self.classes_past_task = copy.deepcopy(self.classes_so_far)
+        self.current_task += 1
+        self.trainloader = self.load_train_data(task=self.current_task)
+
+        # update classes_so_far
+        if if_label:
+            self.classes_so_far.extend(label_info['labels'])
+            self.task_dict[self.current_task] = label_info['labels']
+
+            self.current_labels.clear()
+            self.current_labels.extend(label_info['labels'])
+            
+        return

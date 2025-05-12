@@ -405,7 +405,7 @@ class NetModule:
         ]
 
         mem_before = self.get_memory_usage_mb()
-        for tid in range(50):  # bug, sửa sau
+        for tid in range(int(self.args.num_classes/self.args.cpt)):  # bug, sửa sau
             print(f"tid={tid}")
             t0 = time.time()
             for lid in range(len(self.shapes)):
