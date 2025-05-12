@@ -2,8 +2,12 @@ import copy
 import torch
 import torch.nn as nn
 import numpy as np
+import statistics
 from torch.utils.data import DataLoader
 from utils.data_utils import *
+
+from flcore.trainmodel.models import *
+
 
 class Client(object):
     """
@@ -12,6 +16,8 @@ class Client(object):
 
     def __init__(self, args, id, train_data, **kwargs):
         torch.manual_seed(0)
+        self.t_angle_after = 0
+
         self.model = copy.deepcopy(args.model)
         self.args = args
         self.algorithm = args.algorithm
@@ -185,3 +191,125 @@ class Client(object):
                 losses += loss.item() * y.shape[0]
 
         return losses, train_num
+
+    def grad_eval(self, old_model):
+        # TODO Re-eval again
+        network_test = []
+
+        network_inner = []
+        optimizer_inner = []
+        optimizer_proto_inner = []
+        optimizer_head_inner = []
+
+        for task_id, task in enumerate(self.task_dict):
+            temp_model = FedAvgCNN(in_features=3, num_classes=self.num_classes, dim=1600).to(self.device)
+            temp_head = copy.deepcopy(temp_model.fc)
+            temp_model.fc = nn.Identity()
+            temp_model = BaseHeadSplit(temp_model, temp_head)
+
+            temp_model.load_state_dict(copy.deepcopy(self.model.state_dict()))
+            network_inner.append(temp_model)
+
+            if self.args.optimizer == "sgd":
+                optimizer_inner.append(
+                    torch.optim.SGD(network_inner[task_id].parameters(), lr=self.learning_rate)
+                )
+                optimizer_proto_inner.append(
+                    torch.optim.SGD(network_inner[task_id].base.parameters(), lr=self.learning_rate)
+                )
+                optimizer_head_inner.append(
+                    torch.optim.SGD(network_inner[task_id].head.parameters(), lr=self.learning_rate)
+                )
+            elif self.args.optimizer == "adam":
+                optimizer_inner.append(
+                    torch.optim.Adam(network_inner[task_id].parameters(), lr=self.learning_rate)
+                )
+                optimizer_proto_inner.append(
+                    torch.optim.Adam(network_inner[task_id].base.parameters(), lr=self.learning_rate)
+                )
+                optimizer_head_inner.append(
+                    torch.optim.Adam(network_inner[task_id].head.parameters(), lr=self.learning_rate)
+                )
+            else:
+                raise ValueError(f"Unsupported optimizer: {self.args.optimizer}.")
+
+            optimizer_inner[task_id].load_state_dict(self.optimizer.state_dict())
+            if self.args.coreset:
+                optimizer_proto_inner[task_id].load_state_dict(self.optimizer_proto.state_dict())
+                optimizer_head_inner[task_id].load_state_dict(self.optimizer_head.state_dict())
+
+        for task_id, task in enumerate(self.task_dict):
+            if self.args.coreset:
+                trainloader = self.load_train_data(task=task)
+                for epoch in range(self.local_epochs):
+                    for i, (x, y) in enumerate(trainloader):
+                        if type(x) == type([]):
+                            x[0] = x[0].to(self.device)
+                        else:
+                            x = x.to(self.device)
+                        y = y.to(self.device)
+
+                        # TODO First Step: ProtoNet update
+                        proto, output = network_inner[task_id].get_proto(x)
+                        proto_metric = self.proto_loss(proto, y)
+                        optimizer_proto_inner[task_id].zero_grad()
+                        proto_metric[0].backward()
+                        optimizer_proto_inner[task_id].step()
+
+                        # TODO Second Step: Entire model update (Or classifier only?)
+                        output = network_inner[task_id](x)
+                        loss = self.loss(output, y)
+                        optimizer_head_inner[task_id].zero_grad()
+                        loss.backward()
+                        optimizer_head_inner[task_id].step()
+
+            else:  # TODO Base+Head use the same classification loss
+                trainloader = self.load_train_data(task=task)
+                for epoch in range(self.local_epochs):
+                    for i, (x, y) in enumerate(trainloader):
+                        if type(x) == type([]):
+                            x[0] = x[0].to(self.device)
+                        else:
+                            x = x.to(self.device)
+                        y = y.to(self.device)
+                        # TODO Base+Head use the same classification loss
+                        output = network_inner[task_id](x)
+                        loss = self.loss(output, y)
+                        optimizer_inner[task_id].zero_grad()
+                        loss.backward()
+                        optimizer_inner[task_id].step()
+
+            network_test.append(network_inner[task_id])
+
+        # TODO Measure Gradient Angles After Aggregate
+        angle_value = []
+        for model_i in network_test:
+            for model_j in network_test:
+                angle_value.append(self.cos_sim(old_model, model_i, model_j))
+        self.t_angle_after = statistics.mean(angle_value)
+        print(
+            f"AFTER  t angle:{self.t_angle_after}")
+
+    def cos_sim(self, prev_model, model1, model2):
+        prev_param = torch.cat([p.data.view(-1) for p in prev_model.parameters()])
+        params1 = torch.cat([p.data.view(-1) for p in model1.parameters()])
+        params2 = torch.cat([p.data.view(-1) for p in model2.parameters()])
+
+        grad1 = params1 - prev_param
+        grad2 = params2 - prev_param
+
+        cos_sim = torch.dot(grad1, grad2) / (torch.norm(grad1) * torch.norm(grad2))
+        return cos_sim.item()
+
+    def cosine_similarity(self, model1, model2):
+        params1 = torch.cat([p.data.view(-1) for p in model1.parameters()])
+        params2 = torch.cat([p.data.view(-1) for p in model2.parameters()])
+        cos_sim = torch.dot(params1, params2) / (torch.norm(params1) * torch.norm(params2))
+        return cos_sim.item()
+
+    def distance(self, model1, model2):
+        params1 = torch.cat([p.data.view(-1) for p in model1.parameters()])
+        params2 = torch.cat([p.data.view(-1) for p in model2.parameters()])
+
+        mse = F.mse_loss(params1, params2)
+        return mse.item()

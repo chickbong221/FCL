@@ -237,21 +237,9 @@ class Server(object):
                 "Global/Averaged GradNorm": self.norm_value,
             }
             if self.args.tgm:
-                self.t_distance_before = statistics.mean(client.t_distance_before for client in self.selected_clients)
-                self.t_norm_before = statistics.mean(client.t_norm_before for client in self.selected_clients)
-                self.t_angle_before = statistics.mean(client.t_angle_before for client in self.selected_clients)
-
-                self.t_distance_after = statistics.mean(client.t_distance_after for client in self.selected_clients)
-                self.t_norm_after = statistics.mean(client.t_norm_after for client in self.selected_clients)
                 self.t_angle_after = statistics.mean(client.t_angle_after for client in self.selected_clients)
 
                 log_keys.update({
-                    "Global/Timestep Distance Before": self.t_distance_before,
-                    "Global/Timestep Norm Before": self.t_norm_before,
-                    "Global/Timestep Angle Before": self.t_angle_before,
-
-                    "Global/Timestep Distance After": self.t_distance_after,
-                    "Global/Timestep Norm After": self.t_norm_after,
                     "Global/Timestep Angle After": self.t_angle_after,
                 })
                 # print(log_keys)
@@ -264,7 +252,7 @@ class Server(object):
             }
 
         if self.args.log and flag == "global":
-            # print(f"{sum(stats_train[2])}, {sum(stats_train[1])}")
+            # print(f"{sum(stats_train[2])}, {sum(stats_train[1])}")task_id
             print(f"Global Averaged Test Accuracy: {test_acc}")
             print(f"Global Averaged Test Loss: {train_loss}")
 

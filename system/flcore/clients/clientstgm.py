@@ -53,14 +53,6 @@ class clientSTGM(Client):
             gamma=args.learning_rate_decay_gamma
         )
 
-        self.t_distance_before = 0
-        self.t_norm_before = 0
-        self.t_angle_before = 0
-
-        self.t_distance_after = 0
-        self.t_norm_after = 0
-        self.t_angle_after = 0
-
     def train(self, task=None):
         trainloader = self.load_train_data(task=task)
         self.model.train()
@@ -136,8 +128,8 @@ class clientSTGM(Client):
                                 y = y.to(self.device)
 
                                 # TODO First Step: ProtoNet update
-                                output = self.model(x)
-                                proto_metric = self.proto_loss(output, y)
+                                proto, output = self.model.get_proto(x)
+                                proto_metric = self.proto_loss(proto, y)
                                 self.optimizer_proto_inner[task_id].zero_grad()
                                 proto_metric[0].backward()
                                 self.optimizer_proto_inner[task_id].step()
@@ -167,17 +159,6 @@ class clientSTGM(Client):
 
             self.network_inner.append(self.model)
 
-            # TODO Measure Gradient Angles Before Aggregate
-            norm = [self.distance(old_model, models) for models in self.network_inner]
-            self.t_norm_before = statistics.mean(norm)
-            angle_value = []
-            for model_i in self.network_inner:
-                for model_j in self.network_inner:
-                    angle_value.append(self.cos_sim(old_model, model_i, model_j))
-            self.t_angle_before = statistics.mean(angle_value)
-            print(f" ========================================== ")
-            print(f"BEFORE  t angle:{self.t_angle_before} | t_norm: {self.t_norm_before}")
-
             """ ===== Temporal Gradient Matching ======  """
             meta_weights = self.tgm_high(
                 meta_weights=old_model,
@@ -186,108 +167,7 @@ class clientSTGM(Client):
             )
             self.model.load_state_dict(copy.deepcopy(meta_weights))
 
-            # TODO Re-eval again
-            network_test = []
-
-            network_inner = []
-            optimizer_inner = []
-            optimizer_proto_inner = []
-            optimizer_head_inner = []
-
-            for task_id, task in enumerate(self.task_dict):
-                temp_model = FedAvgCNN(in_features=3, num_classes=self.num_classes, dim=1600).to(self.device)
-                temp_head = copy.deepcopy(temp_model.fc)
-                temp_model.fc = nn.Identity()
-                temp_model = BaseHeadSplit(temp_model, temp_head)
-
-                temp_model.load_state_dict(copy.deepcopy(self.model.state_dict()))
-                network_inner.append(temp_model)
-
-                if self.args.optimizer == "sgd":
-                    optimizer_inner.append(
-                        torch.optim.SGD(network_inner[task_id].parameters(), lr=self.learning_rate)
-                    )
-                    optimizer_proto_inner.append(
-                        torch.optim.SGD(network_inner[task_id].base.parameters(), lr=self.learning_rate)
-                    )
-                    optimizer_head_inner.append(
-                        torch.optim.SGD(network_inner[task_id].head.parameters(), lr=self.learning_rate)
-                    )
-                elif self.args.optimizer == "adam":
-                    optimizer_inner.append(
-                        torch.optim.Adam(network_inner[task_id].parameters(), lr=self.learning_rate)
-                    )
-                    optimizer_proto_inner.append(
-                        torch.optim.Adam(network_inner[task_id].base.parameters(), lr=self.learning_rate)
-                    )
-                    optimizer_head_inner.append(
-                        torch.optim.Adam(network_inner[task_id].head.parameters(), lr=self.learning_rate)
-                    )
-                else:
-                    raise ValueError(f"Unsupported optimizer: {self.args.optimizer}.")
-
-                if self.optimizer_inner_state is not None:
-                    optimizer_inner[task_id].load_state_dict(self.optimizer.state_dict())
-                    optimizer_proto_inner[task_id].load_state_dict(self.optimizer_proto.state_dict())
-                    optimizer_head_inner[task_id].load_state_dict(self.optimizer_head.state_dict())
-
-            for task_id, task in enumerate(self.task_dict):
-                if self.args.coreset:
-                    # TODO Load CoreSet
-                    trainloader = self.load_train_data(task=task)
-                    for epoch in range(max_local_epochs):
-                        for i, (x, y) in enumerate(trainloader):
-                            if type(x) == type([]):
-                                x[0] = x[0].to(self.device)
-                            else:
-                                x = x.to(self.device)
-                            y = y.to(self.device)
-
-                            # TODO First Step: ProtoNet update
-                            output = network_inner[task_id](x)
-                            proto_metric = self.proto_loss(output, y)
-                            print(f"proto: {proto_metric}")
-                            optimizer_proto_inner[task_id].zero_grad()
-                            proto_metric[0].backward()
-                            optimizer_proto_inner[task_id].step()
-
-                            # TODO Second Step: Entire model update (Or classifier only?)
-                            output = network_inner[task_id](x)
-                            loss = self.loss(output, y)
-                            optimizer_head_inner[task_id].zero_grad()
-                            print(f"head: {loss}")
-                            loss.backward()
-                            optimizer_head_inner[task_id].step()
-
-                else: # TODO Base+Head use the same classification loss
-                    trainloader = self.load_train_data(task=task)
-                    for epoch in range(max_local_epochs):
-                        for i, (x, y) in enumerate(trainloader):
-                            if type(x) == type([]):
-                                x[0] = x[0].to(self.device)
-                            else:
-                                x = x.to(self.device)
-                            y = y.to(self.device)
-                            # TODO Base+Head use the same classification loss
-                            output = network_inner[task_id][task_id](x)
-                            loss = self.loss(output, y)
-                            optimizer_inner[task_id].zero_grad()
-                            loss.backward()
-                            optimizer_inner[task_id].step()
-
-                network_test.append(network_inner[task_id])
-
-            # TODO Measure Gradient Angles After Aggregate
-            distance = [self.distance(self.model, models) for models in network_test]
-            norm = [self.distance(old_model, models) for models in network_test]
-            self.t_distance_after = statistics.mean(distance)
-            self.t_norm_after = statistics.mean(norm)
-            angle_value = []
-            for model_i in network_test:
-                for model_j in network_test:
-                    angle_value.append(self.cos_sim(old_model, model_i, model_j))
-            self.t_angle_after = statistics.mean(angle_value)
-            print(f"AFTER  t angle:{self.t_angle_after} | t_distance: {self.t_distance_after} | t_norm: {self.t_norm_after}")
+            self.grad_eval(old_model=old_model)
         else:
             pass
 

@@ -28,6 +28,8 @@ class clientAVG(Client):
                 loss.backward()
                 self.optimizer.step()
 
+        self.grad_eval(old_model=self.model)
+
         # self.model.cpu()
 
         if self.learning_rate_decay:

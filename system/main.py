@@ -94,6 +94,9 @@ def run(args):
 
         # select algorithm
         if args.algorithm == "FedAvg":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
             server = FedAvg(args, i)
 
         elif args.algorithm == "FedALA":
@@ -166,12 +169,19 @@ if __name__ == "__main__":
     if args.nt is not None:
         cfdct['num_tasks'] = args.nt
 
+
     cfdct['nt'] = args.nt
     cfdct['wandb'] = args.wandb
     cfdct['offlog'] = args.offlog
     cfdct['log'] = args.log
     cfdct['debug'] = args.debug
     cfdct['cpt'] = args.cpt
+
+    if "tgm" not in cfdct:
+        cfdct['tgm'] = True
+
+    if "coreset" not in cfdct:
+        cfdct['coreset'] = False
 
     args = Namespace(**cfdct)
 
