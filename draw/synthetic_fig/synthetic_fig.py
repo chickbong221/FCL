@@ -88,7 +88,7 @@ fig.legend(
 )
 # Tiêu đề chính (suptitle) đặt ở dưới
 fig.text(0.5, -0.12, "Figure 3. Performance w.r.t data heterogeneity $\\alpha$ for four datasets.", 
-         ha='center', fontsize=12)
+         ha='center', fontsize=14)
 
 fig.tight_layout(rect=[0, 0, 1, 0.93])  # Chừa không gian phía trên cho legend
 plt.show()
