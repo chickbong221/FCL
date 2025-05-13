@@ -313,3 +313,17 @@ class Client(object):
 
         mse = F.mse_loss(params1, params2)
         return mse.item()
+
+    def spatio_grad_eval(self, model_origin):
+        angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
+        distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
+        norm = [self.distance(model_origin, models) for models in self.uploaded_models]
+        self.angle_value = statistics.mean(angle)
+        self.distance_value = statistics.mean(distance)
+        self.norm_value = statistics.mean(norm)
+        angle_value = []
+        for grad_i in self.grads:
+            for grad_j in self.grads:
+                angle_value.append(self.cosine_similarity(grad_i, grad_j))
+        self.grads_angle_value = statistics.mean(angle_value)
+        print(f"grad angle: {self.grads_angle_value}")

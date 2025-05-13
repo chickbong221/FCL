@@ -163,6 +163,8 @@ if __name__ == "__main__":
     parser.add_argument('--debug', type=bool, default=False, help='When use Debug, turn off forgetting')
     parser.add_argument('--cpt', type=int, default=2, help='Class per task')
     parser.add_argument('--nt', type=int, default=None, help='Num tasks')
+    parser.add_argument('--seval', type=bool, default=True, help='Log Spatio Gradient')
+    parser.add_argument('--teval', type=bool, default=False, help='Log Temporal Gradient')
 
     args = parser.parse_args()
 
@@ -180,6 +182,8 @@ if __name__ == "__main__":
     cfdct['log'] = args.log
     cfdct['debug'] = args.debug
     cfdct['cpt'] = args.cpt
+    cfdct['seval'] = args.seval
+    cfdct['teval'] = args.teval
 
     if "tgm" not in cfdct:
         cfdct['tgm'] = True
