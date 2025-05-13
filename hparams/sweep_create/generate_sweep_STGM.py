@@ -10,7 +10,7 @@ base_config = {
     "datadir": "dataset",
     "device": "cuda",
     "device_id": "0",
-    "dataset": "IMAGENET1k",
+    "dataset": "IMAGENET1k",    
     "num_classes": 1000,
     "model": "CNN",
     "batch_size": 64,
