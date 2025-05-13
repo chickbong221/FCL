@@ -134,6 +134,9 @@ def run(args):
             server = FedTARGET(args, i)
 
         elif args.algorithm == "FedL2P":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
             server = FedL2P(args, i)
 
         else:

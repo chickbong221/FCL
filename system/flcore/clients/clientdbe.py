@@ -76,6 +76,7 @@ class clientDBE(Client):
                 self.detach_running()
 
         # self.model.cpu()
+        self.grad_eval(old_model=self.model)
 
         if self.learning_rate_decay:
             self.learning_rate_scheduler.step()
