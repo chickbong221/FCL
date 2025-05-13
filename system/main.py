@@ -165,6 +165,7 @@ if __name__ == "__main__":
     parser.add_argument('--nt', type=int, default=None, help='Num tasks')
     parser.add_argument('--seval', type=bool, default=True, help='Log Spatio Gradient')
     parser.add_argument('--teval', type=bool, default=False, help='Log Temporal Gradient')
+    parser.add_argument('--pca_eval', type=bool, default=False, help='Log Temporal Gradient')
 
     args = parser.parse_args()
 
@@ -184,6 +185,7 @@ if __name__ == "__main__":
     cfdct['cpt'] = args.cpt
     cfdct['seval'] = args.seval
     cfdct['teval'] = args.teval
+    cfdct['pca_eval'] = args.pca_eval
 
     if "tgm" not in cfdct:
         cfdct['tgm'] = True

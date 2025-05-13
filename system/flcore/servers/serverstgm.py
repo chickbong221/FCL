@@ -158,7 +158,7 @@ class FedSTGM(Server):
                     model_origin = copy.deepcopy(self.global_model)
                     self.aggregate_parameters()
 
-                if self.args.flag:
+                if self.args.seval:
                     self.spatio_grad_eval(model_origin = model_origin)
 
                 self.Budget.append(time.time() - s_t)

@@ -28,7 +28,8 @@ class clientAVG(Client):
                 loss.backward()
                 self.optimizer.step()
 
-        # self.grad_eval(old_model=self.model)
+        if self.args.teval:
+            self.grad_eval(old_model=self.model)
 
         # self.model.cpu()
 
