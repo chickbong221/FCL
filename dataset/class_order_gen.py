@@ -1,6 +1,6 @@
 import numpy as np
 
-def generate_unique_permutations_flat(client_num=100, classes=1000, duplicate=20, seed=None):
+def generate_unique_permutations_flat(client_num=100, classes=10, duplicate=20, seed=None):
     if seed is not None:
         np.random.seed(seed)
     
@@ -20,11 +20,11 @@ def generate_unique_permutations_flat(client_num=100, classes=1000, duplicate=20
     
     return array
 
-num_clients = 20
-num_classes = 1000
+num_clients = 100
+num_classes = 10
 
 permuted_array = generate_unique_permutations_flat(client_num=num_clients, classes=num_classes)
 
-np.save("/root/projects/FCL/dataset/class_order/class_order_imagenet1k.npy", permuted_array)
+np.save("/root/projects/FCL/dataset/class_order/class_order_cifar10.npy", permuted_array)
 
 print(permuted_array.shape)  # (100, 10000)
