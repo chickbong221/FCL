@@ -102,6 +102,9 @@ def run(args):
             server = FedAvg(args, i)
 
         elif args.algorithm == "FedALA":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
             server = FedALA(args, i)
 
         elif args.algorithm == "FedDBE":
@@ -115,6 +118,9 @@ def run(args):
             server = FedWeIT(args, i)
 
         elif args.algorithm == "PreciseFCL":
+            # args.head = copy.deepcopy(args.model.classifier.fc_classifier)
+            # args.model.classifier.fc_classifier = nn.Identity()
+            # args.model.classifier = BaseHeadSplit_AFFCL(args.model.classifier, args.head)
             server = FedAFFCL(args, i)
 
         elif args.algorithm == 'FedAS':
@@ -133,6 +139,9 @@ def run(args):
             server = FedSTGM(args, i)
 
         elif args.algorithm == "FedTARGET":
+            args.head = copy.deepcopy(args.model.fc)
+            args.model.fc = nn.Identity()
+            args.model = BaseHeadSplit(args.model, args.head)
             server = FedTARGET(args, i)
 
         elif args.algorithm == "FedL2P":
@@ -165,9 +174,9 @@ if __name__ == "__main__":
     parser.add_argument('--debug', type=bool, default=False, help='When use Debug, turn off forgetting')
     parser.add_argument('--cpt', type=int, default=2, help='Class per task')
     parser.add_argument('--nt', type=int, default=None, help='Num tasks')
-    parser.add_argument('--seval', type=bool, default=True, help='Log Spatio Gradient')
-    parser.add_argument('--teval', type=bool, default=False, help='Log Temporal Gradient')
-    parser.add_argument('--pca_eval', type=bool, default=False, help='Log Temporal Gradient')
+    parser.add_argument('--seval', action='store_true', help='Log Spatio Gradient')
+    parser.add_argument('--teval', action='store_true', help='Log Temporal Gradient')
+    parser.add_argument('--pca_eval', action='store_true', help='Log PCA Gradient')
 
     args = parser.parse_args()
 

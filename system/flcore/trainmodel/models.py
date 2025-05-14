@@ -25,6 +25,39 @@ class BaseHeadSplit(nn.Module):
         out    = self.head(hidden)
 
         return hidden, out
+    
+class BaseHeadSplit_AFFCL(nn.Module):
+    def __init__(self, base, head):
+        super().__init__()
+        self.base = base  # Resnet_plus with fc_classifier = Identity
+        self.head = head  # original fc_classifier layer
+
+        # giữ lại các thành phần cần thiết từ base
+        self.features = self.base.features
+        self.fc1 = self.base.fc1
+        self.fc2 = self.base.fc2
+        self.softmax = self.base.softmax
+
+    def forward_to_xa(self, x):
+        xa = self.features(x)
+        return xa
+
+    def forward_from_xa(self, xa):
+        xa = F.leaky_relu(self.fc1(xa))
+        xb = F.leaky_relu(self.fc2(xa))
+        logits = self.head(xb)
+        classes_p = self.softmax(logits)
+        return classes_p, logits
+
+    def forward(self, x):
+        xa = self.forward_to_xa(x)
+        classes_p, logits = self.forward_from_xa(xa)
+        return classes_p, xa, logits
+
+    def get_proto(self, x):
+        xa = self.forward_to_xa(x)
+        _, logits = self.forward_from_xa(xa)
+        return xa, logits
 
 ###########################################################
 

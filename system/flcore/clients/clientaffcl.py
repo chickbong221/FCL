@@ -102,6 +102,9 @@ class ClientAFFCL(Client):
                 cls_meter._update(cls_result, batch_size=x.shape[0])
                 counter += 1
 
+        if self.args.teval:
+            self.grad_eval(old_model=self.model.classifier)
+
         acc = float(correct)/sample_num
         result_dict = cls_meter.get_scalar_dict('global_avg')
         if 'flow_loss' not in result_dict.keys():
@@ -125,7 +128,8 @@ class ClientAFFCL(Client):
     def test_metrics(self, task):
         testloader = self.load_test_data(task=task)
 
-        self.model.eval()
+        self.model.classifier.eval()
+        self.model.flow.eval()
 
         test_acc = 0
         test_num = 0
@@ -147,7 +151,8 @@ class ClientAFFCL(Client):
 
     def train_metrics(self, task):
         trainloader = self.load_train_data(task=task)
-        self.model.eval()
+        self.model.classifier.eval()
+        self.model.flow.eval()
 
         train_num = 0
         losses = 0

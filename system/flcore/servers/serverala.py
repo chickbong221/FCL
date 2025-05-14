@@ -4,6 +4,7 @@ from flcore.clients.clientala import clientALA
 from flcore.servers.serverbase import Server
 from threading import Thread
 from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+import copy
 
 class FedALA(Server):
     def __init__(self, args, times):
@@ -94,7 +95,15 @@ class FedALA(Server):
                 # [t.join() for t in threads]
 
                 self.receive_models()
+                self.receive_grads()
+                model_origin = copy.deepcopy(self.global_model)
                 self.aggregate_parameters()
+
+                if self.args.seval:
+                    self.spatio_grad_eval(model_origin=model_origin)
+
+                if self.args.pca_eval:
+                    self.proto_eval(model=self.global_model, task=task, round=i)
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")

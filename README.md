@@ -49,6 +49,7 @@ python3 system/main.py --cfp ./hparams/imagenet1k/FedAvg.json
 python3 system/main.py --cfp ./hparams/imagenet1k/FedTARGET.json
 python3 system/main.py --cfp ./hparams/imagenet1k/FedL2P.json
 python3 system/main.py --cfp ./hparams/imagenet1k/FedAvg.json --cpt 20 --nt 50 --log True --note 20classes --wandb True
+python3 system/main.py --cfp ./hparams/imagenet1k/FedTARGET.json --cpt 20 --nt 50 --log True --note 20classes_st --wandb True --teval --seval
 
 # Cifar100
 python3 system/main.py --cfp ./hparams/cifar100/FedAvg_cifar100.json --wandb True --offlog True --log True --note final

@@ -141,7 +141,15 @@ class FedTARGET(Server):
                     client.train(task=task)
 
                 self.receive_models()
+                self.receive_grads()
+                model_origin = copy.deepcopy(self.global_model)
                 self.aggregate_parameters()
+
+                if self.args.seval:
+                    self.spatio_grad_eval(model_origin=model_origin)
+
+                if self.args.pca_eval:
+                    self.proto_eval(model=self.global_model, task=task, round=i)
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
