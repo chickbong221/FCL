@@ -1,5 +1,6 @@
 *__pycache__*
 dataset/cifar100-classes
+dataset/cifar10-classes
 dataset/imagenet1k-classes
 dataset/imagenet1k_224_classes
 dataset/synthetic_data
