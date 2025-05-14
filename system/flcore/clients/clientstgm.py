@@ -166,10 +166,11 @@ class clientSTGM(Client):
                 lr_meta=2*self.tgm_meta_lr
             )
             self.model.load_state_dict(copy.deepcopy(meta_weights))
-
-            self.grad_eval(old_model=old_model)
         else:
             pass
+
+        if self.args.teval:
+            self.grad_eval(old_model=self.model)
 
         if self.learning_rate_decay:
             self.learning_rate_scheduler.step()

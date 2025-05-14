@@ -31,6 +31,9 @@ class clientAVG(Client):
         if self.args.teval:
             self.grad_eval(old_model=self.model)
 
+        if self.args.pca_eval:
+            self.proto_eval(model = self.model)
+
         # self.model.cpu()
 
         if self.learning_rate_decay:

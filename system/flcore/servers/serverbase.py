@@ -9,6 +9,7 @@ import csv
 import copy
 import time
 import random
+from datetime import datetime
 from utils.data_utils import load_full_test_data, read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
 from flcore.metrics.average_forgetting import metric_average_forgetting
 
@@ -72,6 +73,8 @@ class Server(object):
         self.distance_value = 0
         self.norm_value = 0
 
+        self.file_name = f"{self.args.algorithm}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+
     def set_clients(self, clientObj):
         for i in range(self.num_clients):
             print(f"Creating client {i} ...")
@@ -89,6 +92,7 @@ class Server(object):
             client.classes_so_far.extend(label_info['labels'])
             client.current_labels.extend(label_info['labels'])
             client.task_dict[0] = label_info['labels']
+            client.file_name = self.file_name
 
     def select_clients(self):
         if self.random_join_ratio:
@@ -147,7 +151,6 @@ class Server(object):
             for grad_param, local_param, global_param in zip(grad_model.parameters(), local_model.parameters(),
                                                              self.global_model.parameters()):
                 grad_param.data = local_param.data - global_param.data
-
         for w, client_model in zip(self.uploaded_weights, self.grads):
             self.mul_params(w, client_model)
 
@@ -361,3 +364,22 @@ class Server(object):
                 angle_value.append(self.cosine_similarity(grad_i, grad_j))
         self.grads_angle_value = statistics.mean(angle_value)
         print(f"grad angle: {self.grads_angle_value}")
+
+    def proto_eval(self, global_model, local_model, task, round):
+        # TODO save models to ./pca_eval/file_name/global
+        model_filename = f"task_{task}_round_{round}.pth"
+        save_dir = os.path.join("pca_eval", self.file_name, "global")
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        # Save model state_dict
+        model_path = os.path.join(save_dir, model_filename)
+        torch.save(global_model.state_dict(), model_path)
+
+        save_dir = os.path.join("pca_eval", self.file_name, "local")
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        # Save model state_dict
+        model_path = os.path.join(save_dir, model_filename)
+        torch.save(local_model.state_dict(), model_path)

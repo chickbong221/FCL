@@ -8,6 +8,9 @@ from utils.data_utils import *
 
 from flcore.trainmodel.models import *
 
+import os
+import joblib
+
 
 class Client(object):
     """
@@ -313,3 +316,13 @@ class Client(object):
 
         mse = F.mse_loss(params1, params2)
         return mse.item()
+
+    # def proto_eval(self, model, task, round):
+    #     save_dir = os.path.join("pca_eval", self.file_name, "local")
+    #     if not os.path.exists(save_dir):
+    #         os.makedirs(save_dir)
+    #
+    #     # Save model state_dict
+    #     model_filename = f"task_{task}_round_{round}.pth"
+    #     model_path = os.path.join(save_dir, model_filename)
+    #     torch.save(model.state_dict(), model_path)
