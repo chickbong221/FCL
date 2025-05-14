@@ -98,6 +98,32 @@ def read_client_data_FCL_cifar100(index, task = 0, classes_per_task = 2, count_l
     
     return data
 
+def read_client_data_FCL_cifar10(index, task = 0, classes_per_task = 2, count_labels=False, train=True):
+    
+    datadir = './dataset/cifar10-classes/'
+    class_order = np.load('./dataset/class_order/class_order_cifar10.npy', allow_pickle=True)
+    class_order = class_order[index]
+
+    if train:
+        x, y = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train_images_per_class=5000, test_images_per_class=1000, train=True)
+    else:
+        x, y = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train_images_per_class=5000, test_images_per_class=1000, train=False)
+    # x = x.type(torch.FloatTensor)
+    print(x.shape)
+    y = torch.Tensor(y.type(torch.long))
+    data = Transform_dataset(x, y)
+
+    if count_labels:
+        label_info = {}
+        unique_y, counts=torch.unique(y, return_counts=True)
+        unique_y=unique_y.detach().numpy()
+        counts=counts.detach().numpy()
+        label_info['labels']=unique_y
+        label_info['counts']=counts
+
+        return data, label_info
+    
+    return data
 
 class Transform_dataset(data.Dataset):
     def __init__(self, X, Y, transform=None) -> None:

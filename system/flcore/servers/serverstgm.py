@@ -3,7 +3,7 @@ import torch
 import copy
 from flcore.clients.clientstgm import clientSTGM
 from flcore.servers.serverbase import Server
-from utils.data_utils import read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+from utils.data_utils import *
 from utils.model_utils import ParamDict
 from torch.nn.utils import vector_to_parameters, parameters_to_vector
 
@@ -68,6 +68,9 @@ class FedSTGM(Server):
                                                                                  count_labels=True)
                     elif self.args.dataset == 'CIFAR100':
                         train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=self.args.cpt,
+                                                                               count_labels=True)
+                    elif self.args.dataset == 'CIFAR100':
+                        train_data, label_info = read_client_data_FCL_cifar10(i, task=task, classes_per_task=self.args.cpt,
                                                                                count_labels=True)
                     else:
                         raise NotImplementedError("Not supported dataset")

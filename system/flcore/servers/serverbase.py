@@ -10,7 +10,7 @@ import copy
 import time
 import random
 from datetime import datetime
-from utils.data_utils import load_full_test_data, read_client_data_FCL_cifar100, read_client_data_FCL_imagenet1k
+from utils.data_utils import *
 from flcore.metrics.average_forgetting import metric_average_forgetting
 
 import statistics
@@ -61,6 +61,8 @@ class Server(object):
             self.N_TASKS = 500
         elif self.args.dataset == 'CIFAR100':
             self.N_TASKS = 50
+        elif self.args.dataset == 'CIFAR10':
+            self.N_TASKS = 5
         if self.args.nt is not None:
             self.N_TASKS = self.args.num_classes // self.args.cpt
 
@@ -82,6 +84,8 @@ class Server(object):
                 train_data, label_info = read_client_data_FCL_imagenet1k(i, task=0, classes_per_task=self.args.cpt, count_labels=True)
             elif self.args.dataset == 'CIFAR100':
                 train_data, label_info = read_client_data_FCL_cifar100(i, task=0, classes_per_task=self.args.cpt, count_labels=True)
+            elif self.args.dataset == 'CIFAR10':
+                train_data, label_info = read_client_data_FCL_cifar10(i, task=0, classes_per_task=self.args.cpt, count_labels=True)
             else:
                 raise NotImplementedError("Not supported dataset")
 

@@ -61,6 +61,8 @@ def run(args):
         if model_str == "CNN": # non-convex
             if "CIFAR100" in args.dataset:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
+            elif "CIFAR10" in args.dataset:
+                args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
             elif "IMAGENET1k" in args.dataset:
                 args.model = FedAvgCNN(in_features=3, num_classes=args.num_classes, dim=1600).to(args.device)
             elif "IMAGENET1k224" in args.dataset:
