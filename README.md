@@ -58,6 +58,10 @@ python3 system/main.py --cfp ./hparams/cifar100/FedDBE_cifar100.json --wandb Tru
 python3 system/main.py --cfp ./hparams/cifar100/FedTARGET_cifar100.json --wandb True --offlog True --log True --note final
 python3 system/main.py --cfp ./hparams/cifar100/AFFCL_cifar100.json --wandb True --offlog True --log True --note final
 python3 system/main.py --cfp ./hparams/cifar100/FedAS_cifar100.json --cpt 20 --nt 15 --log True --offlog True --wandb True --note 20classes
+
+# Cifar10
+python3 system/main.py --cfp ./hparams/cifar10/FedAvg_cifar10.json
+python3 system/main.py --cfp ./hparams/cifar10/FedSTGM_cifar10.json
 ```
 
 Test gradient angle
