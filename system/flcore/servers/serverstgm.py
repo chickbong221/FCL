@@ -69,7 +69,7 @@ class FedSTGM(Server):
                     elif self.args.dataset == 'CIFAR100':
                         train_data, label_info = read_client_data_FCL_cifar100(i, task=task, classes_per_task=self.args.cpt,
                                                                                count_labels=True)
-                    elif self.args.dataset == 'CIFAR100':
+                    elif self.args.dataset == 'CIFAR10':
                         train_data, label_info = read_client_data_FCL_cifar10(i, task=task, classes_per_task=self.args.cpt,
                                                                                count_labels=True)
                     else:

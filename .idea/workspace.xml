@@ -5,14 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="99ce310d-b914-4464-8807-136f6ae09a0b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hparams/imagenet1k/FedSTGM.json" beforeDir="false" afterPath="$PROJECT_DIR$/hparams/imagenet1k/FedSTGM.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/flcore/clients/clientavg.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/clients/clientavg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/flcore/clients/clientbase.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/clients/clientbase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/flcore/clients/clientstgm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/clients/clientstgm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serveravg.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serveravg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/flcore/servers/serverbase.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serverbase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/draw/pca/PCA_Representations.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/draw/pca/PCA_Representations.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hparams/cifar10/FedSTGM_cifar10.json" beforeDir="false" afterPath="$PROJECT_DIR$/hparams/cifar10/FedSTGM_cifar10.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/system/flcore/servers/serverstgm.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/flcore/servers/serverstgm.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
