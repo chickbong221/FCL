@@ -160,9 +160,11 @@ def load_data(datadir, classes=[], train_images_per_class = 600, test_images_per
     return x, y
 
 
-def load_full_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=600, test_images_per_class=100, concat_every=500):
+def load_full_test_data(datadir, dataset="IMAGENET1k", train_images_per_class=5000, test_images_per_class=1000, concat_every=5):
     if dataset == "CIFAR100":
         classes = list(range(100))
+    elif dataset == "CIFAR10":
+        classes = list(range(10))
     elif dataset == "IMAGENET1k":
         classes = list(range(1000))
     else:
