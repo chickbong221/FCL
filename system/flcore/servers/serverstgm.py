@@ -164,9 +164,10 @@ class FedSTGM(Server):
                 if self.args.seval:
                     self.spatio_grad_eval(model_origin = model_origin)
 
-                if self.args.pca_eval:
-                    self.proto_eval(global_model=self.global_model,
-                                    local_model=self.uploaded_models[0], task=task, round=i)
+                if task > 10:
+                    if self.args.pca_eval:
+                        self.proto_eval(global_model=self.global_model,
+                                        local_model=self.uploaded_models[0], task=task, round=i)
 
                 self.Budget.append(time.time() - s_t)
                 print('-' * 25, 'time cost', '-' * 25, self.Budget[-1])

@@ -294,8 +294,7 @@ class Client(object):
             for model_j in network_test:
                 angle_value.append(self.cos_sim(old_model, model_i, model_j))
         self.t_angle_after = statistics.mean(angle_value)
-        print(
-            f"AFTER  t angle:{self.t_angle_after}")
+        print(f"AFTER  t angle:{self.t_angle_after}")
 
     def cos_sim(self, prev_model, model1, model2):
         prev_param = torch.cat([p.data.view(-1) for p in prev_model.parameters()])
