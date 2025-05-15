@@ -109,7 +109,8 @@ class FedAvg(Server):
                     self.spatio_grad_eval(model_origin=model_origin)
 
                 if self.args.pca_eval:
-                    self.proto_eval(model=self.global_model, task=task, round=i)
+                    self.proto_eval(global_model=self.global_model,
+                                    local_model=self.uploaded_models[0], task=task, round=i)
 
                 if i%self.eval_gap == 0:
                     self.eval(task=task, glob_iter=glob_iter, flag="local")
