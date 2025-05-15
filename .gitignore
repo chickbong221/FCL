@@ -13,3 +13,4 @@ pretrain_model/task_sofar_model
 .env
 out
 pca_eval
+Proto
