@@ -198,6 +198,10 @@ if __name__ == "__main__":
     cfdct['teval'] = args.teval
     cfdct['pca_eval'] = args.pca_eval
 
+    print(args.seval)
+    print(args.teval)
+    print(args.pca_eval)
+
     if "tgm" not in cfdct:
         cfdct['tgm'] = True
 
