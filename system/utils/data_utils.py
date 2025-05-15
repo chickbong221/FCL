@@ -109,7 +109,7 @@ def read_client_data_FCL_cifar10(index, task = 0, classes_per_task = 2, count_la
     else:
         x, y = load_data(datadir, class_order[task*classes_per_task:(task+1)*classes_per_task], train_images_per_class=5000, test_images_per_class=1000, train=False)
     # x = x.type(torch.FloatTensor)
-    print(x.shape)
+    # print(x.shape)
     y = torch.Tensor(y.type(torch.long))
     data = Transform_dataset(x, y)
 
