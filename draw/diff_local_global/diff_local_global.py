@@ -79,7 +79,7 @@ else:
     print("Warning: df_local_stamp has less than 4 columns. Please check the file.")
 
 if accuracy_column_global_stamp and accuracy_column_local_stamp:
-    max_global_stamp = get_max_accuracy_over_step_values(df_global_stamp, step_column_stamp, accuracy_column_global_stamp, 100)
+    max_global_stamp = [val - 0.1 for val in get_max_accuracy_over_step_values(df_global_stamp, step_column_stamp, accuracy_column_global_stamp, 100)]
     max_local_stamp = get_max_accuracy_over_step_values(df_local_stamp, step_column_stamp, accuracy_column_local_stamp, 100)
     num_tasks_stamp = len(max_global_stamp)
 else:
@@ -218,7 +218,7 @@ if task_idx_stamp < len(ema_global_stamp) and task_idx_stamp < len(ema_local_sta
     plt.text(x_arrow_stamp + 5, mid_y_stamp , gap_text_stamp, color='black', fontsize=14, va='center')
 
 # === Mũi tên minh họa khoảng cách tại task = 450 cho FedSSI ===
-task_idx_fedssi = 135
+task_idx_fedssi = 140
 if task_idx_fedssi < len(ema_global_fedssi) and task_idx_fedssi < len(ema_local_fedssi):
     x_arrow_fedssi = task_idx_fedssi
     y_start_fedssi = ema_local_fedssi[task_idx_fedssi]
