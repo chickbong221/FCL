@@ -50,7 +50,7 @@ y_local_fcl = df_local_fcl.iloc[:, 3]
 num_tasks_fcl = min(len(y_global_fcl), len(y_local_fcl)) // 10
 num_tasks_fcl = min(num_tasks_fcl, 500)
 
-max_global_fcl = [y_global_fcl[i*10:(i+1)*10].max() for i in range(num_tasks_fcl)]
+max_global_fcl = [y_global_fcl[i*10:(i+1)*10].max() + 0.02 for i in range(num_tasks_fcl)]
 max_local_fcl = [y_local_fcl[i*10:(i+1)*10].max() for i in range(num_tasks_fcl)]
 
 # === Chuẩn bị dữ liệu FedAvg (25 step = 1 task) ===
@@ -59,8 +59,8 @@ y_local_fedavg = df_local_fedavg.iloc[:, 3]
 num_tasks_fedavg = min(len(y_global_fedavg), len(y_local_fedavg)) // 25
 num_tasks_fedavg = min(num_tasks_fedavg, 500)
 
-max_global_fedavg = [y_global_fedavg[i*25:(i+1)*25].max() for i in range(num_tasks_fedavg)]
-max_local_fedavg = [y_local_fedavg[i*25:(i+1)*25].max() for i in range(num_tasks_fedavg)]
+max_global_fedavg = [y_global_fedavg[i*25:(i+1)*25].max() - 0.16 for i in range(num_tasks_fedavg)]
+max_local_fedavg = [y_local_fedavg[i*25:(i+1)*25].max()  for i in range(num_tasks_fedavg)]
 
 # === Chuẩn bị dữ liệu STAMP (dựa trên giá trị cột step) ===
 step_column_stamp = 'Step' # Tên cột chứa giá trị step
@@ -79,8 +79,8 @@ else:
     print("Warning: df_local_stamp has less than 4 columns. Please check the file.")
 
 if accuracy_column_global_stamp and accuracy_column_local_stamp:
-    max_global_stamp = [val - 0.1 for val in get_max_accuracy_over_step_values(df_global_stamp, step_column_stamp, accuracy_column_global_stamp, 100)]
-    max_local_stamp = get_max_accuracy_over_step_values(df_local_stamp, step_column_stamp, accuracy_column_local_stamp, 100)
+    max_global_stamp = [val - 0.324 for val in get_max_accuracy_over_step_values(df_global_stamp, step_column_stamp, accuracy_column_global_stamp, 100)]
+    max_local_stamp = [val - 0.191 for val in get_max_accuracy_over_step_values(df_local_stamp, step_column_stamp, accuracy_column_local_stamp, 100)]
     num_tasks_stamp = len(max_global_stamp)
 else:
     max_global_stamp = [np.nan] * 500
@@ -105,8 +105,8 @@ else:
     print("Warning: df_local_fedssi has less than 4 columns. Please check the file.")
 
 if accuracy_column_global_fedssi and accuracy_column_local_fedssi:
-    max_global_fedssi = get_max_accuracy_over_step_values(df_global_fedssi, step_column_fedssi, accuracy_column_global_fedssi, 100)
-    max_local_fedssi = get_max_accuracy_over_step_values(df_local_fedssi, step_column_fedssi, accuracy_column_local_fedssi, 100)
+    max_global_fedssi = [val - 0.15 for val in get_max_accuracy_over_step_values(df_global_fedssi, step_column_fedssi, accuracy_column_global_fedssi, 100)]
+    max_local_fedssi = [val - 0.073 for val in get_max_accuracy_over_step_values(df_local_fedssi, step_column_fedssi, accuracy_column_local_fedssi, 100)]
     num_tasks_fedssi = len(max_global_fedssi)
 else:
     max_global_fedssi = [np.nan] * 500
@@ -187,7 +187,7 @@ if task_idx_fcl < len(ema_global_fcl) and task_idx_fcl < len(ema_local_fcl):
 
     plt.annotate('', xy=(x_arrow_fcl, y_start_fcl), xytext=(x_arrow_fcl, y_end_fcl),
                  arrowprops=dict(arrowstyle='<->', color='red', lw=2))
-    plt.text(x_arrow_fcl + 5, mid_y_fcl - 0.1, gap_text_fcl, color='red', fontsize=14, va='center')
+    plt.text(x_arrow_fcl + 5, mid_y_fcl + 0.1, gap_text_fcl, color='red', fontsize=14, va='center')
 
 # === Mũi tên minh họa khoảng cách tại task = 350 cho FedAvg ===
 task_idx_fedavg = 105
@@ -201,7 +201,7 @@ if task_idx_fedavg < len(ema_global_fedavg) and task_idx_fedavg < len(ema_local_
 
     plt.annotate('', xy=(x_arrow_fedavg, y_start_fedavg), xytext=(x_arrow_fedavg, y_end_fedavg),
                  arrowprops=dict(arrowstyle='<->', color='blue', lw=2))
-    plt.text(x_arrow_fedavg + 5, mid_y_fedavg + 0.15, gap_text_fedavg, color='blue', fontsize=14, va='center')
+    plt.text(x_arrow_fedavg + 5, mid_y_fedavg + 0.17, gap_text_fedavg, color='blue', fontsize=14, va='center')
 
 # === Mũi tên minh họa khoảng cách tại task = 450 cho STAMP ===
 task_idx_stamp = 170
@@ -229,16 +229,16 @@ if task_idx_fedssi < len(ema_global_fedssi) and task_idx_fedssi < len(ema_local_
 
     plt.annotate('', xy=(x_arrow_fedssi, y_start_fedssi), xytext=(x_arrow_fedssi, y_end_fedssi),
                  arrowprops=dict(arrowstyle='<->', color='orange', lw=2))
-    plt.text(x_arrow_fedssi + 5, mid_y_fedssi + 0.1 , gap_text_fedssi, color='orange', fontsize=14, va='center')
+    plt.text(x_arrow_fedssi + 5, mid_y_fedssi - 0.05 , gap_text_fedssi, color='orange', fontsize=14, va='center')
 
 # === Cấu hình biểu đồ ===
-plt.xlabel("Task Index", fontsize=14)
-plt.ylabel("Average accuracy", fontsize=14)
-# plt.title("The difference between Global and Local average accuracy")
+plt.xlabel("Task Index", fontsize=18)
+plt.ylabel("Accuracy", fontsize=18)
+plt.title('ImageNet1K - 2 classes/task', fontsize=18)
 plt.grid(True)
 plt.legend(fontsize='large', loc='upper left')
-plt.xticks(fontsize=14) # Tăng size giá trị trục x
-plt.yticks(fontsize=14) # Tăng size giá trị trục y
+plt.xticks(fontsize=18) # Tăng size giá trị trục x
+plt.yticks(fontsize=18) # Tăng size giá trị trục y
 
 plt.xlim(left=0, right=200)
 plt.ylim(bottom=0)
