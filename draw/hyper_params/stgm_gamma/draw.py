@@ -88,7 +88,7 @@ plt.fill_between(x3, y3_mean - y3_std, y3_mean + y3_std, alpha=0.3)
 # Labels and styling
 plt.xlabel("Task Index")
 plt.ylabel("Accuracy")
-plt.title("STAMP Gamma")
+plt.title("STAMP Learning Rate Scheduling Step Size")
 plt.grid(True)
 plt.xlim(left=0, right=end_task - start_task)
 plt.legend()
