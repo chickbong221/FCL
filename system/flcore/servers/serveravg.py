@@ -106,7 +106,7 @@ class FedAvg(Server):
                 self.aggregate_parameters()
 
                 if self.args.seval:
-                    self.spatio_grad_eval(model_origin=model_origin)
+                    self.spatio_grad_eval(model_origin=model_origin, glob_iter=glob_iter)
 
                 if self.args.pca_eval:
                     self.proto_eval(global_model=self.global_model,

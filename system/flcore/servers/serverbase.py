@@ -121,8 +121,13 @@ class Server(object):
     def receive_models(self):
         assert (len(self.selected_clients) > 0)
 
-        active_clients = random.sample(
-            self.selected_clients, int((1-self.client_drop_rate) * self.current_num_join_clients))
+        active_clients = sorted(
+            random.sample(
+                self.selected_clients, 
+                int((1 - self.client_drop_rate) * self.current_num_join_clients)
+            ), 
+            key=lambda client: client.id
+        )
 
         self.uploaded_ids = []
         self.uploaded_weights = []
@@ -355,7 +360,7 @@ class Server(object):
         mse = F.mse_loss(params1, params2)
         return mse.item()
 
-    def spatio_grad_eval(self, model_origin):
+    def spatio_grad_eval(self, model_origin, glob_iter):
         angle = [self.cos_sim(model_origin, self.global_model, models) for models in self.uploaded_models]
         distance = [self.distance(self.global_model, models) for models in self.uploaded_models]
         norm = [self.distance(model_origin, models) for models in self.uploaded_models]
@@ -372,7 +377,26 @@ class Server(object):
             for j in range(i + 1, len(self.grads)):
                 angle_value.append(self.cosine_similarity(self.grads[i], self.grads[j]))
 
-                print(f"cosine simi: {self.cosine_similarity(self.grads[i], self.grads[j])}")
+        cosine_to_client0 = {}
+        count_positive = 0  # cosine > 0
+        count_negative = 0  # cosine >= 0
+
+        for i in range(1, len(self.grads)):
+            sim = self.cosine_similarity(self.grads[0], self.grads[i])
+            cosine_to_client0[f"{i}"] = sim
+
+            if sim > 0:
+                count_positive += 1
+            if sim <= 0:
+                count_negative += 1
+
+        wandb.log({f"cosine/{k}": v for k, v in cosine_to_client0.items()}, step=glob_iter)
+
+        wandb.log({
+            "cosine_count/positive (>0)": count_positive,
+            "cosine_count/negative (<=0)": count_negative
+        }, step=glob_iter)
+
         self.grads_angle_value = statistics.mean(angle_value)
         # print(f"grad angle: {self.grads_angle_value}")
 
