@@ -41,7 +41,7 @@ class FedAvg(Server):
                 for u in self.clients:
                     available_labels = available_labels.union(set(u.classes_so_far))
                     available_labels_current = available_labels_current.union(set(u.current_labels))
-                print("ahihi " + str(len(available_labels_current)))
+                # print("ahihi " + str(len(available_labels_current)))
                 for u in self.clients:
                     u.available_labels = list(available_labels)
                     u.available_labels_current = list(available_labels_current)
@@ -112,8 +112,8 @@ class FedAvg(Server):
                     self.proto_eval(global_model=self.global_model,
                                     local_model=self.uploaded_models[0], task=task, round=i)
 
-                if i%self.eval_gap == 0:
-                    self.eval(task=task, glob_iter=glob_iter, flag="local")
+                # if i%self.eval_gap == 0:
+                #     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
                 self.Budget.append(time.time() - s_t)
                 print('-'*25, 'time cost', '-'*25, self.Budget[-1])

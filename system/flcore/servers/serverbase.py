@@ -363,11 +363,18 @@ class Server(object):
         self.distance_value = statistics.mean(distance)
         self.norm_value = statistics.mean(norm)
         angle_value = []
-        for grad_i in self.grads:
-            for grad_j in self.grads:
-                angle_value.append(self.cosine_similarity(grad_i, grad_j))
+
+        # for grad_i in self.grads:
+        #     for grad_j in self.grads:
+        #         angle_value.append(self.cosine_similarity(grad_i, grad_j))
+
+        for i in range(len(self.grads)):
+            for j in range(i + 1, len(self.grads)):
+                angle_value.append(self.cosine_similarity(self.grads[i], self.grads[j]))
+
+                print(f"cosine simi: {self.cosine_similarity(self.grads[i], self.grads[j])}")
         self.grads_angle_value = statistics.mean(angle_value)
-        print(f"grad angle: {self.grads_angle_value}")
+        # print(f"grad angle: {self.grads_angle_value}")
 
     def proto_eval(self, global_model, local_model, task, round):
         # TODO save models to ./pca_eval/file_name/global
