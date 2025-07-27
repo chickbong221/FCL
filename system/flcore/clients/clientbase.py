@@ -299,7 +299,10 @@ class Client(object):
             for j in range(i + 1, len(network_test)):
                 angle_value.append(self.cos_sim(old_model, network_test[i], network_test[j]))
 
-        self.t_angle_after = statistics.mean(angle_value)
+        if angle_value:
+            self.t_angle_after = statistics.mean(angle_value)
+        else:
+            self.t_angle_after = 1
         print(f"AFTER  t angle:{self.t_angle_after}")
 
     def cos_sim(self, prev_model, model1, model2):
