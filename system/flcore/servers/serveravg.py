@@ -27,8 +27,8 @@ class FedAvg(Server):
 
     def train(self):
 
-        if self.args.num_tasks % self.N_TASKS != 0:
-            raise ValueError("Set num_task again")
+        # if self.args.num_tasks % self.N_TASKS != 0:
+        #     raise ValueError("Set num_task again")
 
         for task in range(self.args.num_tasks):
 
@@ -118,10 +118,12 @@ class FedAvg(Server):
                 self.Budget.append(time.time() - s_t)
                 print('-'*25, 'time cost', '-'*25, self.Budget[-1])
 
-            if int(task/self.N_TASKS) == int(self.args.num_tasks/self.N_TASKS-1):
-                if self.args.offlog == True and not self.args.debug:  
-                    self.eval_task(task=task, glob_iter=glob_iter, flag="local")
+            # Comment for boosting speed for rebuttal run
+            
+            # if int(task/self.N_TASKS) == int(self.args.num_tasks/self.N_TASKS-1):
+            #     if self.args.offlog == True and not self.args.debug:  
+            #         self.eval_task(task=task, glob_iter=glob_iter, flag="local")
 
-                    # need eval before data update
-                    self.send_models()
-                    self.eval_task(task=task, glob_iter=glob_iter, flag="global")
+            #         # need eval before data update
+            #         self.send_models()
+            #         self.eval_task(task=task, glob_iter=glob_iter, flag="global")
