@@ -105,8 +105,8 @@ class FedALA(Server):
                 if self.args.pca_eval:
                     self.proto_eval(model=self.global_model, task=task, round=i)
 
-                if i%self.eval_gap == 0:
-                    self.eval(task=task, glob_iter=glob_iter, flag="local")
+                # if i%self.eval_gap == 0:
+                #     self.eval(task=task, glob_iter=glob_iter, flag="local")
 
                 self.Budget.append(time.time() - s_t)
                 print('-'*25, 'time cost', '-'*25, self.Budget[-1])
