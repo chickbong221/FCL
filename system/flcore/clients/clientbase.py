@@ -290,9 +290,15 @@ class Client(object):
 
         # TODO Measure Gradient Angles After Aggregate
         angle_value = []
-        for model_i in network_test:
-            for model_j in network_test:
-                angle_value.append(self.cos_sim(old_model, model_i, model_j))
+
+        # for model_i in network_test:
+        #     for model_j in network_test:
+        #         angle_value.append(self.cos_sim(old_model, model_i, model_j))
+
+        for i in range(len(network_test)):
+            for j in range(i + 1, len(network_test)):
+                angle_value.append(self.cos_sim(old_model, network_test[i], network_test[j]))
+
         self.t_angle_after = statistics.mean(angle_value)
         print(f"AFTER  t angle:{self.t_angle_after}")
 
