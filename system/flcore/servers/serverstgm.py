@@ -37,8 +37,8 @@ class FedSTGM(Server):
 
     def train(self):
 
-        if self.args.num_tasks % self.N_TASKS != 0:
-            raise ValueError("Set num_task again")
+        # if self.args.num_tasks % self.N_TASKS != 0:
+        #     raise ValueError("Set num_task again")
 
         for task in range(self.args.num_tasks):
         # for task in range(self.N_TASKS):
